@@ -1,0 +1,424 @@
+version: "3.1"
+  
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true
+
+intents:
+  - greet
+  - goodbye
+  - affirm
+  - deny
+  - mood_great
+  - mood_unhappy
+  - bot_challenge
+  - fechas_horarios_teoria
+  - fechas_horarios_practica
+  - lunes
+  - martes
+  - miercoles
+  - jueves
+  - viernes
+  - teoria
+  - practica
+  - fechas_tp
+  - gracias
+  - profesorado
+  - tema1
+  - tema2
+  - tema3
+  - tema4
+  - tema5
+  - repasar
+  - set_resultado_defs
+  - cuestionarios
+  - conceptos
+  - ejercicios
+  - capa_aplicacion
+  - capa_presentacion
+  - capa_sesion
+  - capa_transporte
+  - capa_red
+  - correos_profesor
+  - entregas
+  - calidad_servicio
+  - congestion
+  - enrutamiento
+  - conmutacion
+  - dijkstra
+  - ejercicioDijsktra
+  - FalloejercicioDijsktrab
+  - FalloejercicioDijsktrac
+  - encaminamiento
+  - ejercicioEncaminamiento
+  - FalloejercicioEncaminamientoa
+  - FalloejercicioEncaminamientoc
+  - FalloejercicioRutaa
+  - ejercicioRuta
+  - FalloejercicioRutab
+  - ruta
+  - noticia
+  - seleccionar_tema
+
+entities:
+  - tema_actual
+
+slots:
+  tema_actual:
+    type: text
+    influence_conversation: false
+    mappings:
+    - type: from_entity
+      entity: tema_actual
+
+  pregunta_actual_idx:
+    type: any
+    influence_conversation: false
+    initial_value: 0
+    mappings:
+    - type: custom
+  respuesta_generica:
+    type: text
+    influence_conversation: false
+    mappings:
+    - type: from_text
+      not_intent:
+        - cuestionarios
+        - tema1
+      conditions:
+      - active_loop: cuestionario_dinamico_form
+
+forms:
+  cuestionario_dinamico_form:
+    required_slots:
+      - respuesta_generica
+
+actions:
+  - validate_cuestionario_dinamico_form
+  - action_ask_respuesta_generica
+  - action_reset_cuestionario_dinamico
+  - action_listar_temas
+
+responses:
+  utter_greet:
+  - text: "Hola, ¿qué duda tienes?"
+  - text: "Hola, ¿necesitas alguna información?"
+  - text: "Buenas, ¿qué duda tienes?"
+  
+  utter_preg_defs:
+  - text: |-
+      Resultado de preg defs
+       - res_def: {res_def}
+
+  utter_cheer_up:
+  - text: "Here is something to cheer you up:"
+    image: "https://i.imgur.com/nGF1K8f.jpg"
+
+  utter_did_that_help:
+  - text: "¿Puedo ayudarte en algo?"
+
+  utter_happy:
+  - text: "Bien, ¡me alegro!"
+
+  utter_goodbye:
+  - text: "Adios, que tenga un buen día"
+  - text: "Hasta luego"
+  - text: "Hasta pronto"
+  - text: "Ten un buen día"
+
+  utter_iamabot:
+  - text: "Soy un robot, me llamo Rasa."
+  
+  utter_martes:
+  - text: "Martes de 12:00 a 13:30 en el aula B9 del Aulario Averroes en Campus de Rabanales"
+  
+  utter_jueves:
+  - text: "Jueves de 09:00 a 10:30 en el aula B9 del Aulario Averroes en Campus de Rabanales"
+  
+  utter_lunes:
+  - text: "Lunes de 11:00 a 13:00 en el aula p1 del Ramón y Cajal"
+  
+  utter_miercoles:
+  - text: "Miércoles de 09:00 a 11:00 en el aula s1 del Ramón y Cajal"
+  
+  utter_viernes:
+  - text: "Viernes de 13:00 a 15:00 en el aula p1 del Ramón y Cajal"
+  
+  utter_gracias:
+  - text: "De nada, un placer"
+  - text: "De nada"
+  
+  utter_profesorado:
+  - text: "Amelia Zafra Gómez - in1zagoa@uco.es\nHorarios tutorias: Lunes 9:00 - 11:00\n \t\t   Martes 8:00 - 10:00"
+        
+  utter_fin_test:
+  - text: "¡Perfecto! Hemos finalizado el cuestionario."
+  
+  utter_acierto_p1t1:
+  - text: "¡Pregunta 1 acertada!"
+  
+  utter_acierto_p2t1:
+  - text: "¡Pregunta 2 acertada!"
+  
+  utter_acierto_p3t1:
+  - text: "¡Pregunta 3 acertada!"
+  
+  utter_acierto_p4t1:
+  - text: "¡Pregunta 4 acertada!"
+  
+  utter_concepto_capa_aplicacion:
+  - text: "Define los protocolos que los usuarios finales utilizan"
+  
+  utter_concepto_capa_presentacion:
+  - text: "Define estructuras de datos abstractas"
+  
+  utter_concepto_capa_sesion:
+  - text: "Permite establecer sesiones"
+  
+  utter_concepto_capa_transporte:
+  - text: "Controla el flujo extremo a extremo"  
+  
+  utter_concepto_capa_red:
+  - text: "Realiza el encaminamiento"
+  
+  utter_concepto_conmutacion:
+  - text: "La Conmutación consiste en establecer un camino entre dos puntos, un emisor y un receptor a través de nodos y líneas de transmisión. La conmutación permite la entrega de la señal desde el origen hasta el destino requerido. Existen diferentes técnicas de conmutación según como se establezca dicho camino: circuitos y paquetes"
+  
+  utter_concepto_enrutamiento:
+  - text: "Es la parte de software de la capa de red encargada de decidir la línea de salida por la que se retransmite un paquete de entrada"
+  
+  utter_concepto_congestion:
+  - text: "Se produce cuando la carga (temporalmente) es superior (en una parte del sistema) a la que pueden manejar los recursos"
+  
+  utter_concepto_calidad_servicio:
+  - text: "hace referencia a los procedimientos utilizados para gestionar el tráfico de una red y garantizar un cierto nivel de rendimiento según el tipo de aplicación. "
+  
+  utter_fallo:
+  - text: "Ohhh has fallado esta pregunta, no te desanimes el cuestionario aun no ha terminado."
+  
+  utter_ultimo_fallo:
+  - text: "Que pena, has fallado la última pregunta."
+  
+  utter_respuesta_correcta_ap1t1:
+  - text: "La respuesta correcta era la A \nRetroalimentación: Debe repasar los tipos de estándar"
+  
+  utter_respuesta_correcta_ap3t1:
+  - text: "La respuesta correcta era la A \nRetroalimentación: Debe repasar las capas del modelo OSI"
+  
+  utter_respuesta_correcta_cp4t1:
+  - text: "La respuesta correcta era la C \nRetroalimentación: Debe repasar el modelo OSI"
+  
+  utter_respuesta_correcta_cp2t1:
+  - text: "La respuesta correcta era la C \nRetroalimentación: Debe repasar el tipo de redes"
+          
+  utter_fechas_horarios_teoria:
+  - text: "Elija el día del que desea la información"
+  
+    buttons:
+      - title: "Clase del martes teórica"
+        payload: "/martes"
+        
+      - title: "Clase del jueves teórica"
+        payload: "/jueves"
+        
+  utter_fechas_horarios_practica:
+  - text: "Elija el día del que desea la información"
+  
+    buttons:
+      - title: "Clase del lunes práctica"
+        payload: "/lunes"
+        
+      - title: "Clase del miércoles práctica"
+        payload: "/miercoles"
+        
+      - title: "Clase del viernes práctica"
+        payload: "/viernes"
+        
+
+    
+  utter_fechas_tp:
+  - text: "¿Desea saber los horarios de teoría o práctica?"
+  
+    buttons:
+      - title: "Clases de teoría"
+        payload: "/teoria"
+        
+      - title: "Clase de práctica"
+        payload: "/practica"
+        
+  utter_tipo_ejercicio:
+  - text: "¿Qué tipo de repaso desea?"
+  
+    buttons:
+      - title: "Conceptos"
+        payload: "/conceptos"
+        
+      - title: "Cuestionarios" 
+        payload: "/cuestionarios"
+        
+      - title: "Ejercicios"
+        payload: "/ejercicios"    
+        
+  utter_conceptosT1:
+  - text: "Seleccione el concepto que desea saber"
+    button_type: vertical
+  
+    buttons:
+      - title: "Capa de aplicación"
+        payload: "/capa_aplicacion"
+        
+      - title: "Capa de presentación" 
+        payload: "/capa_presentacion"
+        
+      - title: "Capa de sesión"
+        payload: "/capa_sesion"   
+        
+      - title: "Capa de transporte"
+        payload: "/capa_transporte"   
+        
+      - title: "Capa de red"
+        payload: "/capa_red"   
+        
+  utter_conceptosT2:
+  - text: "Seleccione el concepto que desea saber"
+    button_type: vertical
+  
+    buttons:
+      - title: "Conmutación"
+        payload: "/conmutacion"
+        
+      - title: "Algoritmo de enrutamiento " 
+        payload: "/enrutamiento"
+        
+      - title: "Congestión"
+        payload: "/congestion"   
+        
+      - title: "Calidad de servicio"
+        payload: "/calidad_servicio"   
+        
+  utter_ejerciciosT2:
+  - text: "Seleccione el ejercicio que desea saber"
+    button_type: vertical
+  
+    buttons:
+      - title: "Dijkstra"
+        payload: "/dijkstra"
+        
+      - title: "Algoritmo de encaminamiento" 
+        payload: "/encaminamiento"
+        
+      - title: "Ruta de paquetes"
+        payload: "/ruta"   
+    
+        
+  utter_ask_p1t1_answer:
+  - text: "Cuando un Estándar se establece por su extensa utilización se dice que es un estándar\n\n
+  A1) De facto\n
+  B1) De jure\n
+  C1) Ninguna de las anteriores"
+        
+        
+  utter_ask_p2t1_answer:
+  - text: "Clasificación de las redes por su extensión\n\n
+  A2) Públicas y Privadas\n
+  B2) Difusión y Punto a Punto\n
+  C2) LAN y WAN"
+        
+  utter_ask_p3t1_answer:
+  - text: "¿Cuál de las siguientes listas enumera las capas del modelo OSI correctamente ordenadas?\n\n
+  A3) Física - enlace de datos - red - transporte - sesión - presentación - aplicación\n
+  B3) Física - enlace de datos - red - transporte - presentación - sesión - aplicación\n
+  C3) Física - enlace de datos - red - transporte - aplicación -  presentación - sesión"
+
+
+  utter_ask_p4t1_answer:
+  - text: "En el modelo OSI, el encaminamiento es una tarea que realiza la\n\n
+  A4) Capa de transporte\n
+  B4) Capa de aplicación\n
+  C4) Capa de red"
+    
+  utter_entregas:
+  - text: "Las entregas que debes enviar a lo largo del curso son las siguientes: \n\n
+  Cuestionario Tema 1 (30 de Septiembre 2022)\n
+  Cuestionario Tema 2 (6 de Octubre 2022)\n
+  Cuestionario Tema 3 (15 de Octubre 2022)\n
+  Cuestionario Tema 4 (30 de Octubre 2022)\n
+  Cuestionario Tema 5 (8 de Noviembre 2022)\n
+  Cuestionario Tema 6 (25 de Noviembre 2022)\n
+  Primer parcial (4 de Diciembre 2022)\n
+  Segundo parcial (16 de Diciembre 2022)\n
+  Primera convocatoria (8 de Enero 2023)\n
+  Segunda convocatoria (27 de Enero 2023)\n
+  Entrega ejericicio 1 (Fecha pendiente de confirmar)\n
+  Entrega ejericicio 2 (Fecha pendiente de confirmar)\n
+  Entrega ejericicio 3 (Fecha pendiente de confirmar)\n
+  Entrega ejericicio 4 (Fecha pendiente de confirmar)\n"
+  
+  utter_respuesta_correcta_e1t2:
+  - text: "La respuesta correcta era la A"
+  
+  utter_falloEjercicios:
+  - text: "Ohhh has fallado el ejercicio ejercicio"
+
+  utter_respuesta_correcta:
+  - text: "La respuesta correcta, ¡muy bien!"  
+  
+  utter_e1t2:
+  - text: "1. Aplique Dijkstra para determinar el costo de la ruta de menor coste entre O y T del grafo que se muestra en la figura. El valor del coste de cada enlace aparece representado en cada enlace."
+    image: "https://i.imgur.com/b0fLQoQ.png"
+    
+  utter_ejerDijsktra:
+  - text: "Seleccione la respuesta correcta"
+  
+    buttons:
+      - title: "a) 13"
+        payload: "/ejercicioDijsktra"
+        
+      - title: "b) 16" 
+        payload: "/FalloejercicioDijsktrab"
+        
+      - title: "c) Ninguna de las anteriores" 
+        payload: "/FalloejercicioDijsktrac"
+        
+  utter_e2t2:
+  - text: "2. Suponga que se utiliza un algoritmo de encaminamiento de vector distancia, y el enrutador C recibe los siguientes vectores de encaminamiento de sus vecinos (B, D y E): desde B(8,0,10,9,15,20), desde D(8,10,3,0,15,10) y desde E(10,5,12,6,0,8). Cada vector representa sus retardos a los nodos A, B, C, D, E y F respectivamente. Los retardos medidos a B, D y E son, respectivamente, 5, 6 y 10. De acuerdo a dicha información, en la tabla de enrutamiento que generaría el enrutador C, ¿por dónde encaminaría los paquetes dirigidos a A?."
+    
+  utter_ejerEncaminamiento:
+  - text: "Seleccione la respuesta correcta"
+  
+    buttons:
+      - title: "a) D"
+        payload: "/FalloejercicioEncaminamientoa"
+        
+      - title: "b) B" 
+        payload: "/ejercicioEncaminamiento"
+        
+      - title: "c) E" 
+        payload: "/FalloejercicioEncaminamientoc"
+        
+  utter_respuesta_correcta_e2t2:
+  - text: "La respuesta correcta era la B"
+ 
+  utter_e3t2:
+  - text: "3. Indique el número de rutas que toma un paquete enviado de A a F usando inundación, y estableciendo un número de saltos máximo 2. Se considera una ruta, el envío de un origen a un destino que no reenvía dicho paquete."
+    
+  utter_rutas_paquetes:
+  - text: "Seleccione la respuesta correcta"
+    image: "https://i.imgur.com/LrUwsnA.png"
+  
+    buttons:
+      - title: "a) 10"
+        payload: "/FalloejercicioRutaa"
+        
+      - title: "b) Ninguna de las anteriores" 
+        payload: "/FalloejercicioRutab"
+        
+      - title: "c) 4" 
+        payload: "/ejercicioRuta"
+        
+  utter_respuesta_correcta_e3t2:
+  - text: "La respuesta correcta era la C"
+  
+  utter_noticia:
+  - text: "La noticia de la semana es la siguiente:\n [Ciberseguridad: Una nueva técnica del 'malware' sin archivos aprovecha los registros de eventos de Windows para ocultarse](https://www.cope.es/actualidad/tecnologia/noticias/ciberseguridad-una-nueva-tecnica-del-malware-sin-archivos-aprovecha-los-registros-eventos-windows-para-ocultarse-20220524_2101869)"
+  

@@ -1,0 +1,23 @@
+# Ignorar modelos compilados (son muy pesados y se deben entrenar localmente)
+models/
+
+# Ignorar Caché y Meta-datos internos de Rasa
+.rasa/
+
+# 🚨🚨 Ignorar Credenciales y Endpoints que contengan secretos/claves 🚨🚨
+credentials.yml
+endpoints.yml
+
+# Ignorar archivos locales de Entornos Virtuales
+venv/
+.env
+
+# Ignorar Backups y logs temporales
+*.bak
+*.log
+rasa.db
+
+# Básicos de Python
+__pycache__/
+*.py[cod]
+*$py.class

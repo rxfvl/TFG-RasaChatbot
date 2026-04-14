@@ -1,0 +1,37 @@
+[
+  {
+    "id": "p1t3",
+    "pregunta": "¿Qué tareas realizan los protocolos de enrutamiento dinámico?\n\n  A1) Actualizan y mantienen las tablas de enrutamiento\n  B1) Asignan direccionamiento IP\n  C1) Descubren hosts",
+    "correcta": "A1",
+    "feedback_acierto": "¡Pregunta 1 acertada!",
+    "feedback_fallo": "La respuesta correcta era la A \nRetroalimentación: Revisar algoritmos de enrutamiento IPv4 del Tema 3"
+  },
+  {
+    "id": "p2t3",
+    "pregunta": "Cuando la red de destino no se encuentra en la lista de la tabla de enrutamiento de un router, ¿cuál es una de las acciones posibles que el router podría realizar?\n\n  A2) El router reenvía el paquete a la interfaz indicada por la entrada de ruta por defecto\n  B2) El router reenvía el paquete por cualquier interfaz de la que disponga y que no sea por la que llegó el paquete\n  C2) El router reenvía el paquete hacia el siguiente salto indicado en la tabla ARP",
+    "correcta": "A2",
+    "feedback_acierto": "¡Pregunta 2 acertada!",
+    "feedback_fallo": "La respuesta correcta era la A \nRetroalimentación: Revisar los algoritmos de enrutamiento del Tema 3"
+  },
+  {
+    "id": "p3t3",
+    "pregunta": "¿Cuáles de los siguientes es un beneficio de NAT?\n\n  A3) Agrega un grado de privacidad y seguridad a una red.\n  B3) Facilita la resolución de problemas de enrutamiento.\n  C3) Facilita el seguimiento del uso de una dirección IP.",
+    "correcta": "A3",
+    "feedback_acierto": "¡Pregunta 3 acertada!",
+    "feedback_fallo": "La respuesta correcta era la A \nRetroalimentación: Revisar el procedimiento NAT del Tema 3"
+  },
+  {
+    "id": "p4t3",
+    "pregunta": "¿Qué representa la dirección IP 172.17.4.250/24?\n\n  A4) Dirección de host\n  B4) Dirección de difusión\n  C4) Dirección de red",
+    "correcta": "A4",
+    "feedback_acierto": "¡Pregunta 4 acertada!",
+    "feedback_fallo": "La respuesta correcta era la A \nRetroalimentación: Revisar el direccionamiento IPv4 del Tema 3"
+  },
+  {
+    "id": "p5t3",
+    "pregunta": "La dirección IPv6: 2001:DB8::BAF:3F57:FE94 es de tipo\n\n  A5) Unidifusión global\n  B5) Link-local\n  C5) Local única",
+    "correcta": "A5",
+    "feedback_acierto": "¡Pregunta 5 acertada!",
+    "feedback_fallo": "La respuesta correcta era la A \nRetroalimentación: Revisar el direccionamiento IPv6 del Tema 3"
+  }
+]

@@ -1,0 +1,37 @@
+[
+  {
+    "id": "p1t1",
+    "pregunta": "Cuando un Estándar se establece por su extensa utilización se dice que es un estándar\n\n  A1) De facto\n  B1) De jure\n  C1) Ninguna de las anteriores",
+    "correcta": "A1",
+    "feedback_acierto": "¡Pregunta 1 acertada!",
+    "feedback_fallo": "La respuesta correcta era la A \nRetroalimentación: Debe repasar los tipos de estándar"
+  },
+  {
+    "id": "p2t1",
+    "pregunta": "Clasificación de las redes por su extensión\n\n  A2) Públicas y Privadas\n  B2) Difusión y Punto a Punto\n  C2) LAN y WAN",
+    "correcta": "C2",
+    "feedback_acierto": "¡Pregunta 2 acertada!",
+    "feedback_fallo": "La respuesta correcta era la C \nRetroalimentación: Debe repasar el tipo de redes"
+  },
+  {
+    "id": "p3t1",
+    "pregunta": "¿Cuál de las siguientes listas enumera las capas del modelo OSI correctamente ordenadas?\n\n  A3) Física - enlace de datos - red - transporte - sesión - presentación - aplicación\n  B3) Física - enlace de datos - red - transporte - presentación - sesión - aplicación\n  C3) Física - enlace de datos - red - transporte - aplicación -  presentación - sesión",
+    "correcta": "A3",
+    "feedback_acierto": "¡Pregunta 3 acertada!",
+    "feedback_fallo": "La respuesta correcta era la A \nRetroalimentación: Debe repasar las capas del modelo OSI"
+  },
+  {
+    "id": "p4t1",
+    "pregunta": "En el modelo OSI, el encaminamiento es una tarea que realiza la\n\n  A4) Capa de transporte\n  B4) Capa de aplicación\n  C4) Capa de red",
+    "correcta": "C4",
+    "feedback_acierto": "¡Pregunta 4 acertada!",
+    "feedback_fallo": "La respuesta correcta era la C \nRetroalimentación: Debe repasar el modelo OSI"
+  },
+  {
+    "id": "p5t1",
+    "pregunta": "PRUEBA\nPRUEBA",
+    "correcta": "C5",
+    "feedback_acierto": "¡Pregunta 5 acertada!",
+    "feedback_fallo": "La respuesta correcta era la C \nRetroalimentación: Debe repasar el modelo OSI"
+  }
+]

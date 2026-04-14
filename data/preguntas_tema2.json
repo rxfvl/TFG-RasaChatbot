@@ -1,0 +1,37 @@
+[
+  {
+    "id": "p1t2",
+    "pregunta": "Las soluciones del control de congestión de ciclo abierto se caracterizan porque:\n\n  A1) Intentan resolver el problema mediante un buen diseño\n  B1) Todas realizan desprendimiento de carga\n  C1) Se basan en el concepto de un ciclo de retroalimentación",
+    "correcta": "A1",
+    "feedback_acierto": "¡Pregunta 1 acertada!",
+    "feedback_fallo": "La respuesta correcta era la A \nRetroalimentación: Revisar las técnicas de cogestión del Tema 2"
+  },
+  {
+    "id": "p2t2",
+    "pregunta": "Una característica de la Conmutación de Circuitos es que:\n\n  A2) No existen bits suplementarios en la transmisión (salvo los propios del establecimiento y el cierre de la conexión)\n  B2) Permite que varios usuarios compartan el canal (canal no dedicado)\n  C2) El mensaje se transmite en base a paquetes",
+    "correcta": "A2",
+    "feedback_acierto": "¡Pregunta 2 acertada!",
+    "feedback_fallo": "La respuesta correcta era la A \nRetroalimentación: Revisar las técnicas de conmutación del Tema 2"
+  },
+  {
+    "id": "p3t2",
+    "pregunta": "Una característica de los Circuitos Virtuales frente a los Datagramas es:\n\n  A3) En Circuitos Virtuales se establece una conexión previa al envío de los datos\n  B3) En Circuitos Virtuales es más difícil realizar control de congestión\n  C3) En Circuitos Virtuales es más difícil dar calidad de servicio",
+    "correcta": "A3",
+    "feedback_acierto": "¡Pregunta 3 acertada!",
+    "feedback_fallo": "La respuesta correcta era la A \nRetroalimentación: Revisar las técnicas de conmutación del Tema 2"
+  },
+  {
+    "id": "p4t2",
+    "pregunta": "El principio de optimalidad establece que\n\n  A4) Si conocemos la ruta óptima de A hacia B entonces conocemos la ruta óptima hacia B de todos los nodos que se encuentren comprendidos en dicha ruta\n  B4) La ruta óptima de A hacia B y la ruta óptima de B hacia A coinciden\n  C4) En la elección de una ruta entre varias alternativas siempre se ha de elegir la más corta",
+    "correcta": "A4",
+    "feedback_acierto": "¡Pregunta 4 acertada!",
+    "feedback_fallo": "La respuesta correcta era la A \nRetroalimentación: Revisar las propiedades de los algoritmos de enrutamiento del Tema 2"
+  },
+  {
+    "id": "p5t2",
+    "pregunta": "El control de congestión pretende:\n\n  A5) Limitar el tráfico en la red para evitar la saturación y asegurar un rendimiento óptimo mientras los usuarios obtienen un tiempo de respuesta aceptable\n  B5) Garantizar a los usuarios el mejor tiempo de respuesta posible\n  C5) Evitar que un usuario pueda acaparar una cantidad de recursos excesiva, lo cual perjudicaría al resto de los usuarios",
+    "correcta": "A5",
+    "feedback_acierto": "¡Pregunta 5 acertada!",
+    "feedback_fallo": "La respuesta correcta era la A \nRetroalimentación: Revisar el control de congestión y sus técnicas del Tema 2"
+  }
+]

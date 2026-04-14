@@ -1,0 +1,250 @@
+version: "3.1"
+
+stories:
+
+- story: happy path
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: mood_great
+  - action: utter_happy
+
+- story: sad path 1
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: mood_unhappy
+  - action: utter_cheer_up
+  - action: utter_did_that_help
+  - intent: affirm
+  - action: utter_happy
+
+- story: sad path 2
+  steps:
+  - intent: greet
+  - action: utter_greet
+  - intent: mood_unhappy
+  - action: utter_cheer_up
+  - action: utter_did_that_help
+  - intent: deny
+  - action: utter_goodbye
+  
+- story: horarios martes
+  steps:
+  - intent: martes
+  - action: utter_martes
+  
+- story: horarios jueves
+  steps:
+  - intent: jueves
+  - action: utter_jueves
+  
+- story: horarios lunes
+  steps:
+  - intent: lunes
+  - action: utter_lunes  
+  
+- story: horarios miercoles
+  steps:
+  - intent: miercoles
+  - action: utter_miercoles
+  
+- story: horarios viernes
+  steps:
+  - intent: viernes
+  - action: utter_viernes
+  
+- story: clases teoricas
+  steps:
+  - intent: fechas_tp
+  - action: utter_fechas_tp
+  - intent: teoria
+  - action: utter_fechas_horarios_teoria
+  
+- story: clases practicas
+  steps:
+  - intent: fechas_tp
+  - action: utter_fechas_tp
+  - intent: practica
+  - action: utter_fechas_horarios_practica
+  
+- story: gracias historia
+  steps:
+  - intent: gracias
+  - action: utter_gracias
+  
+- story: Profesorado
+  steps:
+  - intent: profesorado
+  - action: utter_profesorado
+  
+- story: Correos
+  steps:
+  - intent: correos_profesor
+  - action: utter_profesorado
+ 
+- story: Entregas del curso
+  steps:
+  - intent: entregas
+  - action: utter_entregas
+  
+- story: Repaso
+  steps:
+  - intent: repasar
+  - action: action_listar_temas
+  
+- story: Cuestionario-Repaso
+  steps:
+  - intent: cuestionarios
+  - action: action_listar_temas
+  
+- story: Concepto-Repaso
+  steps:
+  - intent: conceptos
+  - action: action_listar_temas
+  
+- story: Ejercicio-Repaso
+  steps:
+  - intent: ejercicios
+  - action: action_listar_temas
+  
+- story: conceptosTema1
+  steps:
+  - intent: tema1
+  - action: utter_tipo_ejercicio
+  - intent: conceptos
+  - action: utter_conceptosT1
+  
+- story: noticias
+  steps:
+  - intent: noticia
+  - action: utter_noticia
+  
+- story: ejerciciosTema2
+  steps:
+  - intent: tema2
+  - action: utter_tipo_ejercicio
+  - intent: ejercicios
+  - action: utter_ejerciciosT2
+  
+- story: ejercicio dijsktra acierto
+  steps:
+  - intent: dijkstra
+  - action: utter_e1t2 
+  - action: utter_ejerDijsktra
+  - intent: ejercicioDijsktra
+  - action: utter_respuesta_correcta
+  
+- story: ejercicio dijsktra fallo
+  steps:
+  - intent: dijkstra
+  - action: utter_e1t2 
+  - action: utter_ejerDijsktra
+  - or:
+    - intent: FalloejercicioDijsktrab
+    - intent: FalloejercicioDijsktrac
+  - action: utter_falloEjercicios
+  - action: utter_respuesta_correcta_e1t2
+  
+- story: ejercicio encaminamiento acierto
+  steps:
+  - intent: encaminamiento
+  - action: utter_e2t2 
+  - action: utter_ejerEncaminamiento
+  - intent: ejercicioEncaminamiento
+  - action: utter_respuesta_correcta
+  
+- story: ejercicio encaminamiento fallo
+  steps:
+  - intent: encaminamiento
+  - action: utter_e2t2 
+  - action: utter_ejerEncaminamiento
+  - or:
+    - intent: FalloejercicioEncaminamientoc
+    - intent: FalloejercicioEncaminamientoa
+  - action: utter_falloEjercicios
+  - action: utter_respuesta_correcta_e2t2
+  
+- story: ejercicio ruta acierto
+  steps:
+  - intent: ruta
+  - action: utter_e3t2 
+  - action: utter_rutas_paquetes
+  - intent: ejercicioRuta
+  - action: utter_respuesta_correcta
+  
+- story: ejercicio encaminamiento fallo
+  steps:
+  - intent: ruta
+  - action: utter_e3t2 
+  - action: utter_rutas_paquetes
+  - or:
+    - intent: FalloejercicioRutaa
+    - intent: FalloejercicioRutab
+  - action: utter_falloEjercicios
+  - action: utter_respuesta_correcta_e3t2
+  
+- story: conceptosTema2
+  steps:
+  - intent: tema2
+  - action: utter_tipo_ejercicio
+  - intent: conceptos
+  - action: utter_conceptosT2
+  
+
+  
+- story: definicion conmutacion
+  steps:
+  - intent: conmutacion
+  - action: utter_concepto_conmutacion 
+  
+- story: definicion enrutamiento
+  steps:
+  - intent: enrutamiento
+  - action: utter_concepto_enrutamiento
+  
+- story: definicion congestion
+  steps:
+  - intent: congestion
+  - action: utter_concepto_congestion
+  
+- story: definicion calidad servicio
+  steps:
+  - intent: calidad_servicio
+  - action: utter_concepto_calidad_servicio
+  
+- story: definicion capa aplicacion
+  steps:
+  - intent: capa_aplicacion
+  - action: utter_concepto_capa_aplicacion
+  
+- story: definicion capa presentacion
+  steps:
+  - intent: capa_presentacion
+  - action: utter_concepto_capa_presentacion
+  
+- story: definicion capa sesion
+  steps:
+  - intent: capa_sesion
+  - action: utter_concepto_capa_sesion
+  
+- story: definicion capa transporte
+  steps:
+  - intent: capa_transporte
+  - action: utter_concepto_capa_transporte
+  
+- story: definicion capa red
+  steps:
+  - intent: capa_red
+  - action: utter_concepto_capa_red
+  
+- story: inicio_cuestionario_dinamico
+  steps:
+  - intent: seleccionar_tema
+  - action: utter_tipo_ejercicio
+  - intent: cuestionarios
+  - action: action_reset_cuestionario_dinamico
+  - action: cuestionario_dinamico_form
+  - active_loop: cuestionario_dinamico_form
+  - active_loop: null
+  - action: utter_fin_test

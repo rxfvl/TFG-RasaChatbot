@@ -1,0 +1,403 @@
+version: "3.1"
+
+nlu:
+- intent: greet
+  examples: |
+    - hola
+    - hola, ¿que tal?
+    - Buenos días
+    - Buenas tardes
+    - Buenos dias
+    - Buenas noches
+
+- intent: goodbye
+  examples: |
+    - Adios
+    - Hasta luego
+    - Buenas noches
+    - Hasta mañana
+    - Hasta pronto
+    - Ten un buen día
+    - Nos vemos pronto
+
+- intent: affirm
+  examples: |
+    - Si
+    - s
+    - Claro
+    - Por supuesto
+    - Eso suena bien
+    - Correcto
+
+- intent: deny
+  examples: |
+    - no
+    - n
+    - Nunca
+    - No lo creo
+    - No me gusta
+    - De ninguna manera
+    - Realmente no
+
+- intent: mood_great
+  examples: |
+    - Perfecto
+    - Bien
+    - Increible
+    - Maravilloso
+    - Me siento bien
+    - Estoy bien
+    - Estoy increible
+    - Voy a salvar el mundo
+    - Extremadamente bien
+
+- intent: mood_unhappy
+  examples: |
+    - Mi día está siendo horrible
+    - Estoy triste
+    - No me siento bien
+    - Estoy decepcionado
+    - Super triste
+    - Estoy tan triste
+    - triste
+    - Muy triste
+    - descontento
+    - no bien
+    - no muy bien
+    - Extremadamente triste
+    - Tan triste
+
+- intent: bot_challenge
+  examples: |
+    - ¿Eres un bot?
+    - ¿Eres un humano?
+    - ¿Estoy hablando con un bot?
+    - ¿Estoy hablando con un humano?
+    
+- intent: fechas_horarios_teoria
+  examples: |
+    - ¿A qué hora es la clase teorica de redes?
+    - ¿Cuando hay clase de teoria?
+    - ¿A qué hora es mañana la clase teorica?
+    - clases teoricas
+    - teoria
+    - teoría
+    - teórica
+    - teorica
+    
+- intent: fechas_horarios_practica
+  examples: |
+    - ¿A qué hora es la clase practica de redes?
+    - ¿Cuando hay clase de practica?
+    - ¿A qué hora es mañana la clase practica?
+    - clases practicas
+    - practica
+    - práctica
+    - prácticas
+    - practicas
+    
+- intent: fechas_tp
+  examples: |
+    - ¿A qué hora es la clase de redes?
+    - ¿Cuando hay clase?
+    - ¿A qué hora es mañana la clase?
+    - Horario
+    - Hora
+    - clases
+    - Informacion sobre clases
+
+- intent: martes
+  examples: |
+    - Martes
+    - martes
+    - MARTES
+    
+- intent: jueves
+  examples: |
+    - Jueves
+    - jueves
+    - JUEVES
+    
+- intent: lunes
+  examples: |
+    - Lunes
+    - lunes
+    - LUNES
+    
+- intent: miercoles
+  examples: |
+    - Miercoles
+    - Miércoles
+    - miercoles
+    - miércoles
+    - MIERCOLES
+    - MIÉRCOLES
+    
+- intent: viernes
+  examples: |
+    - Viernes
+    - viernes
+    - VIERNES
+    
+- intent: teoria
+  examples: |
+    - Teoría
+    - teoria
+    - Teoría
+    - teoría
+    - TEORIA
+    - TEORÍA
+    
+- intent: practica
+  examples: |
+    - Práctica
+    - Practica
+    - practica
+    - práctica
+    - PRÁCTICA
+    - PRACTICA
+    
+- intent: gracias
+  examples: |
+    - Gracias
+    - GRACIAS
+    - gracias
+ 
+- intent: profesorado
+  examples: |
+    - Profesor
+    - Profesora
+    - tutorias
+    - tutorías
+    - PROFESOR
+    - PROFESORA
+    - profesor
+    - profesora
+    - TUTORIAS
+    - TUTORÍAS
+    - Tutorias
+    - Tutorías
+    - Amelia Zafra Gómez
+    - AMELIA ZAFRA GÓMEZ
+    - amelia zafra gómez
+    
+- intent: repasar
+  examples: |
+    - quiero repasar
+    - Repasar
+    - repasar
+    - repaso
+    - Repaso
+    - estudiar
+    - Estudiar
+    - Estudio
+    - estudio
+  
+- intent: tema1
+  examples: |
+    - tema 1
+    - TEMA 1
+    - Tema 1
+    
+
+- intent: cuestionarios
+  examples: |
+    - Cuestionarios
+    - cuestionarios
+    - CUESTIONARIOS
+    - Cuestionario
+    - cuestionario
+    - CUESTIONARIO
+    
+- intent: conceptos
+  examples: |
+    - Conceptos
+    - conceptos
+    - CONCEPTOS
+    - Concepto
+    - concepto
+    - CONCEPTO
+    
+- intent: ejercicios
+  examples: |
+    - Ejercicios
+    - ejercicios
+    - EJERCICIOS
+    - Ejercicio
+    - ejercicio
+    - EJERCICIO
+    
+- intent: capa_aplicacion
+  examples: |
+    - Capa de aplicacion
+    - capa de aplicacion
+    - CAPA DE APLICACION
+    
+- intent: capa_presentacion
+  examples: |
+    - Capa de presentacion
+    - capa de presentacion
+    - CAPA DE PRESENTACION
+    
+- intent: capa_sesion
+  examples: |
+    - Capa de sesion
+    - capa de sesion
+    - CAPA DE SESION
+    
+- intent: capa_transporte
+  examples: |
+    - Capa de transporte
+    - capa de transporte
+    - CAPA DE TRANSPORTE
+ 
+- intent: capa_red
+  examples: |
+    - Capa de red
+    - capa de red
+    - CAPA DE RED
+    
+- intent: conmutacion
+  examples: |
+    - Conmutación
+    - Conmutacion
+    - CONMUTACION
+    - CONMUTACIÓN
+    - conmutación
+    - conmutacion
+    
+- intent: enrutamiento
+  examples: |
+    - ENRUTAMIENTO
+    - Enrutamiento
+    - enrutamiento
+    
+- intent: congestion
+  examples: |
+    - Congestión
+    - Congestion
+    - CONGESTION
+    - CONGESTIÓN
+    - congestion
+    - congestion
+    
+- intent: dijkstra
+  examples: |
+    - Dijkstra
+    - dijkstra
+    - DIJKSTRA
+
+- intent: encaminamiento
+  examples: |
+    - Encaminamiento
+    - encaminamiento
+    - ENCAMINAMIENTO
+    
+- intent: ruta
+  examples: |
+    - Ruta
+    - ruta
+    - RUTA
+    
+- intent: calidad_servicio
+  examples: |
+    - calidad servicio
+    - Calidad servicio
+    - CALIDAD SERVICIO
+    
+- intent: correos_profesor
+  examples: |
+    - correos
+    - Correos
+    - CORREOS
+    - email
+    - EMAIL
+    - Email
+    
+- intent: entregas
+  examples: |
+    - Entregas
+    - entregas
+    - ENTREGAS
+    - envios
+    - Envios
+    - ENVIOS
+    - Entrega
+    - entrega
+    - ENTREGA
+    - envio
+    - Envio
+    - Recordatorio
+    - RECORDATORIO
+    - recordatorio
+    - ENVIO
+    
+- intent: ejercicioDijsktra
+  examples: |
+    - A)13
+    - a)13
+    
+- intent: FalloejercicioDijsktrab
+  examples: |
+    - b)16
+    - B)16
+    
+- intent: FalloejercicioDijsktrac
+  examples: |
+    - c)Ninguna de las anteriores
+    - C)NINGUNA DE LAS ANTERIORES
+    
+- intent: FalloejercicioEncaminamientoa
+  examples: |
+    - a)D
+    - A)D
+    
+- intent: ejercicioEncaminamiento
+  examples: |
+    - b)B
+    - B)B
+    
+- intent: FalloejercicioEncaminamientoc
+  examples: |
+    - c)E
+    - C)E
+    
+- intent: FalloejercicioRutaa
+  examples: |
+    - a)10
+    - A)10
+    
+- intent: ejercicioRuta
+  examples: |
+    - c)4
+    - C)4
+    
+- intent: FalloejercicioRutab
+  examples: |
+    - b)Ninguna de las anteriores
+    - B)NINGUNA DE LAS ANTERIORES
+    
+- intent: noticia
+  examples: |
+    - Noticia
+    - noticia
+    - NOTICIA
+    - Noticias
+    - noticias
+    - NOTICIAS
+    - Noticia semanal
+    - noticia semanal
+    - NOTICIA SEMANAL
+    - Noticias semanales
+    - noticias semanales
+    - NOTICIAS SEMANALES
+    
+- intent: seleccionar_tema
+  examples: |
+    - hacer el [tema 1]{"entity": "tema_actual", "value": "tema1"}
+    - el [tema 2]{"entity": "tema_actual", "value": "tema2"}
+    - el [tema 3]{"entity": "tema_actual", "value": "tema3"}
+    - [tema 4]{"entity": "tema_actual", "value": "tema4"}
+    - [tema 5]{"entity": "tema_actual", "value": "tema5"}
+
+

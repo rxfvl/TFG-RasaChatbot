@@ -1,0 +1,37 @@
+[
+  {
+    "id": "p1t4",
+    "pregunta": "¿En qué capa del modelo OSI opera un Router?\n\n  A1) Capa de Red\n  B1) Capa Física\n  C1) Capa de Transporte",
+    "correcta": "A1",
+    "feedback_acierto": "¡Pregunta 1 acertada!",
+    "feedback_fallo": "La respuesta correcta era la A \nRetroalimentación: Revisar los dispositivos intermediarios del Tema 4"
+  },
+  {
+    "id": "p2t4",
+    "pregunta": "¿Qué dispositivo se utiliza para crear o dividir los dominios de broadcast?\n\n  A2) Router\n  B2) Switch\n  C2) Hub",
+    "correcta": "A2",
+    "feedback_acierto": "¡Pregunta 2 acertada!",
+    "feedback_fallo": "La respuesta correcta era la A \nRetroalimentación: Revisar los dispositivos intermediarios del Tema 4"
+  },
+  {
+    "id": "p3t4",
+    "pregunta": "¿Qué es un switch?\n\n  A3) Dispositivo que envía tramas tomando como base las direcciones MAC.\n  B3) Se trata de un repetidor multipuerto.\n  C3) Es equivalente a un repetidor, no tiene características adicionales.",
+    "correcta": "A3",
+    "feedback_acierto": "¡Pregunta 3 acertada!",
+    "feedback_fallo": "La respuesta correcta era la A \nRetroalimentación: Revisar los dispositivos intermediarios del Tema 4"
+  },
+  {
+    "id": "p4t4",
+    "pregunta": "Una posible causa para segmentar una red es:\n\n  A4) Ambas respuestas son correctas.\n  B4) Si se sobrepasa el número de nodos máximo permitido\n  C4) Si baja el rendimiento de la red.",
+    "correcta": "A4",
+    "feedback_acierto": "¡Pregunta 4 acertada!",
+    "feedback_fallo": "La respuesta correcta era la A \nRetroalimentación: Revisar los dispositivos intermediarios del Tema 4"
+  },
+  {
+    "id": "p5t4",
+    "pregunta": "¿En qué capa del modelo OSI opera un repetidor?\n\n  A5) Capa Física\n  B5) Capa de Red\n  C5) Capa de Transporte",
+    "correcta": "A5",
+    "feedback_acierto": "¡Pregunta 5 acertada!",
+    "feedback_fallo": "La respuesta correcta era la A \nRetroalimentación: Revisar los dispositivos intermediarios del Tema 4"
+  }
+]

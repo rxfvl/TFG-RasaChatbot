@@ -1,0 +1,37 @@
+[
+  {
+    "id": "p1t5",
+    "pregunta": "¿Qué información se encuentra tanto en los encabezados TCP como en el UDP?\n\n  A1) Puerto de origen y destino.\n  B1) Confirmación de recepción (ack).\n  C1) Números de secuencia.",
+    "correcta": "A1",
+    "feedback_acierto": "¡Pregunta 1 acertada!",
+    "feedback_fallo": "La respuesta correcta era la A \nRetroalimentación: Revisar protocolo TCP y UDP del Tema 5"
+  },
+  {
+    "id": "p2t5",
+    "pregunta": "Según el mecanismo de control de congestión conocido como ‘slow-start’ (inicio lento) cuando la ventana llega al valor denominado ‘umbral de peligro’ entonces su tamaño:\n\n  A2) Crece, pero más lentamente que antes.\n  B2) Disminuye a partir de ese momento.\n  C2) Se mantiene constante.",
+    "correcta": "A2",
+    "feedback_acierto": "¡Pregunta 2 acertada!",
+    "feedback_fallo": "La respuesta correcta era la A \nRetroalimentación: Revisar control de congestión de la capa de transporte del Tema 5"
+  },
+  {
+    "id": "p3t5",
+    "pregunta": "¿Qué campo del encabezado de TCP se utiliza para proporcionar el control de flujo a medida que los segmentos viajan desde el origen hacia el destino?\n\n  A3) Tamaño de ventana.\n  B3) Números de secuencia.\n  C3) Confirmaciones de recepción (ack).",
+    "correcta": "A3",
+    "feedback_acierto": "¡Pregunta 3 acertada!",
+    "feedback_fallo": "La respuesta correcta era la A \nRetroalimentación: Revisar protocolo TCP del Tema 5"
+  },
+  {
+    "id": "p4t5",
+    "pregunta": "El protocolo de transporte en tiempo real (RTP) se ejecuta sobre:\n\n  A4) UDP.\n  B4) TCP.\n  C4) IP.",
+    "correcta": "A4",
+    "feedback_acierto": "¡Pregunta 4 acertada!",
+    "feedback_fallo": "La respuesta correcta era la A \nRetroalimentación: Revisar protocolo RTP del Tema 5"
+  },
+  {
+    "id": "p5t5",
+    "pregunta": "¿Qué número o conjunto de números representa a un socket?\n\n  A5) 192.168.1.1:80\n  B5) 01-23-45-67-89-AB\n  C5) 10.1.1.15",
+    "correcta": "A5",
+    "feedback_acierto": "¡Pregunta 5 acertada!",
+    "feedback_fallo": "La respuesta correcta era la A \nRetroalimentación: Revisar la definición de socket del Tema 5"
+  }
+]

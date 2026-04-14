@@ -1,0 +1,21 @@
+version: "3.1"
+
+rules:
+
+- rule: saludar cuando el usuario se salude
+  steps:
+  - intent: greet
+  - action: utter_greet
+
+- rule: Decir adios cuando el usuario se despida
+  steps:
+  - intent: goodbye
+  - action: utter_goodbye
+
+- rule: Si te pregunta decir soy un robot
+  steps:
+  - intent: bot_challenge
+  - action: utter_iamabot
+  
+
+  

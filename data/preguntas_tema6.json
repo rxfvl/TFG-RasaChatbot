@@ -1,0 +1,37 @@
+[
+  {
+    "id": "p1t6",
+    "pregunta": "¿En cuál de las siguientes aplicaciones es conveniente el uso de UDP como protocolo de transporte?\n\n  A1) Transmisiones de vídeo bajo demanda\n  B1) Transferencia de ficheros\n  C1) Páginas Web (HTTP)",
+    "correcta": "A1",
+    "feedback_acierto": "¡Pregunta 1 acertada!",
+    "feedback_fallo": "La respuesta correcta era la A \nRetroalimentación: Revisar tipos de aplicaciones en Tema 6"
+  },
+  {
+    "id": "p2t6",
+    "pregunta": "Qué protocolo permite acceder a un buzón de correo y descargarse los correos que haya en él?\n\n  A2) POP3\n  B2) SMTP\n  C2) MIME",
+    "correcta": "A2",
+    "feedback_acierto": "¡Pregunta 2 acertada!",
+    "feedback_fallo": "La respuesta correcta era la A \nRetroalimentación: Revisar protocolo POP3 en Tema 6"
+  },
+  {
+    "id": "p3t6",
+    "pregunta": "¿Cuál de los siguientes protocolos utilizan los servidores de correo electrónico para comunicarse entre sí?\n\n  A3) SMPT\n  B3) POP3\n  C3) IMAP",
+    "correcta": "A3",
+    "feedback_acierto": "¡Pregunta 3 acertada!",
+    "feedback_fallo": "La respuesta correcta era la A \nRetroalimentación: Revisar aplicaciones multimedia en Tema 6"
+  },
+  {
+    "id": "p4t6",
+    "pregunta": "El video bajo demanda\n\n  A4) Es similar a un reproductor de vídeo\n  B4) Es similar a un canal de televisión\n  C4) Es similar a un canal de televisión, pero repite los flujos de información cada x tiempo",
+    "correcta": "A4",
+    "feedback_acierto": "¡Pregunta 4 acertada!",
+    "feedback_fallo": "La respuesta correcta era la A \nRetroalimentación: Revisar aplicaciones multimedia en Tema 6"
+  },
+  {
+    "id": "p5t6",
+    "pregunta": "Qué aplicación se encarga de dada una dirección de dominio http://www.uco.es/ obtener su dirección IP 150.214.117.212?\n\n  A5) DNS\n  B5) SMTP\n  C5) HTTP",
+    "correcta": "A5",
+    "feedback_acierto": "¡Pregunta 5 acertada!",
+    "feedback_fallo": "La respuesta correcta era la A \nRetroalimentación: Revisar protocolo DNS en Tema 6"
+  }
+]
