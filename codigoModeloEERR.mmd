@@ -1,0 +1,118 @@
+---
+config:
+  look: classic
+  theme: dark
+---
+erDiagram
+    ALUMNOS {
+        string rasa_sender_id PK
+        string nombre
+        string correo UK
+    }
+    PROFESORES {
+        int id PK
+        string nombre
+        string correo
+    }
+    ASIGNATURAS {
+        int id PK
+        string nombre
+        string titulacion
+        string curso
+        string enlace_guia_docente
+    }
+    MATRICULAS {
+        int id PK
+        string alumno_id FK
+        int asignatura_id FK
+    }
+    PROF_ASIG {
+        int profesor_id PK
+        int asignatura_id PK
+    }
+    TEMAS {
+        int id PK
+        int asignatura_id FK
+        int numero
+        string titulo
+    }
+    CONCEPTOS_TEORICOS {
+        int id PK
+        int tema_id FK
+        string termino
+        string definicion
+    }
+    CUESTIONARIOS {
+        int id PK
+        int tema_id FK
+        string titulo
+    }
+    CUESTIONARIOS_PREGUNTAS {
+        int id PK
+        int cuestionario_id FK
+        int concepto_relacionado_id FK
+        string pregunta_texto
+        int dificultad "enum"
+    }
+    CUESTIONARIOS_RESPUESTAS {
+        int id PK
+        int pregunta_id FK
+        string texto_opcion
+        boolean es_correcta
+        string feedback
+    }
+    SEGUIMIENTO {
+        int id PK
+        string alumno_id FK
+        int cuestionario_id FK
+        float puntuacion_total
+        datetime fecha_intento
+    }
+    SEGUIMIENTO_DETALLE {
+        int id PK
+        int seguimiento_id FK
+        int pregunta_id FK
+        int respuesta_id FK
+    }
+    CLASE_HORARIO {
+        int id PK
+        int profesor_id FK
+        int asignatura_id FK
+        string grupo
+        string dia_semana
+        time hora_inicio
+    }
+    ENTREGAS_CALENDARIO {
+        int id PK
+        int profesor_id FK
+        int asignatura_id FK
+        string titulo
+        string descripcion
+        date fecha_limite
+    }
+    TUTORIAS {
+        int id PK
+        int profesor_id FK
+        string dia_semana
+        string franja_horaria
+    }
+    PROFESORES ||--o{ TUTORIAS : "ofrece"
+    PROFESORES ||--o{ PROF_ASIG : "imparte"
+    ASIGNATURAS ||--o{ PROF_ASIG : "asignada_a"
+    PROFESORES ||--o{ CLASE_HORARIO : "imparte_en"
+    ASIGNATURAS ||--o{ CLASE_HORARIO : "programada_en"
+    PROFESORES ||--o{ ENTREGAS_CALENDARIO : "coordina"
+    ASIGNATURAS ||--o{ ENTREGAS_CALENDARIO : "requiere"
+    ALUMNOS ||--o{ MATRICULAS : "inscrito"
+    ASIGNATURAS ||--o{ MATRICULAS : "incluye"
+    ALUMNOS ||--o{ SEGUIMIENTO : "realiza"
+    ASIGNATURAS ||--o{ TEMAS : "tiene"
+    TEMAS ||--o{ CONCEPTOS_TEORICOS : "contiene"
+    TEMAS ||--o{ CUESTIONARIOS : "evalua"
+    CUESTIONARIOS ||--o{ CUESTIONARIOS_PREGUNTAS : "contiene"
+    CONCEPTOS_TEORICOS ||--o{ CUESTIONARIOS_PREGUNTAS : "vinculado"
+    CUESTIONARIOS_PREGUNTAS ||--o{ CUESTIONARIOS_RESPUESTAS : "tiene"
+    CUESTIONARIOS ||--o{ SEGUIMIENTO : "registra"
+    SEGUIMIENTO ||--o{ SEGUIMIENTO_DETALLE : "desglosa"
+    CUESTIONARIOS_PREGUNTAS ||--o{ SEGUIMIENTO_DETALLE : "evaluada_en"
+    CUESTIONARIOS_RESPUESTAS ||--o{ SEGUIMIENTO_DETALLE : "seleccionada_en"
