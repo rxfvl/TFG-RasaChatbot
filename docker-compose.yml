@@ -1,0 +1,62 @@
+services:
+  # --- BASE DE DATOS POSTGRESQL ---
+  db:
+    image: postgres:15
+    container_name: postgres_db
+    restart: always
+    env_file: .env
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./script_bbdd.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres_data:/var/lib/postgresql/data
+
+  # --- ACTION SERVER ---
+  action_server:
+    image: rasa/rasa-sdk:latest
+    container_name: rasa_action_server
+    volumes:
+      - ./actions:/app/actions
+      - ./requirements.txt:/app/requirements.txt
+    user: root
+    command: >
+      sh -c "pip install --no-cache-dir -r requirements.txt && start --actions actions"
+    ports:
+      - "5055:5055"
+
+  # --- NGROK ---
+  ngrok:
+    image: ngrok/ngrok:latest
+    container_name: ngrok
+    restart: always
+    environment:
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN:-}
+    command: http rasa_server:5005
+
+  # --- RASA CORE & NLU ---
+  rasa_server:
+    image: rasa/rasa:latest-full
+    container_name: rasa_server
+    restart: always
+    volumes:
+      - .:/app
+    env_file: .env
+    ports:
+      - "5005:5005"
+    depends_on:
+      - db
+      - action_server
+      - ngrok
+    environment:
+      - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
+      - TELEGRAM_VERIFY_NAME=${TELEGRAM_VERIFY_NAME}
+    user: root
+    command: >
+      sh -c "python /app/docker_entrypoint.py"
+
+volumes:
+  postgres_data:
