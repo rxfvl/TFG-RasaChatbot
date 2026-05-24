@@ -19,6 +19,8 @@ services:
   action_server:
     image: rasa/rasa-sdk:latest
     container_name: rasa_action_server
+    restart: unless-stopped
+    env_file: .env
     volumes:
       - ./actions:/app/actions
       - ./requirements.txt:/app/requirements.txt
@@ -33,15 +35,18 @@ services:
     image: ngrok/ngrok:latest
     container_name: ngrok
     restart: always
+    volumes:
+      - ./ngrok.yml:/etc/ngrok.yml
     environment:
       - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN:-}
-    command: http rasa_server:5005
+    command: http rasa_server:5005 --config /etc/ngrok.yml
 
   # --- RASA CORE & NLU ---
   rasa_server:
     image: rasa/rasa:latest-full
     container_name: rasa_server
     restart: always
+    entrypoint: ""
     volumes:
       - .:/app
     env_file: .env

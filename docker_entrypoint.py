@@ -11,22 +11,29 @@ def main():
     
     # 1. Wait for ngrok to be up and fetch URL
     ngrok_url = None
+    urls_to_try = ["http://ngrok:4040/api/tunnels", "http://localhost:4040/api/tunnels", "http://127.0.0.1:4040/api/tunnels"]
     print("🟡 Esperando a que Ngrok inicie...")
     for i in range(15):
-        try:
-            req = urllib.request.Request("http://ngrok:4040/api/tunnels")
-            with urllib.request.urlopen(req, timeout=2) as response:
-                data = json.loads(response.read().decode())
-                if len(data.get('tunnels', [])) > 0:
-                    ngrok_url = data['tunnels'][0]['public_url']
-                    # Some ngrok versions return both http and https, find https
-                    for tunnel in data['tunnels']:
-                        if tunnel['public_url'].startswith("https"):
-                            ngrok_url = tunnel['public_url']
-                            break
-                    break
-        except Exception as e:
-            pass
+        print("Intento", i+1)
+        for url in urls_to_try:
+            try:
+                req = urllib.request.Request(url)
+                with urllib.request.urlopen(req, timeout=2) as response:
+                    data = json.loads(response.read().decode())
+                    if len(data.get('tunnels', [])) > 0:
+                        ngrok_url = data['tunnels'][0]['public_url']
+                        # Some ngrok versions return both http and https, find https
+                        for tunnel in data['tunnels']:
+                            if tunnel['public_url'].startswith("https"):
+                                ngrok_url = tunnel['public_url']
+                                break
+                        break
+            except Exception as e:
+                pass
+        
+        if ngrok_url:
+            break
+            
         time.sleep(2)
         
     if not ngrok_url:

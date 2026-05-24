@@ -2,9 +2,33 @@ version: "3.1"
 
 rules:
 
-- rule: saludar cuando el usuario se salude
+- rule: saludar cuando el usuario se salude y esta registrado
   steps:
   - intent: greet
+  - action: action_check_registro
+  - slot_was_set:
+    - requiere_registro: false
+  - action: utter_greet
+
+- rule: iniciar registro cuando el usuario salude y NO esta registrado
+  steps:
+  - intent: greet
+  - action: action_check_registro
+  - slot_was_set:
+    - requiere_registro: true
+  - action: registro_form
+  - active_loop: registro_form
+
+- rule: completar registro
+  condition:
+  - active_loop: registro_form
+  steps:
+  - action: registro_form
+  - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  - action: action_guardar_alumno
+  - action: utter_registro_completado
   - action: utter_greet
 
 - rule: Decir adios cuando el usuario se despida

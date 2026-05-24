@@ -1,0 +1,148 @@
+2026-05-21 21:18:09 DEBUG    aiogram  - Make request: "getMe" with data: "{}" and files "None"
+2026-05-21 21:18:09 DEBUG    aiogram  - Response for getMe: [200] "'{"ok":true,"result":{"id":5388935623,"is_bot":true,"first_name":"Logi","username":"UcoLogibot","can_join_groups":true,"can_read_all_group_messages":false,"supports_inline_queries":false,"supports_guest_queries":false,"can_connect_to_business":false,"has_main_web_app":false,"has_topics_enabled":false,"allows_users_to_create_topics":false,"can_manage_bots":false}}'"
+2026-05-21 21:18:09 DEBUG    rasa.core.lock_store  - Issuing ticket for conversation '6266468745'.
+2026-05-21 21:18:09 DEBUG    rasa.core.lock_store  - Acquiring lock for conversation '6266468745'.
+2026-05-21 21:18:09 DEBUG    rasa.core.lock_store  - Acquired lock for conversation '6266468745'.
+2026-05-21 21:18:09 DEBUG    rasa.core.tracker_store  - Recreating tracker from sender id '6266468745'
+2026-05-21 21:18:09 DEBUG    rasa.engine.runner.dask  - Running graph with inputs: {'__message__': [<rasa.core.channels.channel.UserMessage object at 0x7f0a8347af50>], '__tracker__': <rasa.shared.core.trackers.DialogueStateTracker object at 0x7f0ab5779a80>}, targets: ['run_RegexMessageHandler'] and ExecutionContext(model_id='859ac64f72ba40a4a9eaacc0518ba520', should_add_diagnostic_data=False, is_finetuning=False, node_name=None).
+2026-05-21 21:18:09 DEBUG    rasa.engine.graph  - Node 'nlu_message_converter' running 'NLUMessageConverter.convert_user_message'.
+2026-05-21 21:18:09 DEBUG    rasa.engine.graph  - Node 'run_WhitespaceTokenizer0' running 'WhitespaceTokenizer.process'.
+2026-05-21 21:18:09 DEBUG    rasa.engine.graph  - Node 'run_RegexFeaturizer1' running 'RegexFeaturizer.process'.
+2026-05-21 21:18:09 DEBUG    rasa.engine.graph  - Node 'run_LexicalSyntacticFeaturizer2' running 'LexicalSyntacticFeaturizer.process'.
+2026-05-21 21:18:09 DEBUG    rasa.engine.graph  - Node 'run_CountVectorsFeaturizer3' running 'CountVectorsFeaturizer.process'.
+2026-05-21 21:18:09 DEBUG    rasa.engine.graph  - Node 'run_CountVectorsFeaturizer4' running 'CountVectorsFeaturizer.process'.
+2026-05-21 21:18:09 DEBUG    rasa.engine.graph  - Node 'run_DIETClassifier5' running 'DIETClassifier.process'.
+2026-05-21 21:18:09 DEBUG    rasa.engine.graph  - Node 'run_EntitySynonymMapper6' running 'EntitySynonymMapper.process'.
+2026-05-21 21:18:09 DEBUG    rasa.engine.graph  - Node 'run_ResponseSelector7' running 'ResponseSelector.process'.
+2026-05-21 21:18:09 DEBUG    rasa.nlu.classifiers.diet_classifier  - There is no trained model for 'ResponseSelector': The component is either not trained or didn't receive enough training data.
+2026-05-21 21:18:09 DEBUG    rasa.nlu.selectors.response_selector  - Adding following selector key to message property: default
+2026-05-21 21:18:09 DEBUG    rasa.engine.graph  - Node 'run_FallbackClassifier8' running 'FallbackClassifier.process'.
+2026-05-21 21:18:09 DEBUG    rasa.engine.graph  - Node 'domain_provider' running 'DomainProvider.provide_inference'.
+2026-05-21 21:18:09 DEBUG    rasa.engine.graph  - Node 'run_RegexMessageHandler' running 'RegexMessageHandler.process'.
+2026-05-21 21:18:09 DEBUG    rasa.core.processor  - [debug    ] processor.message.parse        parse_data_entities=[] parse_data_intent={'name': 'repasar', 'confidence': 0.9551800489425659} parse_data_text=Quiero repasar
+2026-05-21 21:18:09 DEBUG    rasa.core.processor  - Logged UserUtterance - tracker now has 66 events.
+2026-05-21 21:18:09 DEBUG    rasa.core.actions.action  - Validating extracted slots:
+2026-05-21 21:18:09 DEBUG    rasa.core.processor  - [debug    ] processor.extract.slots        action_extract_slot=action_extract_slots len_extraction_events=0 rasa_events=[]
+2026-05-21 21:18:09 DEBUG    rasa.engine.runner.dask  - Running graph with inputs: {'__tracker__': <rasa.shared.core.trackers.DialogueStateTracker object at 0x7f0ab5779a80>}, targets: ['select_prediction'] and ExecutionContext(model_id='859ac64f72ba40a4a9eaacc0518ba520', should_add_diagnostic_data=False, is_finetuning=False, node_name=None).
+2026-05-21 21:18:09 DEBUG    rasa.engine.graph  - Node 'rule_only_data_provider' running 'RuleOnlyDataProvider.provide'.
+2026-05-21 21:18:09 DEBUG    rasa.engine.graph  - Node 'domain_provider' running 'DomainProvider.provide_inference'.
+2026-05-21 21:18:09 DEBUG    rasa.engine.graph  - Node 'run_MemoizationPolicy0' running 'MemoizationPolicy.predict_action_probabilities'.
+2026-05-21 21:18:09 DEBUG    rasa.core.policies.memoization  - [debug    ] memoization.predict.actions    tracker_states=[{}, {'user': {'intent': 'greet'}, 'prev_action': {'action_name': 'action_listen'}}, {'user': {'intent': 'greet'}, 'prev_action': {'action_name': 'action_check_registro'}}, {'user': {'intent': 'greet'}, 'prev_action': {'action_name': 'utter_greet'}}, {'user': {'intent': 'greet'}, 'prev_action': {'action_name': 'action_listen'}}, {'user': {'intent': 'greet'}, 'prev_action': {'action_name': 'action_check_registro'}}, {'user': {'intent': 'greet'}, 'prev_action': {'action_name': 'utter_greet'}}, {'user': {'intent': 'greet'}, 'prev_action': {'action_name': 'action_listen'}}, {'user': {'intent': 'greet'}, 'prev_action': {'action_name': 'action_check_registro'}}, {'user': {'intent': 'greet'}, 'prev_action': {'action_name': 'utter_greet'}}, {'user': {'intent': 'greet'}, 'prev_action': {'action_name': 'action_listen'}}, {'user': {'intent': 'greet'}, 'slots': {'requiere_registro': (1.0, 0.0)}, 'prev_action': {'action_name': 'action_check_registro'}}, {'user': {'intent': 'greet'}, 'slots': {'requiere_registro': (1.0, 0.0)}, 'prev_action': {'action_name': 'action_check_registro'}}, {'user': {'intent': 'greet'}, 'slots': {'requiere_registro': (1.0, 0.0)}, 'prev_action': {'action_name': 'utter_greet'}}, {'user': {'intent': 'repasar'}, 'slots': {'requiere_registro': (1.0, 0.0)}, 'prev_action': {'action_name': 'action_listen'}}, {'user': {'intent': 'repasar'}, 'slots': {'requiere_registro': (1.0, 0.0)}, 'prev_action': {'action_name': 'action_listar_temas'}}, {'user': {'intent': 'repasar'}, 'slots': {'requiere_registro': (1.0, 0.0)}, 'prev_action': {'action_name': 'action_listen'}}]
+2026-05-21 21:18:09 DEBUG    rasa.core.policies.memoization  - There is no memorised next action
+2026-05-21 21:18:09 DEBUG    rasa.engine.graph  - Node 'run_RulePolicy1' running 'RulePolicy.predict_action_probabilities'.
+2026-05-21 21:18:09 DEBUG    rasa.core.policies.rule_policy  - [debug    ] rule_policy.actions.find       current_states=
+[state 1] user intent: greet | previous action name: action_listen
+[state 2] user intent: greet | previous action name: action_check_registro
+[state 3] user intent: greet | previous action name: utter_greet
+[state 4] user intent: greet | previous action name: action_listen
+[state 5] user intent: greet | previous action name: action_check_registro
+[state 6] user intent: greet | previous action name: utter_greet
+[state 7] user intent: greet | previous action name: action_listen
+[state 8] user intent: greet | previous action name: action_check_registro
+[state 9] user intent: greet | previous action name: utter_greet
+[state 10] user intent: greet | previous action name: action_listen
+[state 11] user intent: greet | previous action name: action_check_registro | slots: {'requiere_registro': (1.0, 1.0)}
+[state 12] user intent: greet | previous action name: registro_form | slots: {'requiere_registro': (1.0, 1.0)}
+[state 13] user intent: greet | previous action name: action_guardar_alumno | slots: {'requiere_registro': (1.0, 0.0)}
+[state 14] user intent: greet | previous action name: utter_registro_completado | slots: {'requiere_registro': (1.0, 0.0)}
+[state 15] user intent: greet | previous action name: utter_greet | slots: {'requiere_registro': (1.0, 0.0)}
+[state 16] user intent: greet | previous action name: action_listen | slots: {'requiere_registro': (1.0, 0.0)}
+[state 17] user intent: greet | previous action name: action_check_registro | slots: {'requiere_registro': (1.0, 0.0)}
+[state 18] user intent: greet | previous action name: utter_greet | slots: {'requiere_registro': (1.0, 0.0)}
+[state 19] user intent: repasar | previous action name: action_listen | slots: {'requiere_registro': (1.0, 0.0)}
+[state 20] user intent: repasar | previous action name: action_unlikely_intent | slots: {'requiere_registro': (1.0, 0.0)}
+[state 21] user intent: repasar | previous action name: action_listar_temas | slots: {'requiere_registro': (1.0, 0.0)}
+[state 22] user text: Quiero repasar | previous action name: action_listen | slots: {'requiere_registro': (1.0, 0.0)}
+2026-05-21 21:18:09 DEBUG    rasa.core.policies.rule_policy  - There is no applicable rule.
+2026-05-21 21:18:09 DEBUG    rasa.core.policies.rule_policy  - [debug    ] rule_policy.actions.find       current_states=
+[state 1] user intent: greet | previous action name: action_listen
+[state 2] user intent: greet | previous action name: action_check_registro
+[state 3] user intent: greet | previous action name: utter_greet
+[state 4] user intent: greet | previous action name: action_listen
+[state 5] user intent: greet | previous action name: action_check_registro
+[state 6] user intent: greet | previous action name: utter_greet
+[state 7] user intent: greet | previous action name: action_listen
+[state 8] user intent: greet | previous action name: action_check_registro
+[state 9] user intent: greet | previous action name: utter_greet
+[state 10] user intent: greet | previous action name: action_listen
+[state 11] user intent: greet | previous action name: action_check_registro | slots: {'requiere_registro': (1.0, 1.0)}
+[state 12] user intent: greet | previous action name: registro_form | slots: {'requiere_registro': (1.0, 1.0)}
+[state 13] user intent: greet | previous action name: action_guardar_alumno | slots: {'requiere_registro': (1.0, 0.0)}
+[state 14] user intent: greet | previous action name: utter_registro_completado | slots: {'requiere_registro': (1.0, 0.0)}
+[state 15] user intent: greet | previous action name: utter_greet | slots: {'requiere_registro': (1.0, 0.0)}
+[state 16] user intent: greet | previous action name: action_listen | slots: {'requiere_registro': (1.0, 0.0)}
+[state 17] user intent: greet | previous action name: action_check_registro | slots: {'requiere_registro': (1.0, 0.0)}
+[state 18] user intent: greet | previous action name: utter_greet | slots: {'requiere_registro': (1.0, 0.0)}
+[state 19] user intent: repasar | previous action name: action_listen | slots: {'requiere_registro': (1.0, 0.0)}
+[state 20] user intent: repasar | previous action name: action_unlikely_intent | slots: {'requiere_registro': (1.0, 0.0)}
+[state 21] user intent: repasar | previous action name: action_listar_temas | slots: {'requiere_registro': (1.0, 0.0)}
+[state 22] user intent: repasar | previous action name: action_listen | slots: {'requiere_registro': (1.0, 0.0)}
+2026-05-21 21:18:09 DEBUG    rasa.core.policies.rule_policy  - There is no applicable rule.
+2026-05-21 21:18:09 DEBUG    rasa.engine.graph  - Node 'run_TEDPolicy3' running 'TEDPolicy.predict_action_probabilities'.
+2026-05-21 21:18:09 DEBUG    rasa.core.policies.ted_policy  - TED predicted 'action_listar_temas' based on user intent.
+2026-05-21 21:18:09 DEBUG    rasa.engine.graph  - Node 'run_UnexpecTEDIntentPolicy2' running 'UnexpecTEDIntentPolicy.predict_action_probabilities'.
+2026-05-21 21:18:09 DEBUG    rasa.core.policies.unexpected_intent_policy  - Querying for intent `repasar`.
+2026-05-21 21:18:09 DEBUG    rasa.core.policies.unexpected_intent_policy  - Score for intent `repasar` is `0.025806963443756104`, while threshold is `-0.07806843519210815`.
+2026-05-21 21:18:09 DEBUG    rasa.core.policies.unexpected_intent_policy  - Top 5 intents (in ascending order) that are likely here are: `[('fechas_tp', 0.2172758), ('encaminamiento', 0.23760293), ('dijkstra', 0.24405009), ('ruta', 0.27534288), ('greet', 0.3139317)]`.
+2026-05-21 21:18:09 DEBUG    rasa.engine.graph  - Node 'select_prediction' running 'DefaultPolicyPredictionEnsemble.combine_predictions_from_kwargs'.
+2026-05-21 21:18:09 DEBUG    rasa.core.policies.ensemble  - Made prediction using user intent.
+2026-05-21 21:18:09 DEBUG    rasa.core.policies.ensemble  - Added `DefinePrevUserUtteredFeaturization(False)` event.
+2026-05-21 21:18:09 DEBUG    rasa.core.policies.ensemble  - Predicted next action using TEDPolicy.
+2026-05-21 21:18:09 DEBUG    rasa.core.processor  - Predicted next action 'action_listar_temas' with confidence 0.97.
+2026-05-21 21:18:09 DEBUG    rasa.core.actions.action  - Calling action endpoint to run action 'action_listar_temas'.
+2026-05-21 21:18:09 DEBUG    rasa.core.processor  - [debug    ] processor.actions.policy_prediction prediction_events=[<rasa.shared.core.events.DefinePrevUserUtteredFeaturization object at 0x7f0ab5779d20>]
+2026-05-21 21:18:09 DEBUG    rasa.core.processor  - [debug    ] processor.actions.log          action_name=action_listar_temas rasa_events=[BotUttered('Actualmente no hay cuestionarios disponibles registrados.', {"elements": null, "quick_replies": null, "buttons": null, "attachment": null, "image": null, "custom": null}, {}, 1779398289.289647)]
+2026-05-21 21:18:09 DEBUG    rasa.core.processor  - [debug    ] processor.slots.log            slot_values=     requiere_registro: False
+        nombre: Rafael David Tortosa Bueno
+        correo: i22tobur@uco.es
+        tema_actual: None
+        pregunta_actual_idx: 0
+        respuesta_generica: None
+        requested_slot: None
+        session_started_metadata: None
+2026-05-21 21:18:09 DEBUG    aiogram  - Make request: "sendMessage" with data: "{'chat_id': '6266468745', 'text': 'Actualmente no hay cuestionarios disponibles registrados.'}" and files "None"
+2026-05-21 21:18:09 DEBUG    aiogram  - Response for sendMessage: [200] "'{"ok":true,"result":{"message_id":1466,"from":{"id":5388935623,"is_bot":true,"first_name":"Logi","username":"UcoLogibot"},"chat":{"id":6266468745,"first_name":"Rafael","last_name":"Tortosa Bueno","type":"private"},"date":1779398289,"text":"Actualmente no hay cuestionarios disponibles registrados."}}'"
+2026-05-21 21:18:09 DEBUG    rasa.engine.runner.dask  - Running graph with inputs: {'__tracker__': <rasa.shared.core.trackers.DialogueStateTracker object at 0x7f0ab5779a80>}, targets: ['select_prediction'] and ExecutionContext(model_id='859ac64f72ba40a4a9eaacc0518ba520', should_add_diagnostic_data=False, is_finetuning=False, node_name=None).
+2026-05-21 21:18:09 DEBUG    rasa.engine.graph  - Node 'rule_only_data_provider' running 'RuleOnlyDataProvider.provide'.
+2026-05-21 21:18:09 DEBUG    rasa.engine.graph  - Node 'domain_provider' running 'DomainProvider.provide_inference'.
+2026-05-21 21:18:09 DEBUG    rasa.engine.graph  - Node 'run_MemoizationPolicy0' running 'MemoizationPolicy.predict_action_probabilities'.
+2026-05-21 21:18:09 DEBUG    rasa.core.policies.memoization  - [debug    ] memoization.predict.actions    tracker_states=[{}, {'user': {'intent': 'greet'}, 'prev_action': {'action_name': 'action_listen'}}, {'user': {'intent': 'greet'}, 'prev_action': {'action_name': 'action_check_registro'}}, {'user': {'intent': 'greet'}, 'prev_action': {'action_name': 'utter_greet'}}, {'user': {'intent': 'greet'}, 'prev_action': {'action_name': 'action_listen'}}, {'user': {'intent': 'greet'}, 'prev_action': {'action_name': 'action_check_registro'}}, {'user': {'intent': 'greet'}, 'prev_action': {'action_name': 'utter_greet'}}, {'user': {'intent': 'greet'}, 'prev_action': {'action_name': 'action_listen'}}, {'user': {'intent': 'greet'}, 'prev_action': {'action_name': 'action_check_registro'}}, {'user': {'intent': 'greet'}, 'prev_action': {'action_name': 'utter_greet'}}, {'user': {'intent': 'greet'}, 'prev_action': {'action_name': 'action_listen'}}, {'user': {'intent': 'greet'}, 'slots': {'requiere_registro': (1.0, 0.0)}, 'prev_action': {'action_name': 'action_check_registro'}}, {'user': {'intent': 'greet'}, 'slots': {'requiere_registro': (1.0, 0.0)}, 'prev_action': {'action_name': 'action_check_registro'}}, {'user': {'intent': 'greet'}, 'slots': {'requiere_registro': (1.0, 0.0)}, 'prev_action': {'action_name': 'utter_greet'}}, {'user': {'intent': 'repasar'}, 'slots': {'requiere_registro': (1.0, 0.0)}, 'prev_action': {'action_name': 'action_listen'}}, {'user': {'intent': 'repasar'}, 'slots': {'requiere_registro': (1.0, 0.0)}, 'prev_action': {'action_name': 'action_listar_temas'}}, {'user': {'intent': 'repasar'}, 'slots': {'requiere_registro': (1.0, 0.0)}, 'prev_action': {'action_name': 'action_listen'}}, {'user': {'intent': 'repasar'}, 'slots': {'requiere_registro': (1.0, 0.0)}, 'prev_action': {'action_name': 'action_listar_temas'}}]
+2026-05-21 21:18:09 DEBUG    rasa.core.policies.memoization  - There is no memorised next action
+2026-05-21 21:18:09 DEBUG    rasa.engine.graph  - Node 'run_RulePolicy1' running 'RulePolicy.predict_action_probabilities'.
+2026-05-21 21:18:09 DEBUG    rasa.core.policies.rule_policy  - [debug    ] rule_policy.actions.find       current_states=
+[state 1] user intent: greet | previous action name: action_listen
+[state 2] user intent: greet | previous action name: action_check_registro
+[state 3] user intent: greet | previous action name: utter_greet
+[state 4] user intent: greet | previous action name: action_listen
+[state 5] user intent: greet | previous action name: action_check_registro
+[state 6] user intent: greet | previous action name: utter_greet
+[state 7] user intent: greet | previous action name: action_listen
+[state 8] user intent: greet | previous action name: action_check_registro
+[state 9] user intent: greet | previous action name: utter_greet
+[state 10] user intent: greet | previous action name: action_listen
+[state 11] user intent: greet | previous action name: action_check_registro | slots: {'requiere_registro': (1.0, 1.0)}
+[state 12] user intent: greet | previous action name: registro_form | slots: {'requiere_registro': (1.0, 1.0)}
+[state 13] user intent: greet | previous action name: action_guardar_alumno | slots: {'requiere_registro': (1.0, 0.0)}
+[state 14] user intent: greet | previous action name: utter_registro_completado | slots: {'requiere_registro': (1.0, 0.0)}
+[state 15] user intent: greet | previous action name: utter_greet | slots: {'requiere_registro': (1.0, 0.0)}
+[state 16] user intent: greet | previous action name: action_listen | slots: {'requiere_registro': (1.0, 0.0)}
+[state 17] user intent: greet | previous action name: action_check_registro | slots: {'requiere_registro': (1.0, 0.0)}
+[state 18] user intent: greet | previous action name: utter_greet | slots: {'requiere_registro': (1.0, 0.0)}
+[state 19] user intent: repasar | previous action name: action_listen | slots: {'requiere_registro': (1.0, 0.0)}
+[state 20] user intent: repasar | previous action name: action_unlikely_intent | slots: {'requiere_registro': (1.0, 0.0)}
+[state 21] user intent: repasar | previous action name: action_listar_temas | slots: {'requiere_registro': (1.0, 0.0)}
+[state 22] user intent: repasar | previous action name: action_listen | slots: {'requiere_registro': (1.0, 0.0)}
+[state 23] user intent: repasar | previous action name: action_listar_temas | slots: {'requiere_registro': (1.0, 0.0)}
+2026-05-21 21:18:09 DEBUG    rasa.core.policies.rule_policy  - There is no applicable rule.
+2026-05-21 21:18:09 DEBUG    rasa.engine.graph  - Node 'run_TEDPolicy3' running 'TEDPolicy.predict_action_probabilities'.
+2026-05-21 21:18:09 DEBUG    rasa.core.policies.ted_policy  - TED predicted 'action_listen' based on user intent.
+2026-05-21 21:18:09 DEBUG    rasa.engine.graph  - Node 'run_UnexpecTEDIntentPolicy2' running 'UnexpecTEDIntentPolicy.predict_action_probabilities'.
+2026-05-21 21:18:09 DEBUG    rasa.core.policies.unexpected_intent_policy  - Skipping predictions for UnexpecTEDIntentPolicy as either there is no event of type `UserUttered`, event's intent is new and not in domain or there is an event of type `ActionExecuted` after the last `UserUttered`.
+2026-05-21 21:18:09 DEBUG    rasa.engine.graph  - Node 'select_prediction' running 'DefaultPolicyPredictionEnsemble.combine_predictions_from_kwargs'.
+2026-05-21 21:18:09 DEBUG    rasa.core.policies.ensemble  - Predicted next action using TEDPolicy.
+2026-05-21 21:18:09 DEBUG    rasa.core.processor  - Predicted next action 'action_listen' with confidence 1.00.
+2026-05-21 21:18:09 DEBUG    rasa.core.processor  - [debug    ] processor.actions.policy_prediction prediction_events=[]
+2026-05-21 21:18:09 DEBUG    rasa.core.processor  - [debug    ] processor.actions.log          action_name=action_listen rasa_events=[]
+2026-05-21 21:18:09 DEBUG    rasa.core.tracker_store  - No event broker configured. Skipping streaming events.
+2026-05-21 21:18:09 DEBUG    rasa.core.tracker_store  - Tracker with sender_id '6266468745' stored to database
+2026-05-21 21:18:09 DEBUG    rasa.core.lock_store  - Deleted lock for conversation '6266468745'.

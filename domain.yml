@@ -64,6 +64,27 @@ entities:
   - tema_actual
 
 slots:
+  requiere_registro:
+    type: bool
+    influence_conversation: true
+    mappings:
+    - type: custom
+  nombre:
+    type: text
+    influence_conversation: false
+    mappings:
+    - type: from_text
+      conditions:
+      - active_loop: registro_form
+        requested_slot: nombre
+  correo:
+    type: text
+    influence_conversation: false
+    mappings:
+    - type: from_text
+      conditions:
+      - active_loop: registro_form
+        requested_slot: correo
   tema_actual:
     type: text
     influence_conversation: false
@@ -89,17 +110,31 @@ slots:
       - active_loop: cuestionario_dinamico_form
 
 forms:
+  registro_form:
+    required_slots:
+      - nombre
+      - correo
   cuestionario_dinamico_form:
     required_slots:
       - respuesta_generica
 
 actions:
+  - action_check_registro
+  - action_guardar_alumno
+  - validate_registro_form
   - validate_cuestionario_dinamico_form
   - action_ask_respuesta_generica
   - action_reset_cuestionario_dinamico
   - action_listar_temas
 
 responses:
+  utter_ask_nombre:
+  - text: "¡Hola! Parece que es tu primera vez aquí. ¿Cómo te llamas?"
+  utter_ask_correo:
+  - text: "Encantado de conocerte. ¿Cuál es tu correo universitario (terminado en @uco.es)?"
+  utter_registro_completado:
+  - text: "¡Perfecto! Ya estás registrado/a."
+  
   utter_greet:
   - text: "Hola, ¿qué duda tienes?"
   - text: "Hola, ¿necesitas alguna información?"

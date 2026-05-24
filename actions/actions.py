@@ -5,38 +5,193 @@ from rasa_sdk.executor import CollectingDispatcher
 import json
 import os
 import re
+import psycopg2
+
+def get_db_connection():
+    return psycopg2.connect(
+        host=os.environ.get("DB_HOST", "postgres_db"),
+        database=os.environ.get("POSTGRES_DB", "RasaDB"),
+        user=os.environ.get("POSTGRES_USER", "postgre"),
+        password=os.environ.get("POSTGRES_PASSWORD", "RasaChatBot_2026")
+    )
 
 def load_preguntas(tema_id):
     if not tema_id:
         return []
-    path = os.path.join(os.path.dirname(__file__), "..", "data", f"preguntas_{tema_id}.json")
-    if os.path.exists(path):
-        with open(path, "r", encoding="utf-8") as f:
-            return json.load(f)
-    return []
+    
+    num_match = re.search(r'\d+', tema_id)
+    if not num_match:
+        return []
+    num = int(num_match.group())
+    
+    preguntas_dict = {}
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        
+        query = """
+            SELECT p.id, p.pregunta_texto, r.texto_opcion, r.es_correcta, r.feedback 
+            FROM TEMAS t
+            JOIN CUESTIONARIOS c ON c.tema_id = t.id
+            JOIN CUESTIONARIOS_PREGUNTAS p ON p.cuestionario_id = c.id
+            JOIN CUESTIONARIOS_RESPUESTAS r ON r.pregunta_id = p.id
+            WHERE t.numero = %s
+            ORDER BY p.id ASC, r.id ASC
+        """
+        cur.execute(query, (num,))
+        rows = cur.fetchall()
+        for row in rows:
+            p_id = str(row[0])
+            p_text = row[1]
+            r_text = row[2]
+            es_correcta = row[3]
+            feedback_json_str = row[4]
+            
+            if p_id not in preguntas_dict:
+                preguntas_dict[p_id] = {
+                    "id": p_id,
+                    "pregunta_base": p_text,
+                    "opciones": [],
+                    "correcta": "",
+                    "feedback_acierto": "¡Acertada!",
+                    "feedback_fallo": "Fallaste."
+                }
+                
+            preguntas_dict[p_id]["opciones"].append(r_text)
+            
+            if es_correcta:
+                match = re.match(r'^[A-Z]\d*', r_text)
+                if match:
+                    preguntas_dict[p_id]["correcta"] = match.group()
+                else:
+                    preguntas_dict[p_id]["correcta"] = r_text
+                    
+                if feedback_json_str:
+                    try:
+                        fb = json.loads(feedback_json_str)
+                        preguntas_dict[p_id]["feedback_acierto"] = fb.get("acierto", "¡Acertada!")
+                        preguntas_dict[p_id]["feedback_fallo"] = fb.get("fallo", "Fallaste.")
+                    except:
+                        pass
+            
+        cur.close()
+        conn.close()
+    except Exception as e:
+        print(f"Error loading questions: {e}")
+        
+    preguntas = []
+    for p_id, p_data in preguntas_dict.items():
+        full_q = p_data["pregunta_base"]
+        if p_data["opciones"]:
+            full_q += "\n\n  " + "\n  ".join(p_data["opciones"])
+            
+        preguntas.append({
+            "id": p_id,
+            "pregunta": full_q,
+            "correcta": p_data["correcta"],
+            "feedback_acierto": p_data["feedback_acierto"],
+            "feedback_fallo": p_data["feedback_fallo"]
+        })
+        
+    return preguntas
+
+class ActionCheckRegistro(Action):
+    def name(self) -> Text:
+        return "action_check_registro"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        sender_id = tracker.sender_id
+        try:
+            conn = get_db_connection()
+            cur = conn.cursor()
+            cur.execute("SELECT nombre FROM ALUMNOS WHERE rasa_sender_id = %s", (sender_id,))
+            alumno = cur.fetchone()
+            cur.close()
+            conn.close()
+            
+            if alumno:
+                return [SlotSet("requiere_registro", False), SlotSet("nombre", alumno[0])]
+            else:
+                return [SlotSet("requiere_registro", True)]
+        except Exception as e:
+            print(f"Error checking registration: {e}")
+            return [SlotSet("requiere_registro", True)]
+
+class ActionGuardarAlumno(Action):
+    def name(self) -> Text:
+        return "action_guardar_alumno"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        sender_id = tracker.sender_id
+        nombre = tracker.get_slot("nombre")
+        correo = tracker.get_slot("correo")
+        
+        try:
+            conn = get_db_connection()
+            cur = conn.cursor()
+            cur.execute(
+                "INSERT INTO ALUMNOS (rasa_sender_id, nombre, correo) VALUES (%s, %s, %s) ON CONFLICT (rasa_sender_id) DO NOTHING",
+                (sender_id, nombre, correo)
+            )
+            conn.commit()
+            cur.close()
+            conn.close()
+        except Exception as e:
+            print(f"Error saving registration: {e}")
+            
+        return [SlotSet("requiere_registro", False)]
+
+class ValidateRegistroForm(FormValidationAction):
+    def name(self) -> Text:
+        return "validate_registro_form"
+
+    def validate_correo(
+        self,
+        slot_value: Any,
+        dispatcher: CollectingDispatcher,
+        tracker: Tracker,
+        domain: Dict[Text, Any],
+    ) -> Dict[Text, Any]:
+        correo = str(slot_value).strip().lower()
+        if correo.endswith("@uco.es"):
+            return {"correo": correo}
+        else:
+            dispatcher.utter_message(text="El correo debe ser una dirección válida de la Universidad de Córdoba (terminada en @uco.es). Por favor, introdúzcalo de nuevo.")
+            return {"correo": None}
 
 class ActionListarTemas(Action):
     def name(self) -> Text:
         return "action_listar_temas"
 
     def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        path = os.path.join(os.path.dirname(__file__), "..", "data")
         temas_disponibles = []
-        pattern = re.compile(r"^preguntas_(tema\d+|t\d+)\.json$")
         
-        if os.path.exists(path):
-            for filename in os.listdir(path):
-                match = pattern.match(filename)
-                if match:
-                    tema_id = match.group(1)
-                    num = ''.join(filter(str.isdigit, tema_id))
-                    temas_disponibles.append({
-                        "title": f"Tema {num}",
-                        "payload": f'/seleccionar_tema{{"tema_actual":"{tema_id}"}}'
-                    })
-                    
+        try:
+            conn = get_db_connection()
+            cur = conn.cursor()
+            # Buscamos los temas que tengan un cuestionario asociado
+            query = """
+                SELECT DISTINCT t.numero 
+                FROM TEMAS t
+                JOIN CUESTIONARIOS c ON c.tema_id = t.id
+                ORDER BY t.numero ASC
+            """
+            cur.execute(query)
+            rows = cur.fetchall()
+            
+            for row in rows:
+                num = row[0]
+                temas_disponibles.append({
+                    "title": f"Tema {num}",
+                    "payload": f'/seleccionar_tema{{"tema_actual":"tema{num}"}}'
+                })
+                
+            cur.close()
+            conn.close()
+        except Exception as e:
+            print(f"Error fetching temas: {e}")
+            
         if temas_disponibles:
-            temas_disponibles.sort(key=lambda x: int(''.join(filter(str.isdigit, x["title"]))))
             dispatcher.utter_message(text="¿Qué tema deseas repasar?", buttons=temas_disponibles)
         else:
             dispatcher.utter_message(text="Actualmente no hay cuestionarios disponibles registrados.")

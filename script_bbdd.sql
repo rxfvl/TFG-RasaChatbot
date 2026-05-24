@@ -231,3 +231,22 @@ CREATE INDEX idx_respuestas_pregunta       ON CUESTIONARIOS_RESPUESTAS(pregunta_
 CREATE INDEX idx_detalle_seguimiento       ON SEGUIMIENTO_DETALLE(seguimiento_id);
 CREATE INDEX idx_detalle_pregunta          ON SEGUIMIENTO_DETALLE(pregunta_id);
 CREATE INDEX idx_detalle_respuesta         ON SEGUIMIENTO_DETALLE(respuesta_id);
+
+-- ============================================================
+-- 7. DATOS INICIALES (INSERTS)
+-- ============================================================
+
+-- Insertar Profesora
+INSERT INTO PROFESORES (nombre, correo) 
+VALUES ('Amelia Zafra Gómez', 'in1zagoa@uco.es');
+
+-- Insertar Asignatura
+INSERT INTO ASIGNATURAS (nombre, titulacion, curso, enlace_guia_docente) 
+VALUES ('Redes', 'Ingeniería Informática', 'tercero', '');
+
+-- Asignar Profesora a la Asignatura
+INSERT INTO PROF_ASIG (profesor_id, asignatura_id)
+VALUES (
+    (SELECT id FROM PROFESORES WHERE correo = 'in1zagoa@uco.es'),
+    (SELECT id FROM ASIGNATURAS WHERE nombre = 'Redes')
+);
