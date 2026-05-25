@@ -305,6 +305,12 @@ nlu:
     - Calidad servicio
     - CALIDAD SERVICIO
     
+- intent: seleccionar_concepto
+  examples: |
+    - quiero ver el concepto [5]{"entity": "concepto_id", "value": "5"}
+    - concepto [3]{"entity": "concepto_id", "value": "3"}
+    - ver concepto [1]{"entity": "concepto_id", "value": "1"}
+
 - intent: correos_profesor
   examples: |
     - correos

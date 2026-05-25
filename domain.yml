@@ -34,21 +34,12 @@ intents:
   - cuestionarios
   - conceptos
   - ejercicios
-  - capa_aplicacion
-  - capa_presentacion
-  - capa_sesion
-  - capa_transporte
-  - capa_red
   - correos_profesor
   - entregas
-  - calidad_servicio
-  - congestion
-  - enrutamiento
-  - conmutacion
   - dijkstra
   - ejercicioDijsktra
   - FalloejercicioDijsktrab
-  - FalloejercicioDijsktrac
+  - FalloejercicioDijsktrc
   - encaminamiento
   - ejercicioEncaminamiento
   - FalloejercicioEncaminamientoa
@@ -59,9 +50,11 @@ intents:
   - ruta
   - noticia
   - seleccionar_tema
+  - seleccionar_concepto
 
 entities:
   - tema_actual
+  - concepto_id
 
 slots:
   requiere_registro:
@@ -91,6 +84,13 @@ slots:
     mappings:
     - type: from_entity
       entity: tema_actual
+
+  concepto_id:
+    type: text
+    influence_conversation: false
+    mappings:
+    - type: from_entity
+      entity: concepto_id
 
   pregunta_actual_idx:
     type: any
@@ -126,6 +126,8 @@ actions:
   - action_ask_respuesta_generica
   - action_reset_cuestionario_dinamico
   - action_listar_temas
+  - action_listar_conceptos
+  - action_dar_concepto
 
 responses:
   utter_ask_nombre:
@@ -201,32 +203,7 @@ responses:
   utter_acierto_p4t1:
   - text: "¡Pregunta 4 acertada!"
   
-  utter_concepto_capa_aplicacion:
-  - text: "Define los protocolos que los usuarios finales utilizan"
-  
-  utter_concepto_capa_presentacion:
-  - text: "Define estructuras de datos abstractas"
-  
-  utter_concepto_capa_sesion:
-  - text: "Permite establecer sesiones"
-  
-  utter_concepto_capa_transporte:
-  - text: "Controla el flujo extremo a extremo"  
-  
-  utter_concepto_capa_red:
-  - text: "Realiza el encaminamiento"
-  
-  utter_concepto_conmutacion:
-  - text: "La Conmutación consiste en establecer un camino entre dos puntos, un emisor y un receptor a través de nodos y líneas de transmisión. La conmutación permite la entrega de la señal desde el origen hasta el destino requerido. Existen diferentes técnicas de conmutación según como se establezca dicho camino: circuitos y paquetes"
-  
-  utter_concepto_enrutamiento:
-  - text: "Es la parte de software de la capa de red encargada de decidir la línea de salida por la que se retransmite un paquete de entrada"
-  
-  utter_concepto_congestion:
-  - text: "Se produce cuando la carga (temporalmente) es superior (en una parte del sistema) a la que pueden manejar los recursos"
-  
-  utter_concepto_calidad_servicio:
-  - text: "hace referencia a los procedimientos utilizados para gestionar el tráfico de una red y garantizar un cierto nivel de rendimiento según el tipo de aplicación. "
+
   
   utter_fallo:
   - text: "Ohhh has fallado esta pregunta, no te desanimes el cuestionario aun no ha terminado."
@@ -293,43 +270,6 @@ responses:
         
       - title: "Ejercicios"
         payload: "/ejercicios"    
-        
-  utter_conceptosT1:
-  - text: "Seleccione el concepto que desea saber"
-    button_type: vertical
-  
-    buttons:
-      - title: "Capa de aplicación"
-        payload: "/capa_aplicacion"
-        
-      - title: "Capa de presentación" 
-        payload: "/capa_presentacion"
-        
-      - title: "Capa de sesión"
-        payload: "/capa_sesion"   
-        
-      - title: "Capa de transporte"
-        payload: "/capa_transporte"   
-        
-      - title: "Capa de red"
-        payload: "/capa_red"   
-        
-  utter_conceptosT2:
-  - text: "Seleccione el concepto que desea saber"
-    button_type: vertical
-  
-    buttons:
-      - title: "Conmutación"
-        payload: "/conmutacion"
-        
-      - title: "Algoritmo de enrutamiento " 
-        payload: "/enrutamiento"
-        
-      - title: "Congestión"
-        payload: "/congestion"   
-        
-      - title: "Calidad de servicio"
-        payload: "/calidad_servicio"   
         
   utter_ejerciciosT2:
   - text: "Seleccione el ejercicio que desea saber"
