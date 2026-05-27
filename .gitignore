@@ -1,10 +1,10 @@
-# Ignorar modelos compilados (son muy pesados y se deben entrenar localmente)
+# Ignorar modelos compilados
 models/
 
 # Ignorar Caché y Meta-datos internos de Rasa
 .rasa/
 
-# 🚨🚨 Ignorar Credenciales y Endpoints que contengan secretos/claves 🚨🚨
+# Ignorar Credenciales y Endpoints
 credentials.yml
 endpoints.yml
 

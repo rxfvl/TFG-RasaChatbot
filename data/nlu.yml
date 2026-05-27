@@ -209,6 +209,17 @@ nlu:
     - cuestionario
     - CUESTIONARIO
     
+- intent: salir_cuestionario
+  examples: |
+    - salir
+    - cancelar
+    - abandonar
+    - terminar cuestionario
+    - salir del cuestionario
+    - para
+    - abortar
+    - terminar test
+    
 - intent: conceptos
   examples: |
     - Conceptos
@@ -406,4 +417,19 @@ nlu:
     - [tema 4]{"entity": "tema_actual", "value": "tema4"}
     - [tema 5]{"entity": "tema_actual", "value": "tema5"}
 
-
+- intent: ver_progreso
+  examples: |
+    - ¿cómo voy?
+    - mi progreso
+    - ver mi progreso
+    - ¿cuántos cuestionarios he hecho?
+    - ¿qué nota tengo?
+    - mi historial
+    - estadísticas
+    - ¿cómo llevo la asignatura?
+    - mis resultados
+    - ¿cuánto he estudiado?
+    - ver estadísticas
+    - muéstrame mi progreso
+    - ¿cuánto llevo hecho?
+    - resumen de mi actividad

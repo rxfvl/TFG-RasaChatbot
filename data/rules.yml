@@ -2,9 +2,14 @@ version: "3.1"
 
 rules:
 
+# ---------------------------------------------------------------------------
+# Registro y saludo
+# ---------------------------------------------------------------------------
+
 - rule: saludar cuando el usuario se salude y esta registrado
   steps:
   - intent: greet
+  - action: action_registrar_intent
   - action: action_check_registro
   - slot_was_set:
     - requiere_registro: false
@@ -13,6 +18,7 @@ rules:
 - rule: iniciar registro cuando el usuario salude y NO esta registrado
   steps:
   - intent: greet
+  - action: action_registrar_intent
   - action: action_check_registro
   - slot_was_set:
     - requiere_registro: true
@@ -34,12 +40,126 @@ rules:
 - rule: Decir adios cuando el usuario se despida
   steps:
   - intent: goodbye
+  - action: action_registrar_intent
   - action: utter_goodbye
 
 - rule: Si te pregunta decir soy un robot
   steps:
   - intent: bot_challenge
+  - action: action_registrar_intent
   - action: utter_iamabot
-  
 
-  
+- rule: Capturar intents no reconocidos (fallback)
+  steps:
+  - intent: nlu_fallback
+  - action: action_default_fallback
+
+# ---------------------------------------------------------------------------
+# Información general (respuestas deterministas de turno único)
+# Las reglas tienen prioridad sobre las stories y no dependen del historial,
+# por lo que funcionan correctamente aunque UnexpecTEDIntentPolicy inyecte
+# action_unlikely_intent en el tracker.
+# ---------------------------------------------------------------------------
+
+- rule: Mostrar horario del martes
+  steps:
+  - intent: martes
+  - action: action_registrar_intent
+  - action: utter_martes
+
+- rule: Mostrar horario del jueves
+  steps:
+  - intent: jueves
+  - action: action_registrar_intent
+  - action: utter_jueves
+
+- rule: Mostrar horario del lunes
+  steps:
+  - intent: lunes
+  - action: action_registrar_intent
+  - action: utter_lunes
+
+- rule: Mostrar horario del miercoles
+  steps:
+  - intent: miercoles
+  - action: action_registrar_intent
+  - action: utter_miercoles
+
+- rule: Mostrar horario del viernes
+  steps:
+  - intent: viernes
+  - action: action_registrar_intent
+  - action: utter_viernes
+
+- rule: Responder gracias
+  steps:
+  - intent: gracias
+  - action: action_registrar_intent
+  - action: utter_gracias
+
+- rule: Mostrar profesorado
+  steps:
+  - intent: profesorado
+  - action: action_registrar_intent
+  - action: utter_profesorado
+
+- rule: Mostrar correos del profesorado
+  steps:
+  - intent: correos_profesor
+  - action: action_registrar_intent
+  - action: utter_profesorado
+
+- rule: Mostrar entregas del curso
+  steps:
+  - intent: entregas
+  - action: action_registrar_intent
+  - action: utter_entregas
+
+- rule: Mostrar noticia semanal
+  steps:
+  - intent: noticia
+  - action: action_registrar_intent
+  - action: utter_noticia
+
+# ---------------------------------------------------------------------------
+# Repaso y selección de tema (turno único → lista de temas)
+# ---------------------------------------------------------------------------
+
+- rule: Iniciar repaso general
+  steps:
+  - intent: repasar
+  - action: action_registrar_intent
+  - action: action_listar_temas
+
+# ---------------------------------------------------------------------------
+# Concepto: ver definición directa (turno único con entidad)
+# ---------------------------------------------------------------------------
+
+- rule: Mostrar definicion de un concepto
+  steps:
+  - intent: seleccionar_concepto
+  - action: action_registrar_intent
+  - action: action_dar_concepto
+
+# ---------------------------------------------------------------------------
+# Selección de opciones tras elegir un tema
+# ---------------------------------------------------------------------------
+
+- rule: Salir de cuestionario dinamico
+  condition:
+  - active_loop: cuestionario_dinamico_form
+  steps:
+  - intent: salir_cuestionario
+  - action: action_registrar_intent
+  - action: action_cancelar_cuestionario
+  - active_loop: null
+
+# ---------------------------------------------------------------------------
+# Seguimiento del progreso del alumno
+# ---------------------------------------------------------------------------
+
+- rule: Mostrar progreso del alumno
+  steps:
+  - intent: ver_progreso
+  - action: action_registrar_intent
+  - action: action_mostrar_progreso

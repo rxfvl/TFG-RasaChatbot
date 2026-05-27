@@ -89,7 +89,7 @@ CREATE TABLE TUTORIAS (
 CREATE TABLE INTERACCIONES_CHAT (
     id            SERIAL PRIMARY KEY,
     alumno_id     VARCHAR(255),
-    tipo_consulta VARCHAR(100),
+    tipo_consulta VARCHAR(100), -- Rasa intent
     mensaje_usuario TEXT,
     fecha         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (alumno_id) REFERENCES ALUMNOS(rasa_sender_id) ON DELETE SET NULL
@@ -252,6 +252,19 @@ VALUES (
     (SELECT id FROM PROFESORES WHERE correo = 'in1zagoa@uco.es'),
     (SELECT id FROM ASIGNATURAS WHERE nombre = 'Redes')
 );
+
+-- Alumno de prueba y su matrícula en Redes
+-- (rasa_sender_id = Telegram user_id del alumno de desarrollo)
+INSERT INTO ALUMNOS (rasa_sender_id, nombre, correo)
+VALUES ('6266468745', 'Rafael David Tortosa Bueno', 'i22tobur@uco.es')
+ON CONFLICT (rasa_sender_id) DO NOTHING;
+
+INSERT INTO MATRICULAS (alumno_id, asignatura_id)
+VALUES (
+    '6266468745',
+    (SELECT id FROM ASIGNATURAS WHERE nombre = 'Redes')
+)
+ON CONFLICT DO NOTHING;
 
 -- Insertar Temas (todos los temas del temario)
 INSERT INTO TEMAS (asignatura_id, numero, titulo) VALUES

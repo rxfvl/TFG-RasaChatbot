@@ -51,6 +51,8 @@ intents:
   - noticia
   - seleccionar_tema
   - seleccionar_concepto
+  - ver_progreso
+  - salir_cuestionario
 
 entities:
   - tema_actual
@@ -104,11 +106,30 @@ slots:
     mappings:
     - type: from_text
       not_intent:
-        - cuestionarios
-        - tema1
+        - salir_cuestionario
       conditions:
       - active_loop: cuestionario_dinamico_form
 
+  seguimiento_id:
+    type: any
+    influence_conversation: false
+    initial_value: null
+    mappings:
+    - type: custom
+
+  aciertos_cuestionario:
+    type: any
+    influence_conversation: false
+    initial_value: 0
+    mappings:
+    - type: custom
+
+  matriculado:
+    type: bool
+    influence_conversation: false
+    initial_value: null
+    mappings:
+    - type: custom
 forms:
   registro_form:
     required_slots:
@@ -128,6 +149,11 @@ actions:
   - action_listar_temas
   - action_listar_conceptos
   - action_dar_concepto
+  - action_registrar_intent
+  - action_default_fallback
+  - action_check_matricula
+  - action_mostrar_progreso
+  - action_cancelar_cuestionario
 
 responses:
   utter_ask_nombre:
