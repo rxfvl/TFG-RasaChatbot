@@ -52,10 +52,11 @@ docker run -d \
   -e POSTGRES_PASSWORD="$DB_PASSWORD" \
   -e POSTGRES_DB="$DB_NAME" \
   -v "$(pwd)/actions:/app/actions" \
+  -v "$(pwd)/models:/app/models" \
   -v "$(pwd)/requirements.txt:/app/requirements.txt" \
   --user root \
   rasa/rasa-sdk:latest \
-  run sh -c "pip install --no-cache-dir psycopg2-binary && python -m rasa_sdk --actions actions"
+  run sh -c "pip install --no-cache-dir psycopg2-binary scikit-learn numpy joblib && python -m rasa_sdk --actions actions"
 
 # Levantar Ngrok
 echo "Levantando contenedor de Ngrok (ngrok)..."

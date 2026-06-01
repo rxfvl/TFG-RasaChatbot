@@ -1,0 +1,436 @@
+version: "3.1"
+stories:
+- story: clases practicas (./tests/test_stories.yml)
+  steps:
+  - intent: fechas_tp
+  - action: utter_fechas_tp  # predicted: action_registrar_intent
+  - intent: practica
+  - action: utter_fechas_horarios_practica  # predicted: action_registrar_intent
+- story: gracias historia (./tests/test_stories.yml)
+  steps:
+  - intent: gracias
+  - action: utter_gracias  # predicted: action_registrar_intent
+- story: Profesorado (./tests/test_stories.yml)
+  steps:
+  - intent: profesorado
+  - action: utter_profesorado  # predicted: action_registrar_intent
+- story: Correos (./tests/test_stories.yml)
+  steps:
+  - intent: correos_profesor
+  - action: utter_profesorado  # predicted: action_registrar_intent
+- story: Entregas del curso (./tests/test_stories.yml)
+  steps:
+  - intent: entregas
+  - action: utter_entregas  # predicted: action_registrar_intent
+  - action: action_listen  # predicted: cuestionario_dinamico_form
+- story: Repaso (./tests/test_stories.yml)
+  steps:
+  - intent: repasar
+  - action: utter_repasar  # predicted: action_registrar_intent
+- story: conceptosTema1 (./tests/test_stories.yml)
+  steps:
+  - intent: tema1
+  - action: utter_tipo_ejercicio  # predicted: action_registrar_intent
+  - intent: conceptos
+  - action: utter_conceptosT1  # predicted: action_registrar_intent
+- story: conceptosTema2 (./tests/test_stories.yml)
+  steps:
+  - intent: tema2
+  - action: utter_tipo_ejercicio  # predicted: action_registrar_intent
+  - intent: conceptos
+  - action: utter_conceptosT2  # predicted: action_registrar_intent
+- story: definicion conmutacion (./tests/test_stories.yml)
+  steps:
+  - intent: conmutacion
+  - action: utter_concepto_conmutacion  # predicted: action_registrar_intent
+- story: definicion enrutamiento (./tests/test_stories.yml)
+  steps:
+  - intent: enrutamiento
+  - action: utter_concepto_enrutamiento  # predicted: action_registrar_intent
+- story: happy path (./tests/test_stories.yml)
+  steps:
+  - intent: greet
+  - action: utter_greet  # predicted: action_registrar_intent
+  - intent: mood_great
+  - action: utter_happy  # predicted: action_registrar_intent
+- story: definicion congestion (./tests/test_stories.yml)
+  steps:
+  - intent: congestion
+  - action: utter_concepto_congestion  # predicted: action_registrar_intent
+- story: definicion calidad servicio (./tests/test_stories.yml)
+  steps:
+  - intent: calidad_servicio
+  - action: utter_concepto_calidad_servicio  # predicted: action_registrar_intent
+- story: definicion capa aplicacion (./tests/test_stories.yml)
+  steps:
+  - intent: capa_aplicacion
+  - action: utter_concepto_capa_aplicacion  # predicted: action_registrar_intent
+- story: definicion capa presentacion (./tests/test_stories.yml)
+  steps:
+  - intent: capa_presentacion
+  - action: utter_concepto_capa_presentacion  # predicted: action_registrar_intent
+- story: definicion capa sesion (./tests/test_stories.yml)
+  steps:
+  - intent: capa_sesion
+  - action: utter_concepto_capa_sesion  # predicted: action_registrar_intent
+- story: definicion capa transporte (./tests/test_stories.yml)
+  steps:
+  - intent: capa_transporte
+  - action: utter_concepto_capa_transporte  # predicted: action_registrar_intent
+- story: definicion capa red (./tests/test_stories.yml)
+  steps:
+  - intent: capa_red
+  - action: utter_concepto_capa_red  # predicted: action_registrar_intent
+- story: inicio_cuestionariot1 (./tests/test_stories.yml)
+  steps:
+  - intent: tema1
+  - action: utter_tipo_ejercicio  # predicted: action_registrar_intent
+  - intent: cuestionarios
+  - action: utter_inicio_t1  # predicted: action_registrar_intent
+  - action: utter_p1t1  # predicted: action_listen
+- story: preguntas p1t1 (./tests/test_stories.yml)
+  steps:
+  - intent: pregunta1tema1
+  - action: utter_acierto_p1t1  # predicted: action_registrar_intent
+  - action: utter_p2t1  # predicted: action_reset_cuestionario_dinamico
+  - intent: pregunta2tema1
+  - action: utter_acierto_p2t1  # predicted: action_registrar_intent
+  - action: utter_p3t1  # predicted: action_listen
+  - intent: pregunta3tema1
+  - action: utter_acierto_p3t1  # predicted: action_registrar_intent
+  - action: utter_p4t1  # predicted: cuestionario_dinamico_form
+  - intent: pregunta4tema1
+  - action: utter_acierto_p4t1  # predicted: action_registrar_intent
+  - action: utter_fin_test  # predicted: action_listen
+- story: sad path 1 (./tests/test_stories.yml)
+  steps:
+  - intent: greet
+  - action: utter_greet  # predicted: action_registrar_intent
+  - intent: mood_unhappy
+  - action: utter_cheer_up  # predicted: action_registrar_intent
+  - action: utter_did_that_help
+  - intent: affirm
+  - action: utter_happy  # predicted: action_registrar_intent
+- story: sad path 2 (./tests/test_stories.yml)
+  steps:
+  - intent: greet
+  - action: utter_greet  # predicted: action_registrar_intent
+  - intent: mood_unhappy
+  - action: utter_cheer_up  # predicted: action_registrar_intent
+  - action: utter_did_that_help
+  - intent: deny
+  - action: utter_goodbye  # predicted: action_registrar_intent
+- story: preg_tema1_mal (./tests/test_stories.yml)
+  steps:
+  - intent: fallo_p1t1b
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_ap1t1  # predicted: action_listen
+  - action: utter_p2t1  # predicted: utter_fin_test
+  - intent: fallo_p2t1a
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_cp2t1  # predicted: action_listen
+  - action: utter_p3t1  # predicted: action_listen
+  - intent: fallo_p3t1b
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_ap3t1  # predicted: action_listen
+  - action: utter_p4t1  # predicted: action_listen
+  - intent: fallo_p4t1a
+  - action: utter_ultimo_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_bp4t1  # predicted: action_default_fallback
+  - action: utter_fin_test  # predicted: action_listen
+- story: preg_tema1_mal (./tests/test_stories.yml)
+  steps:
+  - intent: fallo_p1t1c
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_ap1t1  # predicted: action_listen
+  - action: utter_p2t1  # predicted: utter_fin_test
+  - intent: fallo_p2t1a
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_cp2t1  # predicted: action_listen
+  - action: utter_p3t1  # predicted: action_listen
+  - intent: fallo_p3t1b
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_ap3t1  # predicted: action_listen
+  - action: utter_p4t1  # predicted: action_listen
+  - intent: fallo_p4t1a
+  - action: utter_ultimo_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_bp4t1  # predicted: action_default_fallback
+  - action: utter_fin_test  # predicted: action_listen
+- story: preg_tema1_mal (./tests/test_stories.yml)
+  steps:
+  - intent: fallo_p1t1b
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_ap1t1  # predicted: action_listen
+  - action: utter_p2t1  # predicted: utter_fin_test
+  - intent: fallo_p2t1b
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_cp2t1  # predicted: action_listen
+  - action: utter_p3t1  # predicted: action_listen
+  - intent: fallo_p3t1b
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_ap3t1  # predicted: action_listen
+  - action: utter_p4t1  # predicted: action_listen
+  - intent: fallo_p4t1a
+  - action: utter_ultimo_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_bp4t1  # predicted: action_default_fallback
+  - action: utter_fin_test  # predicted: action_listen
+- story: preg_tema1_mal (./tests/test_stories.yml)
+  steps:
+  - intent: fallo_p1t1c
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_ap1t1  # predicted: action_listen
+  - action: utter_p2t1  # predicted: utter_fin_test
+  - intent: fallo_p2t1b
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_cp2t1  # predicted: action_listen
+  - action: utter_p3t1  # predicted: action_listen
+  - intent: fallo_p3t1b
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_ap3t1  # predicted: action_listen
+  - action: utter_p4t1  # predicted: action_listen
+  - intent: fallo_p4t1a
+  - action: utter_ultimo_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_bp4t1  # predicted: action_default_fallback
+  - action: utter_fin_test  # predicted: action_listen
+- story: preg_tema1_mal (./tests/test_stories.yml)
+  steps:
+  - intent: fallo_p1t1b
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_ap1t1  # predicted: action_listen
+  - action: utter_p2t1  # predicted: utter_fin_test
+  - intent: fallo_p2t1a
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_cp2t1  # predicted: action_listen
+  - action: utter_p3t1  # predicted: action_listen
+  - intent: fallo_p3t1c
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_ap3t1  # predicted: action_listen
+  - action: utter_p4t1  # predicted: action_listen
+  - intent: fallo_p4t1a
+  - action: utter_ultimo_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_bp4t1  # predicted: action_default_fallback
+  - action: utter_fin_test  # predicted: action_listen
+- story: preg_tema1_mal (./tests/test_stories.yml)
+  steps:
+  - intent: fallo_p1t1c
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_ap1t1  # predicted: action_listen
+  - action: utter_p2t1  # predicted: utter_fin_test
+  - intent: fallo_p2t1a
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_cp2t1  # predicted: action_listen
+  - action: utter_p3t1  # predicted: action_listen
+  - intent: fallo_p3t1c
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_ap3t1  # predicted: action_listen
+  - action: utter_p4t1  # predicted: action_listen
+  - intent: fallo_p4t1a
+  - action: utter_ultimo_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_bp4t1  # predicted: action_default_fallback
+  - action: utter_fin_test  # predicted: action_listen
+- story: preg_tema1_mal (./tests/test_stories.yml)
+  steps:
+  - intent: fallo_p1t1b
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_ap1t1  # predicted: action_listen
+  - action: utter_p2t1  # predicted: utter_fin_test
+  - intent: fallo_p2t1b
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_cp2t1  # predicted: action_listen
+  - action: utter_p3t1  # predicted: action_listen
+  - intent: fallo_p3t1c
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_ap3t1  # predicted: action_listen
+  - action: utter_p4t1  # predicted: action_listen
+  - intent: fallo_p4t1a
+  - action: utter_ultimo_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_bp4t1  # predicted: action_default_fallback
+  - action: utter_fin_test  # predicted: action_listen
+- story: preg_tema1_mal (./tests/test_stories.yml)
+  steps:
+  - intent: fallo_p1t1c
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_ap1t1  # predicted: action_listen
+  - action: utter_p2t1  # predicted: utter_fin_test
+  - intent: fallo_p2t1b
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_cp2t1  # predicted: action_listen
+  - action: utter_p3t1  # predicted: action_listen
+  - intent: fallo_p3t1c
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_ap3t1  # predicted: action_listen
+  - action: utter_p4t1  # predicted: action_listen
+  - intent: fallo_p4t1a
+  - action: utter_ultimo_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_bp4t1  # predicted: action_default_fallback
+  - action: utter_fin_test  # predicted: action_listen
+- story: preg_tema1_mal (./tests/test_stories.yml)
+  steps:
+  - intent: fallo_p1t1b
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_ap1t1  # predicted: action_listen
+  - action: utter_p2t1  # predicted: utter_fin_test
+  - intent: fallo_p2t1a
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_cp2t1  # predicted: action_listen
+  - action: utter_p3t1  # predicted: action_listen
+  - intent: fallo_p3t1b
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_ap3t1  # predicted: action_listen
+  - action: utter_p4t1  # predicted: action_listen
+  - intent: fallo_p4t1c
+  - action: utter_ultimo_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_bp4t1  # predicted: action_default_fallback
+  - action: utter_fin_test  # predicted: action_listen
+- story: preg_tema1_mal (./tests/test_stories.yml)
+  steps:
+  - intent: fallo_p1t1c
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_ap1t1  # predicted: action_listen
+  - action: utter_p2t1  # predicted: utter_fin_test
+  - intent: fallo_p2t1a
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_cp2t1  # predicted: action_listen
+  - action: utter_p3t1  # predicted: action_listen
+  - intent: fallo_p3t1b
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_ap3t1  # predicted: action_listen
+  - action: utter_p4t1  # predicted: action_listen
+  - intent: fallo_p4t1c
+  - action: utter_ultimo_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_bp4t1  # predicted: action_default_fallback
+  - action: utter_fin_test  # predicted: action_listen
+- story: preg_tema1_mal (./tests/test_stories.yml)
+  steps:
+  - intent: fallo_p1t1b
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_ap1t1  # predicted: action_listen
+  - action: utter_p2t1  # predicted: utter_fin_test
+  - intent: fallo_p2t1b
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_cp2t1  # predicted: action_listen
+  - action: utter_p3t1  # predicted: action_listen
+  - intent: fallo_p3t1b
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_ap3t1  # predicted: action_listen
+  - action: utter_p4t1  # predicted: action_listen
+  - intent: fallo_p4t1c
+  - action: utter_ultimo_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_bp4t1  # predicted: action_default_fallback
+  - action: utter_fin_test  # predicted: action_listen
+- story: preg_tema1_mal (./tests/test_stories.yml)
+  steps:
+  - intent: fallo_p1t1c
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_ap1t1  # predicted: action_listen
+  - action: utter_p2t1  # predicted: utter_fin_test
+  - intent: fallo_p2t1b
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_cp2t1  # predicted: action_listen
+  - action: utter_p3t1  # predicted: action_listen
+  - intent: fallo_p3t1b
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_ap3t1  # predicted: action_listen
+  - action: utter_p4t1  # predicted: action_listen
+  - intent: fallo_p4t1c
+  - action: utter_ultimo_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_bp4t1  # predicted: action_default_fallback
+  - action: utter_fin_test  # predicted: action_listen
+- story: preg_tema1_mal (./tests/test_stories.yml)
+  steps:
+  - intent: fallo_p1t1b
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_ap1t1  # predicted: action_listen
+  - action: utter_p2t1  # predicted: utter_fin_test
+  - intent: fallo_p2t1a
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_cp2t1  # predicted: action_listen
+  - action: utter_p3t1  # predicted: action_listen
+  - intent: fallo_p3t1c
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_ap3t1  # predicted: action_listen
+  - action: utter_p4t1  # predicted: action_listen
+  - intent: fallo_p4t1c
+  - action: utter_ultimo_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_bp4t1  # predicted: action_default_fallback
+  - action: utter_fin_test  # predicted: action_listen
+- story: preg_tema1_mal (./tests/test_stories.yml)
+  steps:
+  - intent: fallo_p1t1c
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_ap1t1  # predicted: action_listen
+  - action: utter_p2t1  # predicted: utter_fin_test
+  - intent: fallo_p2t1a
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_cp2t1  # predicted: action_listen
+  - action: utter_p3t1  # predicted: action_listen
+  - intent: fallo_p3t1c
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_ap3t1  # predicted: action_listen
+  - action: utter_p4t1  # predicted: action_listen
+  - intent: fallo_p4t1c
+  - action: utter_ultimo_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_bp4t1  # predicted: action_default_fallback
+  - action: utter_fin_test  # predicted: action_listen
+- story: preg_tema1_mal (./tests/test_stories.yml)
+  steps:
+  - intent: fallo_p1t1b
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_ap1t1  # predicted: action_listen
+  - action: utter_p2t1  # predicted: utter_fin_test
+  - intent: fallo_p2t1b
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_cp2t1  # predicted: action_listen
+  - action: utter_p3t1  # predicted: action_listen
+  - intent: fallo_p3t1c
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_ap3t1  # predicted: action_listen
+  - action: utter_p4t1  # predicted: action_listen
+  - intent: fallo_p4t1c
+  - action: utter_ultimo_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_bp4t1  # predicted: action_default_fallback
+  - action: utter_fin_test  # predicted: action_listen
+- story: preg_tema1_mal (./tests/test_stories.yml)
+  steps:
+  - intent: fallo_p1t1c
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_ap1t1  # predicted: action_listen
+  - action: utter_p2t1  # predicted: utter_fin_test
+  - intent: fallo_p2t1b
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_cp2t1  # predicted: action_listen
+  - action: utter_p3t1  # predicted: action_listen
+  - intent: fallo_p3t1c
+  - action: utter_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_ap3t1  # predicted: action_listen
+  - action: utter_p4t1  # predicted: action_listen
+  - intent: fallo_p4t1c
+  - action: utter_ultimo_fallo  # predicted: action_registrar_intent
+  - action: utter_respuesta_correcta_bp4t1  # predicted: action_default_fallback
+  - action: utter_fin_test  # predicted: action_listen
+- story: horarios martes (./tests/test_stories.yml)
+  steps:
+  - intent: martes
+  - action: utter_martes  # predicted: action_registrar_intent
+- story: horarios jueves (./tests/test_stories.yml)
+  steps:
+  - intent: jueves
+  - action: utter_jueves  # predicted: action_registrar_intent
+- story: horarios lunes (./tests/test_stories.yml)
+  steps:
+  - intent: lunes
+  - action: utter_lunes  # predicted: action_registrar_intent
+- story: horarios miercoles (./tests/test_stories.yml)
+  steps:
+  - intent: miercoles
+  - action: utter_miercoles  # predicted: action_registrar_intent
+- story: horarios viernes (./tests/test_stories.yml)
+  steps:
+  - intent: viernes
+  - action: utter_viernes  # predicted: action_registrar_intent
+- story: clases teoricas (./tests/test_stories.yml)
+  steps:
+  - intent: fechas_tp
+  - action: utter_fechas_tp  # predicted: action_registrar_intent
+  - intent: teoria
+  - action: utter_fechas_horarios_teoria  # predicted: action_registrar_intent

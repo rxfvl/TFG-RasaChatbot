@@ -96,93 +96,25 @@ stories:
   - action: action_registrar_intent
   - action: action_listar_temas
 
-# ---------------------------------------------------------------------------
-# Ejercicios Tema 2 (flujo multi-turno)
-# ---------------------------------------------------------------------------
 
-- story: ejerciciosTema2
-  steps:
-  - intent: tema2
-  - action: action_registrar_intent
-  - action: utter_tipo_ejercicio
-  - intent: ejercicios
-  - action: action_registrar_intent
-  - action: utter_ejerciciosT2
-
-- story: ejercicio dijsktra acierto
-  steps:
-  - intent: dijkstra
-  - action: action_registrar_intent
-  - action: utter_e1t2
-  - action: utter_ejerDijsktra
-  - intent: ejercicioDijsktra
-  - action: action_registrar_intent
-  - action: utter_respuesta_correcta
-
-- story: ejercicio dijsktra fallo
-  steps:
-  - intent: dijkstra
-  - action: action_registrar_intent
-  - action: utter_e1t2
-  - action: utter_ejerDijsktra
-  - or:
-    - intent: FalloejercicioDijsktrab
-    - intent: FalloejercicioDijsktrc
-  - action: action_registrar_intent
-  - action: utter_falloEjercicios
-  - action: utter_respuesta_correcta_e1t2
-
-- story: ejercicio encaminamiento acierto
-  steps:
-  - intent: encaminamiento
-  - action: action_registrar_intent
-  - action: utter_e2t2
-  - action: utter_ejerEncaminamiento
-  - intent: ejercicioEncaminamiento
-  - action: action_registrar_intent
-  - action: utter_respuesta_correcta
-
-- story: ejercicio encaminamiento fallo
-  steps:
-  - intent: encaminamiento
-  - action: action_registrar_intent
-  - action: utter_e2t2
-  - action: utter_ejerEncaminamiento
-  - or:
-    - intent: FalloejercicioEncaminamientoc
-    - intent: FalloejercicioEncaminamientoa
-  - action: action_registrar_intent
-  - action: utter_falloEjercicios
-  - action: utter_respuesta_correcta_e2t2
-
-- story: ejercicio ruta acierto
-  steps:
-  - intent: ruta
-  - action: action_registrar_intent
-  - action: utter_e3t2
-  - action: utter_rutas_paquetes
-  - intent: ejercicioRuta
-  - action: action_registrar_intent
-  - action: utter_respuesta_correcta
-
-- story: ejercicio ruta fallo
-  steps:
-  - intent: ruta
-  - action: action_registrar_intent
-  - action: utter_e3t2
-  - action: utter_rutas_paquetes
-  - or:
-    - intent: FalloejercicioRutaa
-    - intent: FalloejercicioRutab
-  - action: action_registrar_intent
-  - action: utter_falloEjercicios
-  - action: utter_respuesta_correcta_e3t2
 
 # ---------------------------------------------------------------------------
 # Flujo dinámico de conceptos (multi-turno: selección tema → lista → detalle)
 # ---------------------------------------------------------------------------
 
-- story: conceptos - seleccionar tema
+- story: repasar y conceptos - seleccionar tema
+  steps:
+  - intent: repasar
+  - action: action_registrar_intent
+  - action: action_listar_temas
+  - intent: seleccionar_tema
+  - action: action_registrar_intent
+  - action: utter_tipo_ejercicio
+  - intent: conceptos
+  - action: action_registrar_intent
+  - action: action_listar_conceptos
+
+- story: conceptos - seleccionar tema directo
   steps:
   - intent: seleccionar_tema
   - action: action_registrar_intent
@@ -195,16 +127,33 @@ stories:
 # Flujo de cuestionarios dinámicos (multi-turno)
 # ---------------------------------------------------------------------------
 
-- story: inicio_cuestionario_dinamico
+- story: repasar e inicio_cuestionario_dinamico
+  steps:
+  - intent: repasar
+  - action: action_registrar_intent
+  - action: action_listar_temas
+  - intent: seleccionar_tema
+  - action: action_registrar_intent
+  - action: utter_tipo_ejercicio
+  - intent: cuestionarios
+  - action: action_registrar_intent
+  - action: action_listar_cuestionarios
+
+- story: inicio_cuestionario_dinamico directo
   steps:
   - intent: seleccionar_tema
   - action: action_registrar_intent
   - action: utter_tipo_ejercicio
   - intent: cuestionarios
   - action: action_registrar_intent
+  - action: action_listar_cuestionarios
+
+- story: seleccionar y hacer cuestionario
+  steps:
+  - intent: seleccionar_cuestionario
+  - action: action_registrar_intent
   - action: action_reset_cuestionario_dinamico
   - action: cuestionario_dinamico_form
   - active_loop: cuestionario_dinamico_form
   - active_loop: null
   - action: utter_fin_test
-

@@ -24,9 +24,11 @@ import json
 import os
 import re
 import psycopg2
+import numpy as np
+import joblib
 
 from rasa_sdk import Action, Tracker, FormValidationAction
-from rasa_sdk.events import SlotSet, UserUtteranceReverted, ActiveLoop
+from rasa_sdk.events import SlotSet, UserUtteranceReverted, ActiveLoop, FollowupAction
 from rasa_sdk.executor import CollectingDispatcher
 
 
@@ -56,30 +58,27 @@ def _tema_num_from_slot(tema_slot: str) -> int | None:
     return int(match.group()) if match else None
 
 
-def load_preguntas(tema_slot: str) -> list:
+def load_preguntas(cuestionario_id_slot: str) -> list:
     """
-    Carga las preguntas y respuestas del cuestionario de un tema desde la BBDD.
-    Devuelve una lista de dicts con claves: id, pregunta, correcta,
-    feedback_acierto, feedback_fallo.
+    Carga las preguntas y respuestas del cuestionario desde la BBDD usando su ID.
+    Devuelve una lista de dicts.
     """
-    tema_num = _tema_num_from_slot(tema_slot)
-    if tema_num is None:
+    if not cuestionario_id_slot:
         return []
 
     preguntas_dict = {}
     try:
+        cuest_id = int(cuestionario_id_slot)
         with get_db_connection() as conn:
             with conn.cursor() as cur:
                 query = """
-                    SELECT p.id, p.pregunta_texto, r.texto_opcion, r.es_correcta, r.feedback
-                    FROM TEMAS t
-                    JOIN CUESTIONARIOS c ON c.tema_id = t.id
-                    JOIN CUESTIONARIOS_PREGUNTAS p ON p.cuestionario_id = c.id
+                    SELECT p.id, p.pregunta_texto, p.imagen_url, r.texto_opcion, r.es_correcta, r.feedback
+                    FROM CUESTIONARIOS_PREGUNTAS p
                     JOIN CUESTIONARIOS_RESPUESTAS r ON r.pregunta_id = p.id
-                    WHERE t.numero = %s AND t.asignatura_id = %s
+                    WHERE p.cuestionario_id = %s
                     ORDER BY p.id ASC, r.id ASC
                 """
-                cur.execute(query, (tema_num, ASIGNATURA_ID_ACTIVA))
+                cur.execute(query, (cuest_id,))
                 rows = cur.fetchall()
         for row in rows:
             p_id = str(row[0])
@@ -87,18 +86,19 @@ def load_preguntas(tema_slot: str) -> list:
                 preguntas_dict[p_id] = {
                     "id": p_id,
                     "pregunta_base": row[1],
+                    "imagen_url": row[2],
                     "opciones": [],
                     "correcta": "",
                     "feedback_acierto": "¡Acertada!",
                     "feedback_fallo": "Fallaste.",
                 }
-            preguntas_dict[p_id]["opciones"].append(row[2])
-            if row[3]:  # es_correcta
-                match = re.match(r'^[A-Z]\d*', row[2])
-                preguntas_dict[p_id]["correcta"] = match.group() if match else row[2]
-                if row[4]:
+            preguntas_dict[p_id]["opciones"].append(row[3])
+            if row[4]:  # es_correcta
+                match = re.match(r'^[A-Z]\d*', row[3])
+                preguntas_dict[p_id]["correcta"] = match.group() if match else row[3]
+                if row[5]:
                     try:
-                        fb = json.loads(row[4])
+                        fb = json.loads(row[5])
                         preguntas_dict[p_id]["feedback_acierto"] = fb.get("acierto", "¡Acertada!")
                         preguntas_dict[p_id]["feedback_fallo"] = fb.get("fallo", "Fallaste.")
                     except (json.JSONDecodeError, TypeError):
@@ -114,6 +114,7 @@ def load_preguntas(tema_slot: str) -> list:
         preguntas.append({
             "id": p_data["id"],
             "pregunta": full_q,
+            "imagen_url": p_data["imagen_url"],
             "correcta": p_data["correcta"],
             "feedback_acierto": p_data["feedback_acierto"],
             "feedback_fallo": p_data["feedback_fallo"],
@@ -500,6 +501,107 @@ class ActionDefaultFallback(Action):
 
 
 # ---------------------------------------------------------------------------
+# Acciones de consulta de horarios y tutorías (Dinámicas)
+# ---------------------------------------------------------------------------
+
+class ActionMostrarHorario(Action):
+    def name(self) -> Text:
+        return "action_mostrar_horario"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        intent_name = tracker.latest_message.get("intent", {}).get("name")
+        dia_semana = intent_name if intent_name in ['lunes', 'martes', 'miercoles', 'jueves', 'viernes'] else None
+        
+        if not dia_semana:
+            dispatcher.utter_message(text="No se ha especificado un día de la semana válido para buscar el horario.")
+            return []
+
+        try:
+            with get_db_connection() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        """
+                        SELECT hora_inicio, hora_fin, aula, grupo 
+                        FROM CLASE_HORARIO 
+                        WHERE dia_semana = %s AND asignatura_id = %s
+                        ORDER BY hora_inicio ASC
+                        """,
+                        (dia_semana, ASIGNATURA_ID_ACTIVA)
+                    )
+                    clases = cur.fetchall()
+
+            if clases:
+                mensaje = f"Clases del {dia_semana.capitalize()}:\n"
+                for hora_inicio, hora_fin, aula, grupo in clases:
+                    h_ini = hora_inicio.strftime("%H:%M") if hasattr(hora_inicio, 'strftime') else hora_inicio
+                    h_fin = hora_fin.strftime("%H:%M") if hasattr(hora_fin, 'strftime') else hora_fin
+                    aula_texto = aula if aula else "Aula no especificada"
+                    tipo = "Teoría" if grupo == 'GG1' else "Práctica" if grupo == 'GM1' else "Clase"
+                    mensaje += f"- {h_ini} a {h_fin} en {aula_texto} ({tipo})\n"
+                dispatcher.utter_message(text=mensaje.strip())
+            else:
+                dispatcher.utter_message(text=f"El {dia_semana} no hay clases programadas.")
+        except Exception as e:
+            print(f"[ActionMostrarHorario] Error: {e}")
+            dispatcher.utter_message(text="Hubo un error al consultar los horarios en la base de datos.")
+
+        return []
+
+
+class ActionMostrarProfesoradoTutorias(Action):
+    def name(self) -> Text:
+        return "action_mostrar_profesorado_tutorias"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        try:
+            with get_db_connection() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        """
+                        SELECT p.id, p.nombre, p.correo 
+                        FROM PROFESORES p
+                        JOIN PROF_ASIG pa ON p.id = pa.profesor_id
+                        WHERE pa.asignatura_id = %s
+                        """,
+                        (ASIGNATURA_ID_ACTIVA,)
+                    )
+                    profesores = cur.fetchall()
+
+                    if not profesores:
+                        dispatcher.utter_message(text="No hay profesores asignados a esta asignatura actualmente.")
+                        return []
+
+                    mensaje = ""
+                    for p_id, p_nombre, p_correo in profesores:
+                        mensaje += f"{p_nombre} - {p_correo}\nHorarios tutorías:\n"
+                        cur.execute(
+                            """
+                            SELECT dia_semana, hora_inicio, hora_fin 
+                            FROM TUTORIAS 
+                            WHERE profesor_id = %s
+                            ORDER BY dia_semana, hora_inicio ASC
+                            """,
+                            (p_id,)
+                        )
+                        tutorias = cur.fetchall()
+                        if tutorias:
+                            for dia, h_ini, h_fin in tutorias:
+                                h_i = h_ini.strftime("%H:%M") if hasattr(h_ini, 'strftime') else h_ini
+                                h_f = h_fin.strftime("%H:%M") if hasattr(h_fin, 'strftime') else h_fin
+                                mensaje += f"  - {dia.capitalize()} {h_i} - {h_f}\n"
+                        else:
+                            mensaje += "  - No hay tutorías registradas.\n"
+                        mensaje += "\n"
+                    
+                    dispatcher.utter_message(text=mensaje.strip())
+        except Exception as e:
+            print(f"[ActionMostrarProfesoradoTutorias] Error: {e}")
+            dispatcher.utter_message(text="Hubo un error al consultar el profesorado y sus tutorías.")
+
+        return []
+
+
+# ---------------------------------------------------------------------------
 # Acciones de registro de alumno y matrícula
 # ---------------------------------------------------------------------------
 
@@ -712,6 +814,61 @@ class ActionDarConcepto(Action):
 # Acciones: cuestionarios dinámicos
 # ---------------------------------------------------------------------------
 
+class ActionListarCuestionarios(Action):
+    def name(self) -> Text:
+        return "action_listar_cuestionarios"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        if not esta_matriculado(tracker.sender_id, ASIGNATURA_ID_ACTIVA):
+            dispatcher.utter_message(text="⚠️ No estás matriculado en la asignatura de Redes.")
+            return []
+
+        tema = tracker.get_slot("tema_actual")
+        tema_num = _tema_num_from_slot(tema)
+        tipo = tracker.get_slot("tipo_cuestionario") or "teoria"
+
+        cuestionarios = []
+        try:
+            with get_db_connection() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        """
+                        SELECT c.id, c.titulo 
+                        FROM CUESTIONARIOS c
+                        JOIN TEMAS t ON c.tema_id = t.id
+                        WHERE t.numero = %s AND t.asignatura_id = %s AND c.tipo = %s
+                        ORDER BY c.id ASC
+                        """,
+                        (tema_num, ASIGNATURA_ID_ACTIVA, tipo)
+                    )
+                    cuestionarios = cur.fetchall()
+        except Exception as e:
+            print(f"[ActionListarCuestionarios] Error: {e}")
+
+        tipo_txt = "cuestionarios de teoría" if tipo == "teoria" else "ejercicios prácticos"
+
+        if not cuestionarios:
+            dispatcher.utter_message(text=f"No hay {tipo_txt} disponibles en la base de datos para el Tema {tema_num}.")
+            return []
+
+        if len(cuestionarios) == 1:
+            cuest_id = str(cuestionarios[0][0])
+            return [
+                SlotSet("cuestionario_id_seleccionado", cuest_id),
+                FollowupAction("action_reset_cuestionario_dinamico")
+            ]
+
+        buttons = [
+            {
+                "title": titulo,
+                "payload": f'/seleccionar_cuestionario{{"cuestionario_id_seleccionado":"{c_id}"}}'
+            }
+            for c_id, titulo in cuestionarios
+        ]
+        dispatcher.utter_message(text=f"Hay varios {tipo_txt} para el Tema {tema_num}. Elige uno:", buttons=buttons)
+        return []
+
+
 class ActionResetCuestionarioDinamico(Action):
     def name(self) -> Text:
         return "action_reset_cuestionario_dinamico"
@@ -730,29 +887,31 @@ class ActionResetCuestionarioDinamico(Action):
                 SlotSet("aciertos_cuestionario", 0),
             ]
 
-        tema = tracker.get_slot("tema_actual")
-        tema_num = _tema_num_from_slot(tema)
-        preguntas = load_preguntas(tema)
+        cuest_id = tracker.get_slot("cuestionario_id_seleccionado")
+        if not cuest_id:
+            dispatcher.utter_message(text="No se ha seleccionado ningún cuestionario.")
+            return []
 
-        # Crear una nueva sesión de seguimiento en la BBDD
+        preguntas = load_preguntas(cuest_id)
         seguimiento_id = None
         if preguntas:
-            cuestionario_id = get_cuestionario_id(tema_num, ASIGNATURA_ID_ACTIVA)
-            if cuestionario_id:
-                seguimiento_id = iniciar_seguimiento(tracker.sender_id, cuestionario_id)
+            seguimiento_id = iniciar_seguimiento(tracker.sender_id, int(cuest_id))
             guardar_interaccion(
                 alumno_id=tracker.sender_id,
                 tipo_consulta="iniciar_cuestionario",
-                mensaje=f"Tema {tema_num}"
+                mensaje=f"Cuestionario {cuest_id}"
             )
             dispatcher.utter_message(
-                text=f"Perfecto, pues ahora realizaremos un tipo test del Tema {tema_num}. "
+                text=f"Perfecto, pues ahora realizaremos el tipo test. "
                      f"Recuerde contestar con letra y/o número (ej: A1). ¡Mucha suerte!"
             )
-            dispatcher.utter_message(text=preguntas[0]["pregunta"])
+            dispatcher.utter_message(
+                text=preguntas[0]["pregunta"],
+                image=preguntas[0].get("imagen_url")
+            )
         else:
             dispatcher.utter_message(
-                text=f"El cuestionario del Tema {tema_num} todavía no ha sido subido a la base de datos."
+                text="El cuestionario seleccionado no tiene preguntas cargadas en la base de datos."
             )
 
         return [
@@ -817,13 +976,13 @@ class ValidateCuestionarioDinamicoForm(FormValidationAction):
 
     async def required_slots(self, domain_slots: List[Text], dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Text]:
         idx = int(tracker.get_slot("pregunta_actual_idx") or 0)
-        preguntas = load_preguntas(tracker.get_slot("tema_actual"))
+        preguntas = load_preguntas(tracker.get_slot("cuestionario_id_seleccionado"))
         return ["respuesta_generica"] if idx < len(preguntas) else []
 
     def validate_respuesta_generica(self, slot_value: Any, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> Dict[Text, Any]:
         idx = int(tracker.get_slot("pregunta_actual_idx") or 0)
-        tema = tracker.get_slot("tema_actual")
-        preguntas = load_preguntas(tema)
+        cuest_id = tracker.get_slot("cuestionario_id_seleccionado")
+        preguntas = load_preguntas(cuest_id)
         seguimiento_id = tracker.get_slot("seguimiento_id")
         aciertos = int(tracker.get_slot("aciertos_cuestionario") or 0)
 
@@ -873,9 +1032,13 @@ class ValidateCuestionarioDinamicoForm(FormValidationAction):
         new_idx = idx + 1
 
         if new_idx < len(preguntas):
-            dispatcher.utter_message(text=preguntas[new_idx]["pregunta"])
+            dispatcher.utter_message(
+                text=preguntas[new_idx]["pregunta"],
+                image=preguntas[new_idx].get("imagen_url")
+            )
         else:
             # Cuestionario terminado: guardar puntuación final
+            tema = tracker.get_slot("tema_actual")
             if seguimiento_id and len(preguntas) > 0:
                 puntuacion = round((aciertos / len(preguntas)) * 10, 2)
                 actualizar_puntuacion(seguimiento_id, puntuacion)
@@ -969,4 +1132,95 @@ class ActionMostrarProgreso(Action):
         ).strip()
 
         dispatcher.utter_message(text=mensaje)
+        return []
+
+# ---------------------------------------------------------------------------
+# Módulo 4: Recomendaciones (MLP)
+# ---------------------------------------------------------------------------
+
+class ActionRecomendar(Action):
+    def name(self) -> Text:
+        return "action_recomendar"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        sender_id = tracker.sender_id
+        
+        # Bloquear si el alumno no está matriculado
+        if not esta_matriculado(sender_id, ASIGNATURA_ID_ACTIVA):
+            dispatcher.utter_message(
+                text="⚠️ No estás matriculado en la asignatura de Redes. "
+                     "No puedo ofrecerte recomendaciones de estudio."
+            )
+            return []
+
+        # Obtener progreso
+        progreso = get_progreso_alumno(sender_id)
+        
+        dias_activo = progreso.get("dias_activo", 0)
+        interacciones = progreso.get("total_interacciones", 0)
+        conceptos_consultados = progreso.get("conceptos_consultados", 0)
+        
+        # Preparar array de indicadores y notas de los 6 temas
+        NUM_TEMAS = 6
+        indicadores = [0] * NUM_TEMAS
+        notas = [0.0] * NUM_TEMAS
+        
+        for t in progreso.get("por_tema", []):
+            idx = t["tema_num"] - 1 # temas son 1-indexados
+            if 0 <= idx < NUM_TEMAS:
+                indicadores[idx] = 1
+                notas[idx] = t["mejor"]
+                
+        # Construir vector de características
+        features = [dias_activo, interacciones, conceptos_consultados] + indicadores + notas
+        
+        try:
+            # Cargar modelo MLP
+            model_path = os.path.join("models", "recommender_mlp.pkl")
+            if not os.path.exists(model_path):
+                dispatcher.utter_message(text="El modelo de recomendaciones no está disponible actualmente.")
+                return []
+                
+            clf = joblib.load(model_path)
+            
+            # Predecir
+            X = np.array([features])
+            prediction = clf.predict(X)[0]
+            
+            # Interpretar predicción y devolver respuesta
+            if prediction.startswith("repasar_tema_"):
+                tema_num = prediction.split("_")[-1]
+                botones = [{"title": f"Repasar Tema {tema_num}", "payload": f'/seleccionar_tema{{"tema_actual":"tema{tema_num}"}}'}]
+                
+                dispatcher.utter_message(
+                    text=f"🤖 **Recomendación de la IA:** He analizado tu progreso y veo que necesitas reforzar el **Tema {tema_num}**. "
+                         "Te sugiero repasar sus conceptos y volver a intentar el cuestionario para mejorar tus resultados.",
+                    buttons=botones
+                )
+            elif prediction == "avanzar_siguiente_tema":
+                # Buscar el primer tema que no ha intentado
+                tema_siguiente = 1
+                for i, ind in enumerate(indicadores):
+                    if ind == 0:
+                        tema_siguiente = i + 1
+                        break
+                        
+                botones = [{"title": f"Ir al Tema {tema_siguiente}", "payload": f'/seleccionar_tema{{"tema_actual":"tema{tema_siguiente}"}}'}]
+                dispatcher.utter_message(
+                    text=f"🤖 **Recomendación de la IA:** ¡Vas muy bien! Tus notas son buenas. "
+                         f"Te recomiendo avanzar hacia el **Tema {tema_siguiente}**.",
+                    buttons=botones
+                )
+            elif prediction == "hacer_examen_global":
+                dispatcher.utter_message(
+                    text="🤖 **Recomendación de la IA:** ¡Excelente trabajo! Has completado y dominado todos los temas. "
+                         "¡Estás preparado/a para el examen final!"
+                )
+            else:
+                dispatcher.utter_message(text="🤖 No estoy seguro de qué recomendarte en este momento. ¡Sigue estudiando!")
+                
+        except Exception as e:
+            print(f"[ActionRecomendar] Error: {e}")
+            dispatcher.utter_message(text="Ha ocurrido un error al generar la recomendación.")
+
         return []

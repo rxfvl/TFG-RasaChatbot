@@ -65,31 +65,31 @@ rules:
   steps:
   - intent: martes
   - action: action_registrar_intent
-  - action: utter_martes
+  - action: action_mostrar_horario
 
 - rule: Mostrar horario del jueves
   steps:
   - intent: jueves
   - action: action_registrar_intent
-  - action: utter_jueves
+  - action: action_mostrar_horario
 
 - rule: Mostrar horario del lunes
   steps:
   - intent: lunes
   - action: action_registrar_intent
-  - action: utter_lunes
+  - action: action_mostrar_horario
 
 - rule: Mostrar horario del miercoles
   steps:
   - intent: miercoles
   - action: action_registrar_intent
-  - action: utter_miercoles
+  - action: action_mostrar_horario
 
 - rule: Mostrar horario del viernes
   steps:
   - intent: viernes
   - action: action_registrar_intent
-  - action: utter_viernes
+  - action: action_mostrar_horario
 
 - rule: Responder gracias
   steps:
@@ -101,13 +101,13 @@ rules:
   steps:
   - intent: profesorado
   - action: action_registrar_intent
-  - action: utter_profesorado
+  - action: action_mostrar_profesorado_tutorias
 
 - rule: Mostrar correos del profesorado
   steps:
   - intent: correos_profesor
   - action: action_registrar_intent
-  - action: utter_profesorado
+  - action: action_mostrar_profesorado_tutorias
 
 - rule: Mostrar entregas del curso
   steps:
@@ -163,3 +163,23 @@ rules:
   - intent: ver_progreso
   - action: action_registrar_intent
   - action: action_mostrar_progreso
+
+- rule: Completar cuestionario dinamico
+  condition:
+  - active_loop: cuestionario_dinamico_form
+  steps:
+  - action: cuestionario_dinamico_form
+  - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  - action: utter_fin_test
+
+# ---------------------------------------------------------------------------
+# Recomendaciones con IA (MLP)
+# ---------------------------------------------------------------------------
+
+- rule: Mostrar recomendaciones
+  steps:
+  - intent: recomendar
+  - action: action_registrar_intent
+  - action: action_recomendar

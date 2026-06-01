@@ -277,12 +277,7 @@ nlu:
     - conmutación
     - conmutacion
     
-- intent: enrutamiento
-  examples: |
-    - ENRUTAMIENTO
-    - Enrutamiento
-    - enrutamiento
-    
+
 - intent: congestion
   examples: |
     - Congestión
@@ -292,24 +287,7 @@ nlu:
     - congestion
     - congestion
     
-- intent: dijkstra
-  examples: |
-    - Dijkstra
-    - dijkstra
-    - DIJKSTRA
 
-- intent: encaminamiento
-  examples: |
-    - Encaminamiento
-    - encaminamiento
-    - ENCAMINAMIENTO
-    
-- intent: ruta
-  examples: |
-    - Ruta
-    - ruta
-    - RUTA
-    
 - intent: calidad_servicio
   examples: |
     - calidad servicio
@@ -348,51 +326,6 @@ nlu:
     - RECORDATORIO
     - recordatorio
     - ENVIO
-    
-- intent: ejercicioDijsktra
-  examples: |
-    - A)13
-    - a)13
-    
-- intent: FalloejercicioDijsktrab
-  examples: |
-    - b)16
-    - B)16
-    
-- intent: FalloejercicioDijsktrac
-  examples: |
-    - c)Ninguna de las anteriores
-    - C)NINGUNA DE LAS ANTERIORES
-    
-- intent: FalloejercicioEncaminamientoa
-  examples: |
-    - a)D
-    - A)D
-    
-- intent: ejercicioEncaminamiento
-  examples: |
-    - b)B
-    - B)B
-    
-- intent: FalloejercicioEncaminamientoc
-  examples: |
-    - c)E
-    - C)E
-    
-- intent: FalloejercicioRutaa
-  examples: |
-    - a)10
-    - A)10
-    
-- intent: ejercicioRuta
-  examples: |
-    - c)4
-    - C)4
-    
-- intent: FalloejercicioRutab
-  examples: |
-    - b)Ninguna de las anteriores
-    - B)NINGUNA DE LAS ANTERIORES
     
 - intent: noticia
   examples: |
@@ -433,3 +366,14 @@ nlu:
     - muéstrame mi progreso
     - ¿cuánto llevo hecho?
     - resumen de mi actividad
+
+- intent: recomendar
+  examples: |
+    - ¿Qué me recomiendas estudiar?
+    - ¿En qué fallo más?
+    - Recomiéndame algo usando IA
+    - ¿Cómo puedo mejorar?
+    - Dame una recomendación
+    - ¿Qué debería repasar?
+    - Sugiéreme un tema
+    - ¿Por dónde sigo?

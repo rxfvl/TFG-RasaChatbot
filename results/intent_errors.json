@@ -1,0 +1,66 @@
+[
+  {
+    "text": "Buenas noches",
+    "intent": "greet",
+    "intent_prediction": {
+      "name": "goodbye",
+      "confidence": 0.4708729386329651
+    }
+  },
+  {
+    "text": "teoria",
+    "intent": "fechas_horarios_teoria",
+    "intent_prediction": {
+      "name": "teoria",
+      "confidence": 0.582167387008667
+    }
+  },
+  {
+    "text": "teoría",
+    "intent": "fechas_horarios_teoria",
+    "intent_prediction": {
+      "name": "teoria",
+      "confidence": 0.8233208656311035
+    }
+  },
+  {
+    "text": "practica",
+    "intent": "fechas_horarios_practica",
+    "intent_prediction": {
+      "name": "practica",
+      "confidence": 0.8577027320861816
+    }
+  },
+  {
+    "text": "práctica",
+    "intent": "fechas_horarios_practica",
+    "intent_prediction": {
+      "name": "practica",
+      "confidence": 0.8869086503982544
+    }
+  },
+  {
+    "text": "tema 1",
+    "intent": "tema1",
+    "intent_prediction": {
+      "name": "seleccionar_tema",
+      "confidence": 0.6029614210128784
+    }
+  },
+  {
+    "text": "TEMA 1",
+    "intent": "tema1",
+    "intent_prediction": {
+      "name": "seleccionar_tema",
+      "confidence": 0.5982116460800171
+    }
+  },
+  {
+    "text": "Tema 1",
+    "intent": "tema1",
+    "intent_prediction": {
+      "name": "seleccionar_tema",
+      "confidence": 0.6022053360939026
+    }
+  }
+]

@@ -36,27 +36,19 @@ intents:
   - ejercicios
   - correos_profesor
   - entregas
-  - dijkstra
-  - ejercicioDijsktra
-  - FalloejercicioDijsktrab
-  - FalloejercicioDijsktrc
-  - encaminamiento
-  - ejercicioEncaminamiento
-  - FalloejercicioEncaminamientoa
-  - FalloejercicioEncaminamientoc
-  - FalloejercicioRutaa
-  - ejercicioRuta
-  - FalloejercicioRutab
-  - ruta
   - noticia
   - seleccionar_tema
   - seleccionar_concepto
+  - seleccionar_cuestionario
   - ver_progreso
   - salir_cuestionario
+  - recomendar
 
 entities:
   - tema_actual
   - concepto_id
+  - tipo_cuestionario
+  - cuestionario_id_seleccionado
 
 slots:
   requiere_registro:
@@ -130,6 +122,19 @@ slots:
     initial_value: null
     mappings:
     - type: custom
+  tipo_cuestionario:
+    type: text
+    influence_conversation: false
+    mappings:
+    - type: from_entity
+      entity: tipo_cuestionario
+  cuestionario_id_seleccionado:
+    type: text
+    influence_conversation: false
+    mappings:
+    - type: from_entity
+      entity: cuestionario_id_seleccionado
+      
 forms:
   registro_form:
     required_slots:
@@ -154,6 +159,10 @@ actions:
   - action_check_matricula
   - action_mostrar_progreso
   - action_cancelar_cuestionario
+  - action_mostrar_horario
+  - action_mostrar_profesorado_tutorias
+  - action_listar_cuestionarios
+  - action_recomendar
 
 responses:
   utter_ask_nombre:
@@ -192,27 +201,13 @@ responses:
   utter_iamabot:
   - text: "Soy un robot, me llamo Rasa."
   
-  utter_martes:
-  - text: "Martes de 12:00 a 13:30 en el aula B9 del Aulario Averroes en Campus de Rabanales"
-  
-  utter_jueves:
-  - text: "Jueves de 09:00 a 10:30 en el aula B9 del Aulario Averroes en Campus de Rabanales"
-  
-  utter_lunes:
-  - text: "Lunes de 11:00 a 13:00 en el aula p1 del Ramón y Cajal"
-  
-  utter_miercoles:
-  - text: "Miércoles de 09:00 a 11:00 en el aula s1 del Ramón y Cajal"
-  
-  utter_viernes:
-  - text: "Viernes de 13:00 a 15:00 en el aula p1 del Ramón y Cajal"
+
   
   utter_gracias:
   - text: "De nada, un placer"
   - text: "De nada"
   
-  utter_profesorado:
-  - text: "Amelia Zafra Gómez - in1zagoa@uco.es\nHorarios tutorias: Lunes 9:00 - 11:00\n \t\t   Martes 8:00 - 10:00"
+
         
   utter_fin_test:
   - text: "¡Perfecto! Hemos finalizado el cuestionario."
@@ -286,32 +281,13 @@ responses:
         
   utter_tipo_ejercicio:
   - text: "¿Qué tipo de repaso desea?"
-  
     buttons:
       - title: "Conceptos"
         payload: "/conceptos"
-        
-      - title: "Cuestionarios" 
-        payload: "/cuestionarios"
-        
-      - title: "Ejercicios"
-        payload: "/ejercicios"    
-        
-  utter_ejerciciosT2:
-  - text: "Seleccione el ejercicio que desea saber"
-    button_type: vertical
-  
-    buttons:
-      - title: "Dijkstra"
-        payload: "/dijkstra"
-        
-      - title: "Algoritmo de encaminamiento" 
-        payload: "/encaminamiento"
-        
-      - title: "Ruta de paquetes"
-        payload: "/ruta"   
-    
-        
+      - title: "Cuestionarios de Teoría"
+        payload: '/cuestionarios{"tipo_cuestionario":"teoria"}'
+      - title: "Ejercicios Prácticos"
+        payload: '/cuestionarios{"tipo_cuestionario":"practica"}'
   utter_ask_p1t1_answer:
   - text: "Cuando un Estándar se establece por su extensa utilización se dice que es un estándar\n\n
   A1) De facto\n
@@ -357,68 +333,11 @@ responses:
   
   utter_respuesta_correcta_e1t2:
   - text: "La respuesta correcta era la A"
-  
-  utter_falloEjercicios:
-  - text: "Ohhh has fallado el ejercicio ejercicio"
+
 
   utter_respuesta_correcta:
   - text: "La respuesta correcta, ¡muy bien!"  
-  
-  utter_e1t2:
-  - text: "1. Aplique Dijkstra para determinar el costo de la ruta de menor coste entre O y T del grafo que se muestra en la figura. El valor del coste de cada enlace aparece representado en cada enlace."
-    image: "https://i.imgur.com/b0fLQoQ.png"
-    
-  utter_ejerDijsktra:
-  - text: "Seleccione la respuesta correcta"
-  
-    buttons:
-      - title: "a) 13"
-        payload: "/ejercicioDijsktra"
-        
-      - title: "b) 16" 
-        payload: "/FalloejercicioDijsktrab"
-        
-      - title: "c) Ninguna de las anteriores" 
-        payload: "/FalloejercicioDijsktrac"
-        
-  utter_e2t2:
-  - text: "2. Suponga que se utiliza un algoritmo de encaminamiento de vector distancia, y el enrutador C recibe los siguientes vectores de encaminamiento de sus vecinos (B, D y E): desde B(8,0,10,9,15,20), desde D(8,10,3,0,15,10) y desde E(10,5,12,6,0,8). Cada vector representa sus retardos a los nodos A, B, C, D, E y F respectivamente. Los retardos medidos a B, D y E son, respectivamente, 5, 6 y 10. De acuerdo a dicha información, en la tabla de enrutamiento que generaría el enrutador C, ¿por dónde encaminaría los paquetes dirigidos a A?."
-    
-  utter_ejerEncaminamiento:
-  - text: "Seleccione la respuesta correcta"
-  
-    buttons:
-      - title: "a) D"
-        payload: "/FalloejercicioEncaminamientoa"
-        
-      - title: "b) B" 
-        payload: "/ejercicioEncaminamiento"
-        
-      - title: "c) E" 
-        payload: "/FalloejercicioEncaminamientoc"
-        
-  utter_respuesta_correcta_e2t2:
-  - text: "La respuesta correcta era la B"
- 
-  utter_e3t2:
-  - text: "3. Indique el número de rutas que toma un paquete enviado de A a F usando inundación, y estableciendo un número de saltos máximo 2. Se considera una ruta, el envío de un origen a un destino que no reenvía dicho paquete."
-    
-  utter_rutas_paquetes:
-  - text: "Seleccione la respuesta correcta"
-    image: "https://i.imgur.com/LrUwsnA.png"
-  
-    buttons:
-      - title: "a) 10"
-        payload: "/FalloejercicioRutaa"
-        
-      - title: "b) Ninguna de las anteriores" 
-        payload: "/FalloejercicioRutab"
-        
-      - title: "c) 4" 
-        payload: "/ejercicioRuta"
-        
-  utter_respuesta_correcta_e3t2:
-  - text: "La respuesta correcta era la C"
+
   
   utter_noticia:
   - text: "La noticia de la semana es la siguiente:\n [Ciberseguridad: Una nueva técnica del 'malware' sin archivos aprovecha los registros de eventos de Windows para ocultarse](https://www.cope.es/actualidad/tecnologia/noticias/ciberseguridad-una-nueva-tecnica-del-malware-sin-archivos-aprovecha-los-registros-eventos-windows-para-ocultarse-20220524_2101869)"
