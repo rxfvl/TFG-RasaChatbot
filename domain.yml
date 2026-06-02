@@ -6,6 +6,7 @@ session_config:
 
 intents:
   - greet
+  - start
   - goodbye
   - affirm
   - deny
@@ -177,13 +178,16 @@ responses:
   - text: "Hola, ¿necesitas alguna información?"
   - text: "Buenas, ¿qué duda tienes?"
   
+  utter_no_en_cuestionario:
+  - text: "Ahora mismo no estás haciendo ningún cuestionario."
+  
   utter_preg_defs:
   - text: |-
       Resultado de preg defs
        - res_def: {res_def}
 
   utter_cheer_up:
-  - text: "Here is something to cheer you up:"
+  - text: "Aquí tienes algo para animarte:"
     image: "https://i.imgur.com/nGF1K8f.jpg"
 
   utter_did_that_help:

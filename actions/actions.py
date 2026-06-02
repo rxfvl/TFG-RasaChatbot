@@ -39,10 +39,10 @@ from rasa_sdk.executor import CollectingDispatcher
 def get_db_connection():
     """Crea y devuelve una conexión a la base de datos PostgreSQL."""
     return psycopg2.connect(
-        host=os.environ.get("DB_HOST", "postgres_db"),
-        database=os.environ.get("POSTGRES_DB", "RasaDB"),
-        user=os.environ.get("POSTGRES_USER", "postgre"),
-        password=os.environ.get("POSTGRES_PASSWORD", "RasaChatBot_2026")
+        host=os.environ.get("DB_HOST"),
+        database=os.environ.get("DB_NAME"),
+        user=os.environ.get("DB_USER"),
+        password=os.environ.get("DB_PASSWORD")
     )
 
 
@@ -639,7 +639,13 @@ class ActionCheckRegistro(Action):
                     if alumno:
                         return [SlotSet("requiere_registro", False), SlotSet("nombre", alumno[0])]
         except Exception as e:
-            print(f"[ActionCheckRegistro] Error: {e}")
+            print(f"[ActionCheckRegistro] Error de conexión a BBDD: {e}")
+            # Si hay un error, informamos al usuario y abortamos la interacción actual
+            dispatcher.utter_message(text="⚠️ Lo siento, ahora mismo hay problemas de conexión con el sistema. Por favor, inténtalo de nuevo en unos minutos.")
+            # UserUtteranceReverted() hace que Rasa ignore el último mensaje del usuario como si no hubiera pasado
+            return [UserUtteranceReverted()]
+        
+        # Si la base de datos va bien pero no encontró al alumno:
         return [SlotSet("requiere_registro", True)]
 
 
@@ -659,7 +665,9 @@ class ActionGuardarAlumno(Action):
                         (sender_id, nombre, correo)
                     )
         except Exception as e:
-            print(f"[ActionGuardarAlumno] Error: {e}")
+            print(f"[ActionGuardarAlumno] Error de conexión a BBDD: {e}")
+            dispatcher.utter_message(text="⚠️ Hubo un error al intentar guardar tu registro debido a problemas de conexión. Por favor, vuelve a introducir tu correo para reintentarlo.")
+            return [UserUtteranceReverted()]
         return [SlotSet("requiere_registro", False)]
 
 

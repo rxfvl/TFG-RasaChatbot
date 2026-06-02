@@ -8,7 +8,9 @@ stories:
 
 - story: happy path
   steps:
-  - intent: greet
+  - or:
+    - intent: greet
+    - intent: start
   - action: action_registrar_intent
   - action: action_check_registro
   - slot_was_set:
@@ -20,7 +22,9 @@ stories:
 
 - story: sad path 1
   steps:
-  - intent: greet
+  - or:
+    - intent: greet
+    - intent: start
   - action: action_registrar_intent
   - action: action_check_registro
   - slot_was_set:
@@ -36,7 +40,9 @@ stories:
 
 - story: sad path 2
   steps:
-  - intent: greet
+  - or:
+    - intent: greet
+    - intent: start
   - action: action_registrar_intent
   - action: action_check_registro
   - slot_was_set:

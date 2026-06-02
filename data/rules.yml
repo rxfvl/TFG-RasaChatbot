@@ -8,7 +8,9 @@ rules:
 
 - rule: saludar cuando el usuario se salude y esta registrado
   steps:
-  - intent: greet
+  - or:
+    - intent: greet
+    - intent: start
   - action: action_registrar_intent
   - action: action_check_registro
   - slot_was_set:
@@ -17,7 +19,9 @@ rules:
 
 - rule: iniciar registro cuando el usuario salude y NO esta registrado
   steps:
-  - intent: greet
+  - or:
+    - intent: greet
+    - intent: start
   - action: action_registrar_intent
   - action: action_check_registro
   - slot_was_set:
@@ -42,6 +46,14 @@ rules:
   - intent: goodbye
   - action: action_registrar_intent
   - action: utter_goodbye
+
+- rule: Salir sin estar en cuestionario
+  condition:
+  - active_loop: null
+  steps:
+  - intent: salir_cuestionario
+  - action: action_registrar_intent
+  - action: utter_no_en_cuestionario
 
 - rule: Si te pregunta decir soy un robot
   steps:

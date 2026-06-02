@@ -48,9 +48,10 @@ docker run -d \
   --name rasa_action_server \
   --network rasa-network \
   -p 5055:5055 \
-  -e POSTGRES_USER="$DB_USER" \
-  -e POSTGRES_PASSWORD="$DB_PASSWORD" \
-  -e POSTGRES_DB="$DB_NAME" \
+  -e DB_HOST="$DB_HOST" \
+  -e DB_USER="$DB_USER" \
+  -e DB_PASSWORD="$DB_PASSWORD" \
+  -e DB_NAME="$DB_NAME" \
   -v "$(pwd)/actions:/app/actions" \
   -v "$(pwd)/models:/app/models" \
   -v "$(pwd)/requirements.txt:/app/requirements.txt" \
@@ -78,6 +79,7 @@ docker run -d \
   -v "$(pwd):/app" \
   -e TELEGRAM_TOKEN="$TELEGRAM_TOKEN" \
   -e TELEGRAM_VERIFY_NAME="$TELEGRAM_VERIFY_NAME" \
+  -e DB_HOST="$DB_HOST" \
   -e DB_USER="$DB_USER" \
   -e DB_PASSWORD="$DB_PASSWORD" \
   -e DB_NAME="$DB_NAME" \
