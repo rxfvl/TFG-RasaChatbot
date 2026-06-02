@@ -12,6 +12,9 @@
 
 \usepackage{tikz} % used in cover to place images
 \usepackage{verbatim}
+\usepackage{float}
+\usepackage{caption}
+\usepackage[hidelinks]{hyperref}
 
 % UTILs
 \usepackage{datetime} % allow formal date format
@@ -139,7 +142,7 @@
 \vfill
 
 \Huge\textbf{\color{epsc:oscuro}
-  Diseño y desarrollo de un assitente conversacional educativo para el apoyo al aprendizaje adaptativo
+  Diseño y desarrollo de un asistente conversacional educativo para el apoyo al aprendizaje adaptativo
 }
 \vfill
 \vfill
@@ -312,42 +315,155 @@ El entorno del proyecto se define desde diversas perspectivas técnicas que gara
 \begin{itemize}
     \item \textbf{Entorno de desarrollo y programación:} La implementación del sistema se basa íntegramente en el lenguaje de programación \textbf{Python}, seleccionado por su madurez en el ámbito de la Inteligencia Artificial y su ecosistema de librerías especializadas. Como núcleo conversacional se utiliza el marco de trabajo (\textit{framework}) de código abierto \textbf{Rasa}, que proporciona las herramientas necesarias para la gestión de NLU\footnote{\textbf{Natural Language Understanding} o Comprensión del Lenguaje Natural} y diálogos.
     
-    \item \textbf{Entorno de ejecución (Software):} Para el despliegue y funcionamiento del proyecto es necesaria una instancia de Python (versión 3.10.x). El sistema operativo de referencia para el desarrollo y servidor de ejecución es \textbf{GNU/Linux (distribución Ubuntu)}, debido a su estabilidad y su compatibilidad con el entorno de desarrollo.
+    \item \textbf{Entorno de ejecución (Software):} El sistema se despliega mediante la tecnología de \textbf{contenedores Docker}, lo que permite aislar los componentes principales (Rasa Server, Action Server y Base de datos) y asegurar su funcionamiento independientemente del sistema \textit{host}. Internamente, las imágenes de Rasa utilizan Python (versión 3.10.x) sobre entornos GNU/Linux.
     
-    \item \textbf{Entorno de persistencia:} El sistema requiere un motor de base de datos relacional \textbf{PostgreSQL} para el almacenamiento de la información del estudiante, profesorado, consultas informativas, conceptos, ejercicios y seguimiento.
+    \item \textbf{Entorno de persistencia:} El sistema requiere un motor de base de datos relacional \textbf{PostgreSQL} para el almacenamiento estructurado de la información del estudiante, profesorado, conceptos, ejercicios y métricas de seguimiento.
     
-    \item \textbf{Entorno de usuario y despliegue:} La interfaz de interacción para el estudiante es la plataforma de mensajería \textbf{Telegram}. Se ha seleccionado este canal por su accesibilidad multiplataforma (escritorio y móvil) y su capacidad para ofrecer un entorno de comunicación privado y seguro para cada alumno.
+    \item \textbf{Entorno de usuario y despliegue:} La interfaz de interacción para el estudiante es la plataforma de mensajería \textbf{Telegram}. Se ha seleccionado este canal por su accesibilidad multiplataforma y su capacidad para ofrecer un entorno de comunicación privado. Además, se emplea la herramienta \textbf{Ngrok} para la exposición segura del puerto local del servidor mediante túneles HTTPS, conectándolo con los \textit{webhooks} de Telegram.
 \end{itemize}
 
 \subsection{Vida esperada}
 
 La vida útil de este asistente conversacional no viene determinada por el desgaste físico, sino por la vigencia de sus componentes software y su relevancia académica.\\
 
-Por un lado, la \textbf{obsolescencia del software} está ligada a las actualizaciones de las librerías de terceros, especialmente el framework Rasa y las API\footnote{Application Programming Interface} de Telegram. Dado que el ecosistema de la Inteligencia Artificial evoluciona rápidamente, sería conveniente llevar a cabo revisiones periódicas para adaptar el código a las nuevas versiones de los modelos de lenguaje y protocolos de seguridad.\\
-% SEGUIR POR AQUÍ TODO
-Por otro lado, desde la perspectiva del **contenido educativo**, la vida esperada es mucho mayor gracias a la arquitectura dinámica implementada. Al estar el conocimiento desacoplado de la lógica del bot, los docentes pueden actualizar los temarios de la asignatura de forma indefinida sin que el sistema quede obsoleto. El asistente seguirá siendo útil mientras la metodología de aprendizaje adaptativo y los planes de estudio de la titulación mantengan su estructura actual.\\
+Por un lado, la \textbf{obsolescencia del software} está ligada a las actualizaciones de las librerías de terceros, especialmente el framework Rasa y las API\footnote{Application Programming Interface} de Telegram. Dado que el ecosistema de la Inteligencia Artificial evoluciona rápidamente, resulta conveniente llevar a cabo revisiones periódicas para adaptar el código a las nuevas versiones de los modelos de lenguaje y protocolos de seguridad.\\
+
+Por otro lado, desde la perspectiva del \textbf{contenido educativo}, la vida esperada es mucho mayor gracias a la arquitectura dinámica implementada. Al estar el conocimiento desacoplado de la lógica del bot, los docentes pueden actualizar los temarios de la asignatura de forma indefinida sin que el sistema quede obsoleto. El asistente seguirá siendo útil mientras la metodología de aprendizaje adaptativo y los planes de estudio de la titulación mantengan su estructura actual.\\
 
 Finalmente, la escalabilidad del diseño permite que, una vez finalizado este ciclo de vida inicial, el bot pueda servir como base para futuras evoluciones, asegurando que el esfuerzo de desarrollo tenga un impacto duradero en la institución.
 
 \subsection{Ciclo de mantenimiento}
 
+El mantenimiento del sistema abarca actuaciones correctivas y evolutivas. Estas incluyen la actualización periódica de las dependencias del software (Rasa, PostgreSQL, librerías de Python), la revisión de compatibilidad ante cambios en las políticas de la API de Telegram, y el monitoreo del rendimiento de la base de datos. Gracias a la contenedorización con Docker, las actualizaciones del entorno de ejecución se simplifican significativamente, permitiendo modificar las versiones de las imágenes base sin alterar la configuración del servidor físico.
+
 \subsection{Competencia}
+
+Aunque existen otros asistentes educativos integrados en plataformas comerciales de aprendizaje (LMS\footnote{Learning Management System}) o chatbots genéricos impulsados por grandes modelos de lenguaje (LLM\footnote{Large Language Model}), la principal ventaja competitiva de este proyecto radica en su \textbf{especialización y soberanía de datos}. El asistente adapta el modelo pedagógico propio de la asignatura sin depender de APIs de pago externas que procesen la información de los estudiantes. Asimismo, se integra de manera directa en una aplicación de uso diario como Telegram, eliminando barreras de adopción y mejorando la cercanía con el alumno.
 
 \subsection{Aspecto externo}
 
+La interfaz visible del sistema es la propia aplicación cliente de Telegram (disponible en formato móvil, escritorio y web). Su aspecto externo corresponde al de un chat convencional, donde el bot interactúa haciendo uso de elementos visuales nativos como botones integrados (\textit{inline keyboards}), comandos de menú (\texttt{/start}) y respuestas enriquecidas con formato (negritas, cursivas, listas o enlaces). Esto garantiza una experiencia de usuario familiar, moderna e intuitiva sin necesidad de desarrollar ni instalar aplicaciones adicionales.
+
 \subsection{Estandarización}
+
+El proyecto se rige por estándares de la industria del desarrollo de software. Emplea contenedores Docker como estándar de facto para el despliegue de aplicaciones; utiliza formatos estandarizados de intercambio de datos como YAML (para la configuración de Rasa) y JSON (para las comunicaciones web); y se apoya en SQL estándar para las operaciones con la base de datos. A nivel de código, la programación en Python respeta las guías de estilo PEP-8, favoreciendo su legibilidad y posterior mantenimiento por parte de la comunidad universitaria.
 
 \subsection{Calidad y fiabilidad}
 
+La fiabilidad del sistema se sustenta en el uso de tecnologías ampliamente testeadas como Rasa y PostgreSQL. A nivel operativo, se han implementado mecanismos de recuperación como políticas de reinicio automático de los contenedores para hacer frente a caídas inesperadas del servicio. En el código del servidor de acciones (\textit{Action Server}), se han incorporado bloques de control de excepciones (\texttt{try/except}) y gestores de contexto (with) que evitan interrupciones críticas en el flujo conversacional, informando al usuario en caso de fallos temporales de conexión con la base de datos y se encargan de abrir y cerrar la conexión con la base de datos automáticamente, respectivamente.
+
 \subsection{Programa de tareas}
+
+Para la consecución de los objetivos planteados, el trabajo se ha estructurado en las siguientes fases principales:
+\begin{enumerate}
+    \item Análisis de requisitos y evaluación de las limitaciones del sistema predecesor.
+    \item Diseño de la nueva arquitectura de despliegue (Rasa 3.x, Docker, PostgreSQL, Ngrok).
+    \item Diseño de la base de datos y migración de esquemas.
+    \item Implementación de los módulos lógicos (acciones personalizadas) para la gestión del contenido dinámico y el seguimiento del alumno.
+    \item Estudio y creación del módulo de recomendación (MLP\footnote{Multi-Layer Perceptron}).
+    \item Fases de pruebas de integración y validación del sistema final.
+    \item Redacción y estructuración de la memoria del proyecto.
+\end{enumerate}
 
 \subsection{Pruebas}
 
+Se ha diseñado una estrategia de validación en varios niveles. A nivel conversacional, se emplean pruebas de flujo (\textit{test stories} y \textit{rules}) propias del entorno Rasa para certificar que el asistente recorre adecuadamente los caminos conversacionales estipulados sin bloqueos. A nivel de sistema, se realizan pruebas de extremo a extremo (\textit{end-to-end}) interactuando directamente desde la aplicación de Telegram, lo que permite verificar la integración completa entre los mensajes del usuario, el procesamiento de Rasa, la ejecución de las acciones en Python y la persistencia de datos en PostgreSQL.
+
 \subsection{Seguridad}
 
+La seguridad se ha abordado de forma integral en el diseño arquitectónico:
+\begin{itemize}
+    \item \textbf{Aislamiento:} El uso de contenedores restringe el acceso de los servicios al sistema de archivos de la máquina anfitriona.
+    \item \textbf{Gestión de credenciales:} Se emplean variables de entorno (mediante archivos \texttt{.env}) para proteger tokens de acceso, contraseñas de bases de datos y configuraciones sensibles, evitando su exposición en repositorios de código.
+    \item \textbf{Comunicaciones seguras:} La conexión entre los servidores de Telegram y el entorno local se cifra mediante un túnel HTTPS proporcionado por Ngrok, garantizando la confidencialidad de los datos en tránsito.
+    \item \textbf{Privacidad de datos:} Telegram garantiza el cifrado y protección de los mensajes. Adicionalmente, el sistema interno solo almacena el identificador numérico de Telegram del usuario, vinculándolo estrictamente con los datos de progreso académico, respetando el principio de minimización de datos.
+\end{itemize}
 
 \chapter{Diseño}
 Modelos que representen la solución propuesta al problema desde diferentes perspectivas (por ejemplo, modelos de: datos, arquitectónico, interfaz, funcional, pruebas, ...), justificando las decisiones tomadas y la posible evaluación de los riesgos asociados.
+
+\chapter{Estudio del Modelo Predictivo}
+\label{cap:estudio_modelos}
+
+Con la finalidad de proporcionar al alumno una experiencia pedagógica realmente adaptativa, se ha llevado a cabo un estudio sobre tres modelos de Aprendizaje automático: Árbol de Decisión (\textit{Decision Tree}), Bosque Aleatorio (\textit{Random Forest}) y un Perceptrón Multicapa (\textit{MLP - Red Neuronal}). El objetivo es determinar qué algoritmo ofrece un mayor rendimiento entre la precisión de las recomendaciones y el coste computacional.
+
+\section{Análisis del Conjunto de Datos Sintético}
+
+Para el entrenamiento y evaluación de los modelos, se generó un conjunto de datos sintético de 10.000 muestras, simulando diversas estadísticas del alumnado (días activos, volumen de interacciones, notas en temas superados, etc.).\\
+
+Para certificar que los modelos aprenderían patrones de comportamiento coherentes, se generó la Matriz de Correlación de las características del conjunto de datos (ver Figura \ref{fig:correlation_matrix}).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{img/dataset_correlation_matrix.png}
+    \caption{Matriz de correlación de las variables del dataset sintético.}
+    \label{fig:correlation_matrix}
+\end{figure}
+
+El análisis de correlación confirma que los indicadores de temas cursados y sus respectivas calificaciones tienen una correlación lógica respecto a la acción a recomendar, validando así la estructura del conjunto de entrenamiento.
+
+\section{Evaluación y Búsqueda de Hiperparámetros}
+
+Se diseñó una malla de hiperparámetros (\textit{GridSearch}) evaluada con validación cruzada de tres particiones (3-folds) para garantizar que la comparativa fuera justa y todos los modelos operaran con su mejor configuración posible. Las métricas globales obtenidas se resumen gráficamente en las siguientes figuras.
+
+\begin{figure}[htpb]
+    \centering
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/comparativa_accuracy.png}
+        \caption{Precisión global (Accuracy) por modelo.}
+    \end{minipage}\hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/comparativa_f1.png}
+        \caption{F1-Score por modelo.}
+    \end{minipage}
+\end{figure}
+
+Como se observa en los resultados, el \textbf{Perceptrón Multicapa (MLP)} es el modelo más preciso, superando el 95.8\% de \textit{Accuracy} y \textit{F1-Score} con una arquitectura de 32 neuronas ocultas, activación \textit{ReLU} y el optimizador \textit{Adam}. Por otro lado, el Árbol de Decisión apenas ronda el 82\% de precisión debido a su tendencia al sobreajuste o alta simplicidad en fronteras de decisión complejas. Por último, el Random Forest mejora notablemente la clasificación hasta un 92.5\%, pero sigue actuando peor que el MLP.
+
+\subsection{Análisis de Errores mediante Matrices de Confusión}
+
+Para comprender mejor los fallos en la clasificación, se extrajeron las matrices de confusión sobre un conjunto de prueba de 2.000 muestras (ver Figuras \ref{fig:cm_rf} y \ref{fig:cm_mlp}).\\
+
+\begin{figure}[htpb]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/confusion_matrix_random_forest.png}
+    \caption{Matriz de confusión del modelo Random Forest.}
+    \label{fig:cm_rf}
+\end{figure}
+
+\begin{figure}[htpb]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/confusion_matrix_mlp_red_neuronal.png}
+    \caption{Matriz de confusión del modelo MLP (Red Neuronal).}
+    \label{fig:cm_mlp}
+\end{figure}
+
+El análisis revela que modelos como el Árbol de Decisión y el Random Forest presentan un mayor grado de confusión entre recomendaciones similares (por ejemplo, confundir repasar el tema 1 con el tema 2), mientras que la Red Neuronal se ajusta mejor a los límites de cuándo el alumno está listo para progresar o cuándo debe volver atrás.
+
+\newpage
+\section{Análisis del Coste Temporal y Decisión Final}
+
+En un sistema conversacional en tiempo real, la latencia de respuesta (\textit{tiempo de inferencia}) es un factor crítico. Se midieron tanto los tiempos de ajuste (GridSearch total) como los tiempos de inferencia sobre el conjunto de prueba (2.000 muestras).
+
+\begin{figure}[htpb]
+    \centering
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/comparativa_tiempo_fit.png}
+        \caption{Tiempos totales de entrenamiento.}
+    \end{minipage}\hfill
+    \begin{minipage}{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/comparativa_tiempo_predict.png}
+        \caption{Tiempos de inferencia.}
+    \end{minipage}
+\end{figure}
+
+El Perceptrón Multicapa requiere un coste computacional significativamente mayor en la fase de entrenamiento (más de 17 segundos frente a los 4 segundos del Random Forest). Sin embargo, este proceso se realiza fuera de la interacción con el alumno, por lo que no penaliza la experiencia del alumno a la hora de conversar con el asistente. En la fase de inferencia (cuando el estudiante solicita la recomendación), el MLP es el más eficiente, requiriendo apenas milisegundos para clasificar las 2.000 peticiones.
+
+\paragraph{Justificación de la elección:} Dados los resultados, el Perceptrón Multicapa (MLP) es seleccionado como el motor de recomendación para el asistente. Su notable superioridad en la precisión de clasificación (95.85\%) combinada con una latencia de inferencia imperceptible para el usuario garantizan un apoyo adaptativo preciso, dinámico y fluido.
 
 \chapter{Conclusiones}
 Resumen de los principales logros obtenidos en el trabajo y/o sugerencias sobre posibles futuras mejoras a realizar sobre la solución aportada.
