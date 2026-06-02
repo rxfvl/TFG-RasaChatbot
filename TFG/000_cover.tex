@@ -1,0 +1,361 @@
+\documentclass[a4paper,12pt,twoside,final]{book}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-nodecimaldot]{babel} % International, rec. by RAE: http://www.tex-tipografia.com/marca_decimal.html
+
+% COLOR
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+% Colores para portada
+\definecolor{epsc:oscuro}{HTML}{280091}
+ \definecolor{epsc:medio}{HTML}{4C5CC5}
+ \definecolor{epsc:claro}{HTML}{3FCFD5}
+ \definecolor{epsc:verde}{HTML}{00B299}
+
+\usepackage{tikz} % used in cover to place images
+\usepackage{verbatim}
+
+% UTILs
+\usepackage{datetime} % allow formal date format
+% "Month, YEAR" date format, in spanish with the month uppercased not interfering other dates
+\newcommand\Monthname[1][EMPTY]{
+  \ifnum1=#1Enero\else
+  \ifnum2=#1Febrero\else
+  \ifnum3=#1Marzo\else
+  \ifnum4=#1Abril\else
+  \ifnum5=#1Mayo\else
+  \ifnum6=#1Junio\else
+  \ifnum7=#1Julio\else
+  \ifnum8=#1Agosto\else
+  \ifnum9=#1Septiembre\else
+  \ifnum10=#1Octubre\else
+  \ifnum11=#1Noviembre\else
+  \ifnum12=#1Diciembre\else
+  \fi\fi\fi\fi\fi\fi\fi\fi\fi\fi\fi\fi
+}
+\newdateformat{monthyeardate}{%
+  \Monthname[\THEMONTH], \THEYEAR}
+
+
+% FONTs
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}           % Needed for new symbols like € ?
+
+\usepackage[scaled]{berasans} % Font for the cover similar to Vera 33
+%\renewcommand*\familydefault{\sfdefault}  %% To use as the base font of the document is to be sans serif
+
+
+% PAGE STYLE
+\usepackage[twoside,bindingoffset=0mm,headheight=16pt,margin=25mm]{geometry} 
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{} % Borra cabeceras y pies actuales
+
+% Configuración para páginas pares (even) e impares (odd)
+\fancyhead[LE]{\leftmark}    % Left Even: Capítulo a la izquierda
+\fancyhead[RO]{\rightmark}   % Right Odd: Sección a la derecha
+\fancyfoot[C]{\thepage}      % Número de página al centro
+
+% Ajustar el ancho de la línea del encabezado (opcional)
+\renewcommand{\headrulewidth}{0.4pt}
+
+%Paquete para gestionar la bibliografía
+\usepackage[backend=bibtex, style=numeric, sorting=none, maxbibnames=6]{biblatex}
+
+% Carga el fichero de bibliografía
+\addbibresource{bib.bib}
+
+% TABLES AND FIGURES
+\usepackage{graphicx}
+\graphicspath{ {img/} }
+
+\usepackage{titlesec}
+
+% Configuramos el formato de los capítulos:
+% [hang] hace que el número y el título estén en la misma línea
+\titleformat{\chapter}[hang]
+{\normalfont\huge\bfseries} % Estilo del texto (Grande y Negrita)
+{\thechapter}               % Solo el número (sin la palabra Capítulo)
+{20pt}                      % Espacio entre el número y el título
+{\huge}                     % Estilo del título
+
+% Hace que las páginas en blanco entre capítulos no tengan número ni encabezado
+\makeatletter
+\def\cleardoublepage{\clearpage\if@twoside \ifodd\c@page\else
+\hbox{}
+\thispagestyle{empty}
+\newpage
+\if@twocolumn\hbox{}\newpage\fi\fi\fi}
+\makeatother
+\usepackage[hidelinks]{hyperref}
+\begin{document}
+\frontmatter
+
+%
+% INSTRUCCIONES:
+% - Cambia a el escudo de tu titulación comentando y descomentando las líneas correspondientes
+% - Cambia todos los textos que están entre '<' y '>' por lo que corresponda en tu proyecto
+%
+
+
+%------------- Cover --------------
+\thispagestyle{empty}
+
+% Backgroud images
+\begin{tikzpicture}[remember picture, overlay]
+  % Top
+  \node [anchor=north east, inner sep=0pt]  at (current page.north east)
+     {\includegraphics[height=6cm]{topRightCorner.pdf}};
+  % Bottom
+  \node [anchor=south west, inner sep=0pt]  at (current page.south west)
+     {\includegraphics[height=6cm]{bottomLeftCorner.pdf}};
+  \node (uco) [anchor=south east, inner sep=0pt, xshift=-10mm, yshift=10mm]  at (current page.south east)
+        {\includegraphics[height=2cm]{logoUCO.pdf}};
+  \node [anchor=south east, inner sep=0pt, xshift=-10mm]  at (uco.south west)
+% ---- Escudo de la titulación correspondiente ----
+        {\includegraphics[height=2cm]{emblema-ing-informatica.pdf}};
+%        {\includegraphics[height=2cm]{emblema-ing-industrial.pdf}};
+%        {\includegraphics[height=2cm]{emblema-ing-tec-industrial.pdf}};
+\end{tikzpicture}
+
+
+\begin{center}
+\fontfamily{\sfdefault}\selectfont
+\vspace*{2cm}
+
+\vfill
+\vfill
+\includegraphics[width=12.5cm]{LogotipoEPSC.pdf}
+\vfill
+\vfill
+
+\large\textbf{\color{epsc:medio}
+  TRABAJO FIN DE GRADO
+}
+\vfill
+
+\Large\textbf{\color{epsc:verde}
+  Grado en Ingeniería Informática
+}
+\vfill
+\vfill
+
+\Huge\textbf{\color{epsc:oscuro}
+  Diseño y desarrollo de un assitente conversacional educativo para el apoyo al aprendizaje adaptativo
+}
+\vfill
+\vfill
+
+\large{\color{epsc:oscuro}Autor}\\
+\textbf{\color{epsc:medio} Rafael David Tortosa Bueno }
+\vfill
+
+\large{\color{epsc:oscuro} Director }\\
+\textbf{\color{epsc:medio} Dra. Amelia Zafra Gómez }
+\vfill
+
+
+
+\textbf{\color{epsc:verde} \monthyeardate\today}
+\vfill
+\vfill
+\vspace{2.7cm}
+\end{center}
+
+
+%-------------------------------------------------------------------------------------------------------
+\clearpage
+
+\thispagestyle{empty}
+\pagecolor{white}
+
+\cleardoublepage
+%-------------------------------------------------------------------------------------------------------
+
+%------------- Índices --------------
+\pagestyle{empty}
+\tableofcontents
+\listoffigures
+\listoftables
+
+\mainmatter
+
+%------------- Capítulos --------------
+\pagestyle{fancy}
+
+\chapter{Introducción y contexto}
+\label{cap:introduccion}
+
+La incorporación de la Inteligencia Artificial (IA) en el ámbito educativo ha impulsado el uso de asistentes conversacionales (\textit{chatbots}) como herramienta de apoyo al estudio. Estos sistemas pueden resolver dudas, proporcionar explicaciones y ofrecer recursos de forma inmediata, lo que resulta especialmente útil ante la falta de atención personalizada y la diversidad de ritmos de aprendizaje. Sin embargo, la literatura también señala retos relevantes asociados a su uso (fiabilidad, evaluación, sesgos, ética y privacidad), por lo que su integración debe orientarse a complementar la docencia, fomentar un uso crítico y establecer mecanismos de supervisión y evaluación \cite{Labadze2023}.\\
+
+En particular, en contextos con alta ratio estudiante-profesor, el apoyo conversacional puede actuar como un ``acompañamiento'' entre sesiones presenciales, ayudando a mantener la continuidad del estudio (p.\,ej., resolviendo dudas frecuentes, proponiendo ejercicios de refuerzo o guiando hacia recursos adecuados). Para que este apoyo sea pedagógicamente útil, resulta clave que el asistente no se limite a respuestas genéricas, sino que adapte el tipo de ayuda a las necesidades reales del estudiante y a su nivel de dominio.\\
+
+En paralelo, el \textit{aprendizaje adaptativo} busca ajustar actividades y contenidos en función del desempeño del estudiante, favoreciendo itinerarios formativos más eficaces y personalizados. En esta línea, estudios recientes exploran asistentes educativos con mecanismos de adaptación más avanzados, combinando análisis de interacción, registro de métricas y estrategias de retroalimentación ajustadas al desempeño (e incluso a dimensiones afectivas), con resultados que sugieren mejoras en rendimiento y participación cuando la adaptación se aplica de forma sistemática \cite{Gutierrez2025}.\\
+
+En este contexto se enmarca este Trabajo Fin de Grado, titulado \textit{Diseño y desarrollo de un asistente conversacional educativo para el apoyo al aprendizaje adaptativo}, cuyo propósito es diseñar e implementar un asistente capaz de dar una asistencia dinámica y personalizada según el desempeño de cada estudiante.
+
+
+\chapter{Objetivos}
+\label{cap:objetivos}
+
+El objetivo general de este proyecto es: Diseñar y desarrollar un asistente conversacional orientado al aprendizaje adaptativo, capaz de generar cuestionarios y contenidos conceptuales de forma dinámica, realizar un seguimiento del progreso del estudiante y proporcionar recomendaciones personalizadas que refuercen su aprendizaje.
+
+\section{Objetivos específicos}
+\label{sec:obj_especificos}
+
+\begin{enumerate}
+    \item \textbf{Módulo de cuestionarios dinámicos:} Desarrollar un módulo para generar preguntas cargadas dinámicamente desde un repositorio estructurado para cada tema, permitiendo que el contenido sea actualizable sin necesidad de modificar el código del asistente.
+    \item \textbf{Módulo de repaso de conceptos dinámicos:} Desarrollar un sistema que permita ofrecer repasos de conceptos cargados dinámicamente desde un repositorio estructurado para cada tema, permitiendo que el contenido sea actualizable sin necesidad de modificar el código del asistente.
+    \item \textbf{Módulo de seguimiento del progreso del estudiante:} Registrar y almacenar métricas de uso por estudiante (número de sesiones, tiempo de interacción, ejercicios completados, porcentaje de acierto), con el fin de analizar su evolución y facilitar una retroalimentación más precisa.
+    \item \textbf{Módulo de recomendaciones:} Diseñar un módulo de recomendación que analice el desempeño del estudiante y sugiera contenidos, repasos o logros obtenidos para reforzar su proceso de aprendizaje de manera personalizada.
+\end{enumerate}
+
+\chapter{Antecedentes}
+\label{cap:antecedentes}
+
+Este Trabajo Fin de Grado se plantea como una \textbf{continuación y evolución} de un desarrollo previo de un chatbot educativo orientado a la docencia universitaria\footnote{I. A. Ruiz Martin-Romo, \textit{Diseño y desarrollo de un Chatbot como recurso para la docencia (Manual técnico)}, Universidad de Córdoba, junio de 2022.}. En dicho trabajo se implementó un asistente conversacional para la asignatura de Redes de la Universidad de Córdoba, con funciones de consulta de información administrativa (horarios, tutorías, profesorado) y apoyo al estudio mediante repasos, cuestionarios y ejercicios con retroalimentación.\\
+
+No obstante, aquel sistema presentaba limitaciones relevantes para un enfoque adaptativo: el número de conceptos y ejercicios por tema era reducido y fijo, la actualización del contenido resultaba costosa al depender de una estructura poco flexible, no se mantenía un registro sistemático de interacciones y rendimiento por estudiante y no existía un módulo de recomendación que guiara el refuerzo en función del historial. Este proyecto tiene como finalidad evolucionar el sistema hacia una herramienta de acompañamiento que fomente el aprendizaje adaptativo, la motivación y la personalización de la experiencia educativa, apoyándose en repositorios dinámicos de contenido, métricas de progreso y recomendaciones.\\
+
+\section{Plataformas y marcos de desarrollo de chatbots}
+\label{sec:plataformas}
+
+En el ámbito de los asistentes conversacionales existen diversas alternativas para su construcción, desde servicios comerciales en la nube hasta soluciones \textit{open-source}. Entre las plataformas comerciales más utilizadas se encuentran IBM Watson Assistant \cite{ibmWatsonAssistant}, Microsoft Azure Bot Service \cite{azureBotService} o Amazon Lex \cite{amazonLex}, que ofrecen integración con servicios cloud y despliegues gestionados. En paralelo, librerías y marcos generalistas como TensorFlow \cite{tensorflow} posibilitan construir modelos de PLN\footnote{Procesamiento del Lenguaje Natural} a medida, si bien suelen requerir mayor esfuerzo de ingeniería para completar la gestión del diálogo, la integración con canales y el mantenimiento del sistema. \\
+
+
+En el dominio educativo han ganado relevancia marcos \textit{open-source} que permiten un mayor control y personalización del comportamiento del bot, especialmente cuando se requiere adaptar el flujo conversacional y conectarlo con recursos propios de la asignatura o la institución. Dentro de estas alternativas destaca Rasa \cite{rasaDocs}, un marco de IA conversacional que proporciona componentes para (i) comprensión del lenguaje natural (clasificación de intenciones y extracción de entidades) y (ii) gestión del diálogo mediante predicción de la siguiente acción, facilitando además la integración mediante acciones personalizadas y el manejo del estado conversacional.\\
+
+Distintos trabajos han utilizado Rasa para construir chatbots educativos o institucionales. Por ejemplo, Supreetha y Sandhya describen la implementación de un chatbot educativo con Rasa, destacando el flujo de entrenamiento y despliegue \cite{Supreetha2022}; Badgujar \textit{et al.} presentan un bot educativo basado en Rasa y discuten su estructura modular \cite{Badgujar2023}; y Kale \textit{et al.} abordan un chatbot conversacional para facilitación educativa, enfatizando escenarios de uso y despliegue \cite{Kale2025}. Estas aportaciones respaldan la idoneidad de Rasa para asistentes entrenables y extensibles en contextos docentes.
+
+\section{Chatbots educativos y evolución hacia la personalización}
+\label{sec:personalizacion}
+
+El uso de chatbots en educación se ha orientado a múltiples objetivos: apoyo al aprendizaje de contenidos, asistencia administrativa, evaluación y motivación del estudiante. La investigación reciente muestra que los chatbots pueden aportar beneficios como apoyo al estudio y experiencias de aprendizaje más personalizadas; no obstante, también se señalan desafíos relevantes en fiabilidad, precisión y consideraciones éticas, por lo que se recomienda incorporar estrategias de evaluación y uso responsable \cite{Labadze2023}. \\
+
+En la línea de la personalización, estudios recientes exploran asistentes educativos con mecanismos de adaptación más avanzados, combinando análisis de interacción, registro de métricas y estrategias de retroalimentación ajustadas al desempeño (e incluso a dimensiones afectivas), con resultados que sugieren mejoras en rendimiento y participación cuando la adaptación se aplica de forma sistemática \cite{Gutierrez2025}. Asimismo, en trabajos basados en Rasa se plantea como extensión natural la incorporación de módulos de seguimiento del progreso y sistemas de recomendación para reforzar el aprendizaje y orientar al estudiante en función de su historial de interacción \cite{Supreetha2022}.
+
+\chapter{Análisis del problema}
+\label{cap:analisis_problema}
+En el presente apartado se expondrán las limitaciones de la anterior versión de este proyecto, ya mencionado en el apartado \ref{cap:antecedentes}. Además, se definirán los problemas real y técnico para la correcta comprensión de los desafíos que motivan el desarrollo de este trabajo.
+
+\section{Definición del problema real}
+\label{sec:def_problema}
+El sistema anterior, aunque era funcional para el alumnado como herramienta de consulta, presentaba una gran limitación para el profesorado debido a su codificación totalmente estática. De forma que si se quiere añadir algún concepto, cuestionario o incluso modificar los horarios para el próximo año, se debe cambiar del núcleo del bot en el que están las reglas e intenciones \textit{hardcodeadas}.\\
+
+Con respecto al módulo de cuestionarios y ejercicios prácticos, el bot solo acepta respuestas como \texttt{A1} o \texttt{A3}, siendo estas las opciones a de las preguntas 1 y 3. Este comportamiento es debido a que, como ya se mencionó anteriormente, las intenciones de estas preguntas están \textit{hardcodeadas} y, por tanto, el sistema no permite tener intenciones repetidas como serían \texttt{A} o \texttt{B}.\\
+
+Por otro lado, el sistema de retroalimentación presenta una restricción funcional significativa al solo procesar la información del propio núcleo sin tener en cuenta el usuario ni sus interacciones pasadas con el bot. Asimismo, al no existir ningún tipo de registro de actividad, el sistema es incapaz de establecer indicadores de trazabilidad del alumno, lo cual imposibilita al profesorado una monitorización del aprendizaje efectiva.
+\begin{comment}
+\section{Requisitos Funcionales (RF)}
+
+\subsection{Módulos de Contenido Dinámico}
+\begin{itemize}
+    \item \textbf{RF-01 Carga dinámica de activos pedagógicos:} El sistema deberá recuperar las preguntas de los cuestionarios y los conceptos de repaso desde un repositorio estructurado externo.
+    \item \textbf{RF-02 Desacoplamiento de contenido y lógica:} La actualización de los materiales de estudio no deberá requerir modificaciones en el código fuente del asistente ni reinicios del servicio.
+    \item \textbf{RF-03 Organización temática:} El sistema deberá filtrar los contenidos dinámicos según el identificador del tema o módulo seleccionado por el usuario.
+\end{itemize}
+
+\subsection{Módulo de Seguimiento y Persistencia}
+\begin{itemize}
+    \item \textbf{RF-04 Gestión de identidad y sesiones:} El sistema deberá identificar a cada estudiante de forma unívoca y registrar el inicio y cierre de sus sesiones de interacción.
+    \item \textbf{RF-05 Almacenamiento en base de datos SQL:} Se implementará un esquema relacional para registrar métricas de uso, incluyendo tiempos de respuesta, ejercicios completados y tasas de éxito.
+    \item \textbf{RF-06 Histórico de interacciones:} El sistema deberá permitir la recuperación de interacciones pasadas para contextualizar la experiencia del usuario.
+\end{itemize}
+
+\subsection{Módulo de Personalización}
+\begin{itemize}
+    \item \textbf{RF-07 Motor de recomendaciones proactivas:} El sistema deberá analizar el desempeño histórico almacenado en la base de datos SQL para sugerir contenidos específicos de refuerzo.
+    %\item \textbf{RF-08 Sistema de gamificación y logros:} El sistema verificará el cumplimiento de hitos pedagógicos y registrará la obtención de logros en el perfil del estudiante.
+\end{itemize}
+
+\section{Requisitos No Funcionales (RNF)}
+\begin{itemize}
+    \item \textbf{RNF-01 Integridad de datos:} La base de datos SQL deberá garantizar la consistencia de la información del progreso del alumno mediante transacciones seguras.
+    \item \textbf{RNF-02 Trazabilidad pedagógica:} El sistema debe permitir reconstruir la evolución del aprendizaje del alumno para facilitar la labor de monitorización del profesorado.
+    \item \textbf{RNF-03 Escalabilidad:} El repositorio estructurado debe ser capaz de crecer en volumen de datos sin comprometer la latencia de respuesta del bot.
+    \item \textbf{RNF-04 Disponibilidad para supervisión:} Los datos de seguimiento deberán estar estructurados de tal forma que permitan su posterior visualización mediante cuadros de mando para los docentes.
+\end{itemize}
+\end{comment}
+
+\section{Definición del problema técnico}
+Desde una perspectiva de ingeniería, la definición del problema se abordará mediante la metodología \textbf{PDS}\footnote{Product Design Specification}. Esta técnica permite desglosar el problema técnico en los parámetros detallados a continuación:
+\subsection{Funcionamiento}
+
+El funcionamiento del asistente se basa en un ciclo de interacción dinámico y centrado en el estudiante, estructurado en tres niveles operativos fundamentales:
+
+\subsubsection*{A. Interacción y Comprensión (Capa de Diálogo)}
+El sistema opera mediante un motor de procesamiento de lenguaje natural (NLP) que permite una comunicación bidireccional fluida. A diferencia de versiones anteriores, el flujo no es estrictamente lineal, permitiendo al asistente:
+\begin{itemize}
+    \item \textbf{Identificar intenciones:} Diferenciar con precisión entre consultas administrativas (tutorías, aulas, fechas de entrega) y peticiones de carácter pedagógico (repaso de conceptos o realización de cuestionarios).
+    \item \textbf{Gestión del estado de la conversación:} Mantener el hilo de la interacción mediante el uso de memoria a corto plazo (\textit{slots}), lo que permite al sistema conocer en qué tema o módulo se encuentra el alumno sin que este deba especificarlo en cada mensaje, facilitando una experiencia más natural.
+\end{itemize}
+
+\subsubsection*{B. Suministro Dinámico de Contenidos (Capa de Datos)}
+El núcleo del avance técnico reside en el desacoplamiento entre la lógica del bot y el material educativo. El proceso operativo ante una solicitud de estudio sigue estos pasos:
+\begin{enumerate}
+    \item El sistema realiza una consulta a un \textbf{repositorio estructurado externo} (fuera del código fuente del bot).
+    \item Se filtran los activos pedagógicos (preguntas, respuestas y explicaciones) en función del identificador del tema solicitado.
+    \item Se genera la interfaz de respuesta de forma dinámica, lo que permite al profesorado actualizar el material educativo de manera instantánea sin necesidad de modificar el código ni reiniciar los servicios del asistente.
+\end{enumerate}
+
+\subsubsection*{C. Lógica Adaptativa y Seguimiento (Capa de Inteligencia)}
+\text{\huge REVISAR}\\
+Esta versión introduce un componente de persistencia que transforma el funcionamiento tradicionalmente reactivo en uno proactivo y personalizado:
+\begin{itemize}
+    \item \textbf{Registro en tiempo real:} Cada interacción y respuesta del alumno se registra en una base de datos relacional (SQL) vinculada a su identificador unívoco, garantizando la trazabilidad del aprendizaje.
+    \item \textbf{Evaluación y Retroalimentación:} Tras la finalización de una actividad, el sistema no solo devuelve una corrección inmediata, sino que procesa el desempeño en comparación con el historial del usuario.
+    \item \textbf{Motor de Recomendación:} Basándose en el análisis de aciertos y errores, el bot altera su comportamiento para sugerir refuerzos específicos en las áreas donde se detecta debilidad o proponer logros para incentivar la motivación del estudiante.
+\end{itemize}
+
+\subsection{Entorno}
+
+El entorno del proyecto se define desde diversas perspectivas técnicas que garantizan el desarrollo, la ejecución y la accesibilidad del asistente:
+
+\begin{itemize}
+    \item \textbf{Entorno de desarrollo y programación:} La implementación del sistema se basa íntegramente en el lenguaje de programación \textbf{Python}, seleccionado por su madurez en el ámbito de la Inteligencia Artificial y su ecosistema de librerías especializadas. Como núcleo conversacional se utiliza el marco de trabajo (\textit{framework}) de código abierto \textbf{Rasa}, que proporciona las herramientas necesarias para la gestión de NLU\footnote{\textbf{Natural Language Understanding} o Comprensión del Lenguaje Natural} y diálogos.
+    
+    \item \textbf{Entorno de ejecución (Software):} Para el despliegue y funcionamiento del proyecto es necesaria una instancia de Python (versión 3.10.x). El sistema operativo de referencia para el desarrollo y servidor de ejecución es \textbf{GNU/Linux (distribución Ubuntu)}, debido a su estabilidad y su compatibilidad con el entorno de desarrollo.
+    
+    \item \textbf{Entorno de persistencia:} El sistema requiere un motor de base de datos relacional \textbf{PostgreSQL} para el almacenamiento de la información del estudiante, profesorado, consultas informativas, conceptos, ejercicios y seguimiento.
+    
+    \item \textbf{Entorno de usuario y despliegue:} La interfaz de interacción para el estudiante es la plataforma de mensajería \textbf{Telegram}. Se ha seleccionado este canal por su accesibilidad multiplataforma (escritorio y móvil) y su capacidad para ofrecer un entorno de comunicación privado y seguro para cada alumno.
+\end{itemize}
+
+\subsection{Vida esperada}
+
+La vida útil de este asistente conversacional no viene determinada por el desgaste físico, sino por la vigencia de sus componentes software y su relevancia académica.\\
+
+Por un lado, la \textbf{obsolescencia del software} está ligada a las actualizaciones de las librerías de terceros, especialmente el framework Rasa y las API\footnote{Application Programming Interface} de Telegram. Dado que el ecosistema de la Inteligencia Artificial evoluciona rápidamente, sería conveniente llevar a cabo revisiones periódicas para adaptar el código a las nuevas versiones de los modelos de lenguaje y protocolos de seguridad.\\
+% SEGUIR POR AQUÍ TODO
+Por otro lado, desde la perspectiva del **contenido educativo**, la vida esperada es mucho mayor gracias a la arquitectura dinámica implementada. Al estar el conocimiento desacoplado de la lógica del bot, los docentes pueden actualizar los temarios de la asignatura de forma indefinida sin que el sistema quede obsoleto. El asistente seguirá siendo útil mientras la metodología de aprendizaje adaptativo y los planes de estudio de la titulación mantengan su estructura actual.\\
+
+Finalmente, la escalabilidad del diseño permite que, una vez finalizado este ciclo de vida inicial, el bot pueda servir como base para futuras evoluciones, asegurando que el esfuerzo de desarrollo tenga un impacto duradero en la institución.
+
+\subsection{Ciclo de mantenimiento}
+
+\subsection{Competencia}
+
+\subsection{Aspecto externo}
+
+\subsection{Estandarización}
+
+\subsection{Calidad y fiabilidad}
+
+\subsection{Programa de tareas}
+
+\subsection{Pruebas}
+
+\subsection{Seguridad}
+
+
+\chapter{Diseño}
+Modelos que representen la solución propuesta al problema desde diferentes perspectivas (por ejemplo, modelos de: datos, arquitectónico, interfaz, funcional, pruebas, ...), justificando las decisiones tomadas y la posible evaluación de los riesgos asociados.
+
+\chapter{Conclusiones}
+Resumen de los principales logros obtenidos en el trabajo y/o sugerencias sobre posibles futuras mejoras a realizar sobre la solución aportada.
+
+\backmatter
+
+%------------- Bibliografía --------------
+\printbibliography
+\end{document}
+
+\end{document}
