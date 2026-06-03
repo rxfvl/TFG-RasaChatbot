@@ -10,11 +10,17 @@
  \definecolor{epsc:claro}{HTML}{3FCFD5}
  \definecolor{epsc:verde}{HTML}{00B299}
 
-\usepackage{tikz} % used in cover to place images
+ % --- Colores renombrados (sin los dos puntos) ---
+\definecolor{epscoscuro}{RGB}{44, 62, 80}  
+\definecolor{epscmedio}{RGB}{52, 152, 219} 
+\definecolor{epscverde}{RGB}{39, 174, 96}  
+
+\usepackage{tikz}
 \usepackage{verbatim}
 \usepackage{float}
 \usepackage{caption}
 \usepackage[hidelinks]{hyperref}
+\usetikzlibrary{arrows.meta, positioning}
 
 % UTILs
 \usepackage{datetime} % allow formal date format
@@ -379,8 +385,238 @@ La seguridad se ha abordado de forma integral en el diseño arquitectónico:
     \item \textbf{Privacidad de datos:} Telegram garantiza el cifrado y protección de los mensajes. Adicionalmente, el sistema interno solo almacena el identificador numérico de Telegram del usuario, vinculándolo estrictamente con los datos de progreso académico, respetando el principio de minimización de datos.
 \end{itemize}
 
+\section{Requisitos Funcionales (RF)}
+
+\subsection{Módulos de Contenido Dinámico}
+\begin{itemize}
+    \item \textbf{RF-01 Carga dinámica de activos pedagógicos:} El sistema deberá recuperar las preguntas de los cuestionarios y los conceptos de repaso desde un repositorio estructurado externo.
+    \item \textbf{RF-02 Desacoplamiento de contenido y lógica:} La actualización de los materiales de estudio no deberá requerir modificaciones en el código fuente del asistente ni reinicios del servicio.
+    \item \textbf{RF-03 Organización temática:} El sistema deberá filtrar los contenidos dinámicos según el identificador del tema o módulo seleccionado por el usuario.
+\end{itemize}
+
+\subsection{Módulo de Seguimiento y Persistencia}
+\begin{itemize}
+    \item \textbf{RF-04 Gestión de identidad y sesiones:} El sistema deberá identificar a cada estudiante de forma unívoca y registrar las sesiones de estudio del alumno (cuestionarios / conceptos).
+    \item \textbf{RF-05 Almacenamiento en base de datos SQL:} Se implementará un esquema relacional para registrar métricas de uso, incluyendo tiempos de respuesta, ejercicios completados y tasas de éxito.
+    \item \textbf{RF-06 Histórico de interacciones:} El sistema deberá permitir la recuperación de interacciones pasadas para contextualizar la experiencia del usuario.
+\end{itemize}
+
+\subsection{Módulo de Personalización}
+\begin{itemize}
+    \item \textbf{RF-07 Motor de recomendaciones proactivas:} El sistema deberá analizar el desempeño histórico almacenado en la base de datos SQL para sugerir contenidos específicos de refuerzo.
+    %\item \textbf{RF-08 Sistema de gamificación y logros:} El sistema verificará el cumplimiento de hitos pedagógicos y registrará la obtención de logros en el perfil del estudiante.
+\end{itemize}
+
+\section{Requisitos No Funcionales (RNF)}
+\begin{itemize}
+    \item \textbf{RNF-01 Integridad de datos:} La base de datos SQL deberá garantizar la consistencia de la información del progreso del alumno mediante transacciones seguras.
+    \item \textbf{RNF-02 Trazabilidad pedagógica:} El sistema debe permitir reconstruir la evolución del aprendizaje del alumno para facilitar la labor de monitorización del profesorado.
+    \item \textbf{RNF-03 Escalabilidad:} El repositorio estructurado debe ser capaz de crecer en volumen de datos sin comprometer la latencia de respuesta del bot.
+\end{itemize}
+
 \chapter{Diseño}
-Modelos que representen la solución propuesta al problema desde diferentes perspectivas (por ejemplo, modelos de: datos, arquitectónico, interfaz, funcional, pruebas, ...), justificando las decisiones tomadas y la posible evaluación de los riesgos asociados.
+\section{Diseño Arquitectónico y de Despliegue}
+\label{sec:diseno_arquitectonico}
+
+El sistema propuesto difiere con la versión anterior del sistema aportando una implementación del software basada en servicios independientes, aislados y gestionados a través de contenedores de Docker. Para dotar de consistencia técnica y automatizar el ciclo de vida del asistente, el entorno de ejecución se orquesta sobre una infraestructura de red virtualizada propia de la plataforma \textit{Docker}, denominada \texttt{rasa-network}, que intercomunica los diferentes servicios de manera nativa sin exponer puertos innecesarios de cara al exterior.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\textwidth]{img/Vista_Despliegue.png}
+    \caption{Diagrama de arquitectura, topología de red virtualizada y flujo de automatización del asistente educativo.}
+    \label{fig:arquitectura_sistema}
+\end{figure}
+
+El proceso de despliegue automatizado y la posterior gestión conversacional se dividen técnicamente en cuatro capas funcionales, implementadas mediante contenedores específicos descritos a continuación:
+\newpage
+
+\begin{enumerate}
+    \item \textbf{Capa de Almacenamiento (\texttt{postgres\_db}):} Consiste en un contenedor con la imagen oficial de \textit{PostgreSQL 15}. Este componente expone internamente el puerto $5432$ y utiliza un volumen persistente de datos llamado \texttt{postgres\_data} vinculado al directorio interno \texttt{/var/lib/postgresql/data}. En el momento del primer despliegue, el contenedor asocia de manera automática un script de inicialización estructurado (\texttt{script\_bbdd.sql}) mapeado directamente sobre el directorio de arranque automático de la imagen (\texttt{/docker-entrypoint-initdb.d/init.sql}).
+    
+    \item \textbf{Capa de Lógica de Negocio y Extensibilidad (\texttt{rasa\_action\_server}):} Ejecuta un contenedor con la imagen SDK de Rasa (\texttt{rasa/rasa-sdk:latest}) que expone el puerto estándar $5055$. Su inicialización requiere la importación de las variables de entorno correspondientes a la base de datos relacional (\texttt{DB\_HOST}, \texttt{DB\_USER}, \texttt{DB\_PASSWORD} y \texttt{DB\_NAME}). El arranque del servicio compila e instala en tiempo de ejecución las librerías necesarias para la conexión con la base de datos y el motor de recomendación (\texttt{psycopg2-binary}, \texttt{scikit-learn}, \texttt{numpy} y \texttt{joblib}), invocando el comando de arranque del servidor de acciones en el paquete de Python \texttt{actions}.
+    
+    \item \textbf{Capa de exposición a Internet y Túnel (\texttt{ngrok}):} Implementa una imagen de \textit{Ngrok} que se integra dentro de la red virtual de Docker. Su función es interceptar el tráfico local del servidor principal y redirigirlo a través de una pasarela segura cifrada bajo el protocolo HTTPS. El contenedor opera de manera síncrona interpretando un archivo de configuración local (\texttt{ngrok.yml}) y vinculando el subdominio generado directamente hacia la interfaz interna del servidor de procesamiento conversacional (\texttt{rasa\_server:5005}).
+    
+    \item \textbf{Capa de Inteligencia Conversacional y Procesamiento NLU (\texttt{rasa\_server}):} Contiene el núcleo de procesamiento del lenguaje natural del asistente. Se despliega mediante la imagen \texttt{rasa/rasa:latest-full} mapeando el directorio de trabajo sobre la ruta raíz del contenedor (\texttt{/app}). En lugar de instanciar la inicialización tradicional de la herramienta de línea de comandos, el contenedor sobreescribe su punto de entrada (\textit{entrypoint}) para ejecutar de manera exclusiva un script estructurado de orquestación en lenguaje Python (\texttt{docker\_entrypoint.py}).
+\end{enumerate}
+
+\subsection{Automatización del Despliegue y Ciclo de Sincronización de Componentes}
+Con el propósito de mitigar la necesidad de una supervisión constante y asegurar un entorno predecible, la cohesión del sistema se delega en un flujo autónomo de automatización. Este proceso se despliega en dos fases críticas:
+
+\subsubsection{Inicialización de la Red y Contenedores Base}
+A través del script \texttt{run\_with\_docker.sh}, el sistema carga el fichero de variables de entorno (\texttt{.env}) y exporta las credenciales requeridas. Posteriormente, inicializa de manera secuencial los contenedores de almacenamiento (\texttt{postgres\_db}), el servidor de lógica personalizada (\texttt{rasa\_action\_server}) y el túnel de comunicación (\texttt{ngrok}). De este modo, la red queda preparada antes de dar control al contenedor de procesado conversacional.
+
+\subsubsection{Orquestación Dinámica del Punto de Entrada}
+Una vez que el contenedor \texttt{rasa\_server} entra en ejecución, el script de control \texttt{docker\_entrypoint.py} realiza los siguientes pasos:
+\begin{itemize}
+    \item \textbf{Sondeo de Disponibilidad de Red:} El script interroga mediante peticiones HTTP internas empleando la librería estándar \texttt{urllib.request} la API local de Ngrok (\texttt{http://ngrok:4040/api/tunnels}) en un ciclo limitado a quince iteraciones. El bucle se mantiene activo hasta recuperar de manera segura la cadena de texto correspondiente a la URL pública.
+    
+    \item \textbf{Modificación del Fichero de Credenciales:} Una vez que el script consigue la dirección web pública y segura de \textit{Ngrok}, abre y lee el archivo \texttt{/app/credentials.yml}. Su objetivo es localizar la sección dedicada a la configuración de \texttt{telegram:}. Cuando la encuentra, el script modifica de forma exacta la línea \texttt{webhook\_url:} para añadirle la nueva URL pública junto al sufijo que Rasa necesita por defecto (\texttt{/webhooks/telegram/webhook}). En ese mismo momento, aprovecha para rellenar de manera automática los campos de autenticación (\texttt{access\_token:}) y de verificación (\texttt{verify:}) utilizando los tokens y contraseñas que previamente se habían cargado de forma segura en las variables de entorno del sistema.
+    
+    \item \textbf{Registro Remoto de Webhook:} Una vez que el archivo de credenciales está listo, el script se conecta directamente con los servidores de Telegram. Para que el alumnado pueda comunicarse con el bot por Telegram, se hace una petición POST a la API oficial (\texttt{https://api.telegram.org/bot<token>/setWebhook}), para así registrar la nueva dirección de \textit{Ngrok}. De esta forma, el puente de comunicación queda registrado de manera definitiva.
+    
+    \item \textbf{Entrenamiento y Lanzamiento de Servicios:} Por último, el script entrena el modelo de procesamiento conversacional mediante el comando \texttt{rasa train} y transfiere el control del proceso principal de ejecución al servicio conversacional de Rasa utilizando una llamada nativa al sistema operativo (\texttt{os.execvp}), habilitando la API interna, la configuración en modo depuración (\texttt{--debug}) y enlazando los puertos de escucha finales.
+\end{itemize}
+\text{\Huge Repasar a partir de aquí}
+\section{Diseño de la Base de Datos}
+\label{sec:diseno_datos}
+
+Para solucionar de forma definitiva la rigidez conceptual y el acoplamiento de datos identificados en la problemática técnica, se ha diseñado un esquema relacional normalizado sobre el motor de base de datos \textit{PostgreSQL 15}. La finalidad primordial de este diseño es desacoplar por completo el conocimiento educativo de la programación del asistente conversacional, permitiendo que el \textit{Action Server} realice consultas SQL dinámicas basadas en los parámetros contextuales de la conversación. \\
+
+El repositorio de persistencia se articula técnicamente mediante una jerarquía de dependencias estructurada en cuatro niveles operativos, lo que optimiza las restricciones de integridad transaccional frente a operaciones de actualización o borrado en cascada.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{img/modelo_relacional.png}
+    \caption{Diagrama del Modelo Relacional del repositorio educativo y el sistema de seguimiento transaccional.}
+    \label{fig:modelo_er}
+\end{figure}
+
+A continuación, se detalla el propósito pedagógico y la configuración técnica de los bloques esenciales del esquema relacional:
+
+\subsection{Capa Entidad-Relación Independiente e Informativa}
+El nivel primario del esquema lo constituyen las entidades que no albergan dependencias externas y dan soporte de identidad al sistema:
+\begin{itemize}
+    \item \textbf{\texttt{ALUMNOS}:} Gestiona el censo de usuarios estudiantes del asistente conversacional. Su clave primaria es el campo \texttt{rasa\_sender\_id}, el cual almacena el identificador numérico unívoco proporcionado de forma nativa por la API de Telegram. Esto permite asociar el historial y el contexto de interacción al alumno sin necesidad de credenciales adicionales.
+    
+    \item \textbf{\texttt{PROFESORES} y \texttt{ASIGNATURAS}:} En el estado actual del asistente, la tabla de profesorado cumple un rol de carácter meramente informativo. Dado que las interacciones del profesor no difieren funcionalmente de las del alumno, el almacenamiento de sus datos responde a la necesidad de resolver dudas administrativas en caliente cuando los alumnos preguntan al chatbot sobre quién imparte la asignatura, sus correos institucionales o sus horarios de tutoría.
+\end{itemize}
+
+\subsection{Estructuración del Contenido Educativo Dinámico}
+La carga dinámica y personalizada del temario se soporta a través de las relaciones dependientes de la tabla \texttt{TEMAS}. Cuando un estudiante interactúa con el bot solicitando revisar contenidos o realizar evaluaciones, Rasa recopila los temas disponibles y ofrece un abanico dinámico de opciones basado en los registros reales de la base de datos. Esta información se nutre de dos ramas:
+\begin{enumerate}
+    \item \textbf{Capa de Refuerzo Teórico (\texttt{CONCEPTOS\_TEORICOS}):} Almacena las definiciones conceptuales organizadas por tema. Utiliza campos llave de tipo slug (\texttt{termino}) para el emparejamiento con el motor NLU de Rasa y cadenas descriptivas (\texttt{termino\_legible}) para maquetar la respuesta conversacional final que leerá el alumno.
+    
+    \item \textbf{Capa de Evaluación y Aprendizaje(\texttt{CUESTIONARIOS}, \texttt{CUESTIONARIOS\_PREGUNTAS} y \texttt{CUESTIONARIOS\_RESPUESTAS}):} Divide las actividades evaluativas según su naturaleza conceptual o práctica. Las preguntas soportan de forma nativa la inclusión de URLs de imágenes (\texttt{imagen\_url}), posibilitando que el bot envíe diagramas o grafos complejos de ejercicios prácticos directamente al chat de Telegram. Por su parte, la tabla de respuestas incluye banderas lógicas (\texttt{es\_correcta}) y campos de \texttt{feedback} personalizados para argumentar el resultado al instante de recibir la pulsación del estudiante.
+\end{enumerate}
+
+\subsection{Subsistema de Trazabilidad y Captura de Métricas Adaptativas}
+La inteligencia adaptativa del proyecto requiere un registro transaccional meticuloso del desempeño estudiantil, superando la naturaleza efímera de las sesiones de chat convencionales. Para ello se han diseñado las entidades \texttt{SEGUIMIENTO} y \texttt{SEGUIMIENTO\_DETALLE}.\\
+
+A medida que el alumno interactúa respondiendo las preguntas de una prueba práctica o conceptual, el servidor de acciones de Rasa inserta de forma instantánea el acierto, el fallo y la puntuación obtenida en el intento. Este registro pormenorizado cumple una doble función técnica crítica:
+\begin{itemize}
+    \item \textbf{Cálculo de Calificaciones en Caliente:} Permite al bot recuperar el histórico de intentos del alumno en la sesión activa, calcular su porcentaje de éxito acumulado y moldear el flujo conversacional basándose en su rendimiento del momento.
+    
+    \item \textbf{Generación del Dataset de Inteligencia:} Estas tablas actúan como la fuente de datos primaria que registra la evolución del aprendizaje del alumno. Los aciertos, errores y estadísticas históricas recopiladas en estas relaciones son las que posteriormente se agregan, estructuran y transforman para alimentar y entrenar el clasificador del Perceptrón Multicapa (MLP) del sistema de recomendación, cerrando de esta forma el bucle de personalización pedagógica.
+\end{itemize}
+
+\section{Diseño del Flujo Conversacional (Rasa)}
+\label{sec:diseno_conversacional}
+
+El procesamiento del lenguaje natural (NLP) y el control de los hilos de diálogo del asistente adaptativo se articulan mediante el marco de desarrollo \textit{Rasa 3.x}. La ventaja técnica fundamental de este diseño frente a la versión precedente radica en que el diálogo ya no está restringido a reglas rígidas encadenadas a intenciones estáticas. En su lugar, el sistema utiliza un espacio de estado unificado que coordina el modelo NLU, la extracción de entidades y una memoria contextual a corto plazo para manejar dinámicamente las peticiones pedagógicas del alumnado.
+
+\subsection{Modelo NLU: Catálogo de Intenciones y Entidades}
+La semántica conversacional del bot se define a partir de un conjunto de intenciones (\textit{intents}) entrenadas para discernir las solicitudes del usuario. Estas intenciones se categorizan en tres bloques funcionales bien diferenciados:
+\begin{itemize}
+    \item \textbf{Control y Gestión del Flujo:} Comprende intenciones esenciales como el saludo (\texttt{greet}), el inicio (\texttt{start}), la despedida (\texttt{goodbye}), la confirmación (\texttt{affirm}), la negación (\texttt{deny}) o la salida explícita de un cuestionario (\texttt{salir\_cuestionario}).
+    \item \textbf{Consultas Administrativas e Informativas:} Engloba las intenciones destinadas a interrogar los metadatos de la asignatura, tales como horarios por días de la semana (\texttt{lunes} a \texttt{viernes}), horarios de teoría o prácticas (\texttt{fechas\_horarios\_teoria}, \texttt{fechas\_horarios\_practica}), profesorado (\texttt{profesorado}), canales de contacto (\texttt{correos\_profesor}), fechas de exámenes (\texttt{entregas}) o noticias (\texttt{noticia}).
+    \item \textbf{Interacción Pedagógica y Adaptativa:} Representa el núcleo de la nueva solución, permitiendo al usuario solicitar actividades (\texttt{repasar}, \texttt{conceptos}, \texttt{cuestionarios}, \texttt{ejercicios}), realizar selecciones en caliente (\texttt{seleccionar\_tema}, \texttt{seleccionar\_concepto}, \texttt{seleccionar\_cuestionario}), consultar estadísticas de rendimiento (\texttt{ver\_progreso}) o invocar proactivamente al motor predictivo (\texttt{recomendar}).
+\end{itemize}
+
+En paralelo, para extraer parámetros variables inyectados en los mensajes del alumno sin necesidad de fragmentar las intenciones, la canalización NLU extrae cuatro entidades específicas de manera transversal: la etiqueta temática (\texttt{tema\_actual}), el identificador interno del concepto (\texttt{concepto\_id}), la tipología de prueba (\texttt{tipo\_cuestionario}) y el identificador de la prueba seleccionada (\texttt{cuestionario\_id\_seleccionado}).
+
+\subsection{Espacio de Estados y Canales de Contexto (\textit{Slots})}
+La capacidad del asistente para recordar la identidad del alumno y determinar qué tema se está evaluando se modela técnicamente mediante \textit{slots}. Estas variables residen en la memoria de la conversación y conservan su valor a lo largo del hilo conversacional. A continuación, se detalla la configuración de las variables de estado críticas del dominio:
+
+\begin{itemize}
+    \item \textbf{\texttt{requiere\_registro} y \texttt{matriculado}:} Variables de tipo booleano. El campo \texttt{requiere\_registro} posee la propiedad \texttt{influence\_conversation: true}, lo que significa que altera directamente las políticas de decisión de Rasa para desviar el flujo hacia el formulario de bienvenida si el identificador del alumno no existe en la base de datos relacional.
+    \item \textbf{\texttt{nombre} y \texttt{correo}:} Cadenas de texto mapeadas mediante la regla \texttt{from\_text} bajo la condición condicional estricta de encontrarse dentro del ciclo activo del formulario \texttt{registro\_form}.
+    \item \textbf{\texttt{tema\_actual}, \texttt{tipo\_cuestionario} y \texttt{cuestionario\_id\_seleccionado}:} Almacenan el contexto de estudio del estudiante, mapeándose directamente desde sus entidades homónimas (\texttt{from\_entity}). Gracias a esto, si el alumno selecciona el "Tema 2", el bot retiene dicho estado en memoria y las peticiones posteriores de cuestionarios o conceptos se filtran automáticamente por ese tema en la base de datos sin necesidad de volver a solicitarlo.
+    \item \textbf{\texttt{pregunta\_actual\_idx}, \texttt{aciertos\_cuestionario} y \texttt{seguimiento\_id}:} Variables transaccionales de tipo \texttt{any} manipuladas de forma exclusiva por las acciones personalizadas del \textit{Action Server} mediante mapeos personalizados (\texttt{custom}). Actúan como el índice del bucle evaluativo, el contador de respuestas correctas en caliente y la llave primaria de la sesión de seguimiento insertada, respectivamente.
+    \item \textbf{\texttt{respuesta\_generica}:} Variable de texto configurada para capturar cualquier mensaje libre enviado por el estudiante (\texttt{from\_text}) durante la ejecución del bucle evaluativo, con la única restricción de ignorar el comando de salida (\texttt{not\_intent: salir\_cuestionario}).
+\end{itemize}
+
+\subsection{Mecanismos de Control Mediante Bucles de Formulario (\textit{Forms})}
+Para gestionar interacciones complejas que exigen la recolección secuencial de datos o respuestas, el sistema implementa la abstracción de formularios (\texttt{forms}) de Rasa, delegando la validación en el servidor de acciones:
+\begin{enumerate}
+    \item \textbf{\texttt{registro\_form}:} Bloquea el hilo de diálogo inicial obligando a capturar de manera secuencial los campos mandatorios \texttt{nombre} y \texttt{correo} antes de habilitar las funciones del chatbot.
+    \item \textbf{\texttt{cuestionario\_id\_seleccionado} en el bucle dinámico:} Para resolver el problema de la versión anterior (donde las intenciones de respuesta estaban limitadas y cableadas de forma estática como \texttt{A1} o \texttt{A3}), esta arquitectura utiliza el formulario \texttt{cuestionario\_dinamico\_form}. Este formulario requiere la captura cíclica de la variable \texttt{respuesta\_generica}. En cada iteración, Rasa captura el texto libre introducido por el estudiante (ya sea la letra de la opción o el contenido) y delega la validación de manera dinámica al componente de backend \texttt{validate\_cuestionario\_dinamico\_form}, el cual compara la entrada con la respuesta correcta almacenada en PostgreSQL, calcula el feedback en tiempo de ejecución, limpia el slot del texto e incrementa el índice para la siguiente pregunta de forma totalmente agnóstica al tema bajo evaluación.
+\end{enumerate}
+
+\newpage
+\section{Diseño de la Lógica de Backend (Action Server)}
+\label{sec:diseno_backend}
+
+La lógica de negocio del asistente, la carga de contenidos bajo demanda y la pasarela de persistencia se implementan mediante un servidor de acciones personalizadas (\textit{Action Server}) desarrollado en \textit{Python} utilizando el SDK de Rasa. El núcleo operativo del backend se estructura mediante la librería nativa \texttt{psycopg2}, estableciendo un aislamiento estricto en la gestión de conexiones mediante el uso de gestores de contexto (\texttt{with}) que garantizan la apertura y cierre automático de canales de comunicación con \textit{PostgreSQL} ante excepciones críticas de red.\\
+
+El servidor de acciones se compone de tres módulos lógicos esenciales que operan de manera síncrona con el estado del bot:
+
+\subsection{Control de Seguridad, Registro y Trazabilidad Universal}
+Para mitigar el acceso no autorizado a los materiales de estudio, toda acción pedagógica del sistema se antepone a una validación delegada:
+\begin{itemize}
+    \item \textbf{Verificación de Censo (\texttt{ActionCheckRegistro}):} Interroga la relación \texttt{ALUMNOS} mediante el \texttt{sender\_id} de Telegram. Si el registro no existe, inyecta el valor booleano \texttt{True} en el slot \texttt{requiere\_registro} para disparar la captura de datos mediante \texttt{registro\_form}. En caso de fallas transaccionales, se invoca una directiva \texttt{UserUtteranceReverted} para congelar la conversación y salvaguardar la coherencia del diálogo.
+    \item \textbf{Validación de Matrícula (\texttt{ActionCheckMatricula}):} Comprueba en caliente mediante la función \texttt{esta\_matriculado} si el usuario posee un registro activo en la tabla \texttt{MATRICULAS} emparejado con la constante \texttt{ASIGNATURA\_ID\_ACTIVA} (fijada técnicamente en el identificador $1$ para la asignatura de Redes).
+    \item \textbf{Auditoría de Conversaciones (\texttt{ActionRegistrarIntent}):} Despacha un log automático en la base de datos registrando el nombre del intent extraído por el clasificador NLU junto a su porcentaje exacto de confianza (\texttt{confidence}) y la cadena original de texto escrita por el alumno.
+\end{itemize}
+
+\subsection{Abstracción de Contenidos y Bucle Evaluativo Agnóstico}
+El desacoplamiento del material didáctico se implementa a través de las funciones de carga \texttt{load\_conceptos} y \texttt{load\_preguntas}. En el caso de los cuestionarios, la acción \texttt{ActionResetCuestionarioDinamico} instancia una sesión evaluativa llamando a la rutina \texttt{iniciar\_seguimiento}. 
+
+La arquitectura transaccional de respuestas implementa la siguiente lógica de negocio dentro del método de validación \texttt{validate\_respuesta\_generica}:
+\begin{enumerate}
+    \item El sistema captura el texto libre introducido por el estudiante y realiza un filtrado preventivo mediante la estructura \texttt{ignore\_words} para bloquear la inserción de comandos accidentales de navegación.
+    \item Se evalúa la respuesta mediante reglas booleanas de coincidencia de palabras (\texttt{words}) para flexibilizar la corrección (admitiendo tanto la cadena literal como el índice de la opción).
+    \item El backend busca el identificador de la opción seleccionada mediante \texttt{get\_respuesta\_id\_elegida} e inserta de forma síncrona el detalle del intento en la tabla \texttt{SEGUIMIENTO\_DETALLE} mediante sentencias \texttt{ON CONFLICT ... DO UPDATE}.
+    \item Si se alcanza el final de la lista de preguntas, la acción calcula de forma ponderada la calificación final sobre una escala de diez puntos e invoca la rutina \texttt{actualizar\_puntuacion} en PostgreSQL.
+\end{enumerate}
+
+\subsection{Capa de Inteligencia Adaptativa: Integración del Modelo Predictivo MLP}
+El motor adaptativo se ejecuta en caliente a través de la clase personalizada \texttt{ActionRecomendar}. Esta clase implementa el puente de unión de ingeniería entre las transacciones almacenadas y la tubería de inferencia del modelo matemático mediante la librería \texttt{joblib}.\\
+
+El flujo de integración y construcción de la predicción sigue un algoritmo matemático secuencial estricto:
+
+\begin{figure}[H]
+    \centering
+    \scalebox{0.82}{%
+        \begin{tikzpicture}[
+            startstop/.style={rectangle, rounded corners, draw=epscoscuro, fill=epscoscuro!10, text width=5cm, align=center, minimum height=1.2cm, font=\bfseries\small},
+            process/.style={rectangle, draw=epscmedio, fill=epscmedio!10, text width=5cm, align=center, minimum height=1.2cm, font=\small},
+            decision/.style={rectangle, rounded corners=0.6cm, draw=epscverde, fill=epscverde!10, text width=3cm, align=center, minimum height=1.2cm, font=\small\bfseries},
+            output/.style={rectangle, rounded corners, draw=epscverde, fill=epscverde!5, text width=4.2cm, align=center, minimum height=1.2cm, font=\footnotesize},
+            arrow/.style={thick, ->, >=stealth, draw=gray!80}
+        ]
+            % Nodos
+            \node (inicio) [startstop] at (0,0) {1. Alumno solicita\\recomendación};
+            \node (db) [process] at (0,-2) {2. Consulta Analítica SQL\\(\texttt{get\_progreso\_alumno})\\Extracción de datos en bruto};
+            \node (vector) [process] at (0,-4) {3. Construcción del Vector\\de Características\\(15 Dimensiones / NumPy Array)};
+            \node (mlp) [process] at (0,-6) {4. Inferencia Predictiva en caliente\\(\texttt{clf.predict(X)} via \textit{joblib})};
+            \node (decidir) [decision] at (0,-8.2) {Evaluación\\de la Salida};
+            
+            % Salidas
+            \node (out_avanzar) [output] at (0,-10.5) {\textbf{avanzar\_siguiente\_tema}\\Invitación motivacional y botón al próximo tema};
+            \node (out_repasar) [output] at (-5.5,-10.5) {\textbf{repasar\_tema\_X}\\Aviso académico de refuerzo y botón al tema débil};
+            \node (out_global) [output] at (5.5,-10.5) {\textbf{hacer\_examen\_global}\\Mensaje de dominio total. Preparación examen final};
+
+            % Conexiones (Flechas)
+            \draw [arrow] (inicio) -- (db);
+            \draw [arrow] (db) -- (vector);
+            \draw [arrow] (vector) -- (mlp);
+            \draw [arrow] (mlp) -- (decidir);
+            
+            % Rutas de decisión
+            \draw [arrow] (decidir.south) -- node[anchor=west] {avanzar} (out_avanzar.north);
+            \draw [arrow] (decidir.west) -| node[anchor=south, near start, xshift=-0.5cm] {repasar} (out_repasar.north);
+            \draw [arrow] (decidir.east) -| node[anchor=south, near start, xshift=0.5cm] {excelente} (out_global.north);
+        \end{tikzpicture}%
+    }
+    \caption{Flujo técnico de agregación de métricas y tubería de inferencia adaptativa basada en el Perceptrón Multicapa.}
+    \label{fig:pipeline_recomendacion}
+\end{figure}
+\begin{enumerate}
+    \item \textbf{Agregación y Extracción Relacional:} El sistema invoca la función analítica \texttt{get\_progreso\_alumno}. Esta rutina procesa el histórico transaccional del alumno y devuelve las métricas unificadas de días de actividad, volumen total de interacciones y número de conceptos consultados.
+    \item \textbf{Estructuración del Vector Físico de Características:} Para adecuar los datos relacionales al espacio de entrada multidimensional que exige la red neuronal, el backend genera de manera dinámica un vector de longitud fija conformado por quince características numéricas ($15$ dimensiones) estructurado exactamente bajo la siguiente ecuación lógica:
+    \begin{equation}
+        V_{features} = [D_{act}, I_{tot}, C_{cons}] \mathbin{\Vert} [Ind_{t1}, \dots, Ind_{t6}] \mathbin{\Vert} [N_{t1}, \dots, N_{t6}]
+    \end{equation}
+    Donde $D_{act}$ representa los días activos, $I_{tot}$ las interacciones y $C_{cons}$ los conceptos consultados. El bloque $[Ind_{t1 \dots t6}]$ representa indicadores binarios ($0$ o $1$) que marcan si el tema ha sido intentado, mientras que el bloque $[N_{t1 \dots t6}]$ inyecta la calificación máxima real (\textit{float}) obtenida por el alumno para cada uno de los seis temas del plan de estudios.
+    \item \textbf{Inferencia Predictiva:} El vector se transforma en una matriz de entrada compatible con \textit{NumPy} (\texttt{np.array([features])}) y se inyecta en caliente en la instancia del clasificador cargado del Perceptrón Multicapa (\texttt{clf.predict(X)}).
+    \item \textbf{Alteración Dinámica del Diálogo:} Dependiendo de la cadena de texto devuelta por la inferencia de la red neuronal, el asistente bifurca proactivamente la conversación sin intervención del motor de Rasa:
+    \begin{itemize}
+        \item Si la salida coincide con el patrón \texttt{repasar\_tema\_X}, el bot maqueta un mensaje de aviso académico sugiriendo reforzar dicha área y adjunta botones interactivos precargados con la carga útil (\textit{payload}) de selección explícita del tema detectado.
+        \item Si la salida dictamina \texttt{avanzar\_siguiente\_tema}, el código escanea el vector de indicadores en busca de la primera posición vacía y genera dinámicamente una invitación motivacional apuntando hacia el inicio del nuevo tema.
+        \item Si la salida clasifica el estado como \texttt{hacer\_examen\_global}, se informa al estudiante de que ha alcanzado el dominio completo de la asignatura y se encuentra preparado para la prueba de evaluación final presencial.
+    \end{itemize}
+\end{enumerate}
 
 \chapter{Estudio del Modelo Predictivo}
 \label{cap:estudio_modelos}
@@ -411,7 +647,7 @@ Se diseñó una malla de hiperparámetros (\textit{GridSearch}) evaluada con val
     \begin{minipage}{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{img/comparativa_accuracy.png}
-        \caption{Precisión global (Accuracy) por modelo.}
+        \caption{Precisión global por modelo.}
     \end{minipage}\hfill
     \begin{minipage}{0.48\textwidth}
         \centering
@@ -452,7 +688,7 @@ En un sistema conversacional en tiempo real, la latencia de respuesta (\textit{t
     \begin{minipage}{0.48\textwidth}
         \centering
         \includegraphics[width=\textwidth]{img/comparativa_tiempo_fit.png}
-        \caption{Tiempos totales de entrenamiento.}
+        \caption{Tiempos de entrenamiento.}
     \end{minipage}\hfill
     \begin{minipage}{0.48\textwidth}
         \centering
