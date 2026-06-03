@@ -1169,7 +1169,7 @@ class ActionRecomendar(Action):
         conceptos_consultados = progreso.get("conceptos_consultados", 0)
         
         # Preparar array de indicadores y notas de los 6 temas
-        NUM_TEMAS = 6
+        NUM_TEMAS = 6 # REVISAR, DEBE SER DINÁMICO
         indicadores = [0] * NUM_TEMAS
         notas = [0.0] * NUM_TEMAS
         
