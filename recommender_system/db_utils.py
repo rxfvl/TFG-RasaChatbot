@@ -1,11 +1,23 @@
+"""
+Módulo de utilidades para la conexión y consulta a la base de datos PostgreSQL.
+
+Proporciona funciones para establecer la conexión con la base de datos utilizando
+variables de entorno y para realizar consultas básicas necesarias para el
+sistema de recomendación.
+"""
+
 import os
 import psycopg2
 
-# Cargar variables de entorno desde el archivo .env si existe
-# (Ejecutado dentro del contenedor de Docker, el entorno ya está cargado)
 
 def get_db_connection():
-    """Crea y devuelve una conexión a la base de datos PostgreSQL usando variables de entorno."""
+    """
+    Establece y devuelve una conexión a la base de datos PostgreSQL utilizando
+    las credenciales configuradas en las variables de entorno.
+    
+    Returns:
+        psycopg2.extensions.connection: Objeto de conexión a la base de datos.
+    """
     return psycopg2.connect(
         host=os.environ.get("DB_HOST", "postgres_db"),
         database=os.environ.get("DB_NAME", "RasaDB"),
@@ -15,7 +27,15 @@ def get_db_connection():
     )
 
 def get_num_temas(asignatura_id=1):
-    """Obtiene el número de temas de la base de datos para la asignatura dada."""
+    """
+    Consulta la base de datos para obtener el número total de temas asociados a una asignatura.
+    
+    Args:
+        asignatura_id (int, opcional): Identificador de la asignatura. Por defecto es 1.
+        
+    Returns:
+        int: Número de temas encontrados. En caso de error de conexión, devuelve un valor de seguridad (6).
+    """
     try:
         conn = get_db_connection()
         cur = conn.cursor()

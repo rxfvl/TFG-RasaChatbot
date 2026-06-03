@@ -1,3 +1,12 @@
+"""
+Script de entrenamiento para el sistema de recomendación basado en Perceptrón Multicapa (MLP).
+
+Este módulo genera un conjunto de datos sintético estructurado que simula el progreso
+de los estudiantes en la plataforma, y entrena un modelo de clasificación para predecir
+la mejor acción recomendada (avanzar, repasar un tema específico o hacer el examen global).
+Incluye optimización de hiperparámetros mediante GridSearchCV.
+"""
+
 import numpy as np
 import random
 import joblib
@@ -14,7 +23,22 @@ MODEL_PATH = os.path.join(MODEL_DIR, "recommender_mlp.pkl")
 RESULTS_DIR = "../results"
 RESULTS_PATH = os.path.join(RESULTS_DIR, "resultados_gridsearch.csv")
 
-def generar_datos_antibloqueo(n_muestras, num_temas):
+def generar_datos(n_muestras, num_temas):
+    """
+    Genera un conjunto de datos sintético para el entrenamiento del modelo recomendador.
+    
+    Crea perfiles de estudiantes distribuidos en tres grupos:
+    1. Éxito total: Estudiantes que han superado todos los temas con buenas notas.
+    2. Fallo final: Estudiantes que han cursado todos los temas pero han suspendido alguno.
+    3. Casos intermedios: Estudiantes en progreso, con diferentes niveles de avance y calificaciones.
+    
+    Args:
+        n_muestras (int): Número total de muestras a generar.
+        num_temas (int): Número total de temas de la asignatura.
+        
+    Returns:
+        tuple: (X, y) donde X es un array de características e y es un array de etiquetas objetivo.
+    """
     X = []
     y = []
     
@@ -77,7 +101,7 @@ if __name__ == "__main__":
     print(f"Detectados {num_temas} temas en la base de datos.")
     
     print("Generando datos de entrenamiento con contraejemplos...")
-    X, y = generar_datos_antibloqueo(NUM_MUESTRAS, num_temas)
+    X, y = generar_datos(NUM_MUESTRAS, num_temas)
     
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
     

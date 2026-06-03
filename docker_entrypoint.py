@@ -1,3 +1,14 @@
+"""
+Script de inicialización (Entrypoint) para el contenedor de Rasa en Docker.
+
+Este script se encarga de:
+1. Esperar a que el servicio de Ngrok esté disponible y obtener su URL pública.
+2. Inyectar dinámicamente la URL de Ngrok y los tokens de Telegram en 'credentials.yml'.
+3. Configurar el webhook en la API de Telegram.
+4. Entrenar el modelo de Rasa si no existe uno previo.
+5. Iniciar el servidor de Rasa.
+"""
+
 import urllib.request
 import urllib.parse
 import json
@@ -7,6 +18,9 @@ import subprocess
 import sys
 
 def main():
+    """
+    Función principal que orquesta la configuración e inicialización del servidor Rasa.
+    """
     print("Iniciando docker_entrypoint.py...")
     
     ngrok_url = None
@@ -21,7 +35,7 @@ def main():
                     data = json.loads(response.read().decode())
                     if len(data.get('tunnels', [])) > 0:
                         ngrok_url = data['tunnels'][0]['public_url']
-                        # find https
+                        # Buscar la URL segura (HTTPS) en la respuesta
                         for tunnel in data['tunnels']:
                             if tunnel['public_url'].startswith("https"):
                                 ngrok_url = tunnel['public_url']
@@ -41,7 +55,7 @@ def main():
         
     print(f"Ngrok URL obtenida: {ngrok_url}")
     
-    # Update credentials.yml manually via string replacement
+    # Actualizar credentials.yml manualmente mediante reemplazo de cadenas
     credentials_path = "/app/credentials.yml"
     if os.path.exists(credentials_path):
         with open(credentials_path, "r") as f:
@@ -55,16 +69,16 @@ def main():
         for line in lines:
             stripped = line.strip()
             
-            # Simple check for telegram section
+            # Comprobación básica para identificar la sección de Telegram
             if stripped == "telegram:":
                 in_telegram = True
             elif in_telegram and stripped and not line.startswith(" ") and not line.startswith("\t") and not stripped.startswith("#"):
-                # If we encounter a new root-level key that is not commented, we are out of telegram
+                # Si encontramos una nueva clave de nivel raíz sin comentar, hemos salido de la sección de Telegram
                 in_telegram = False
                 
             if in_telegram and stripped.startswith("webhook_url:"):
-                # Replace webhook_url
-                new_line = line[:len(line) - len(line.lstrip())] # Preserve indentation
+                # Reemplazar webhook_url
+                new_line = line[:len(line) - len(line.lstrip())] # Preservar la indentación original
                 new_lines.append(f'{new_line}webhook_url: "{ngrok_url}/webhooks/telegram/webhook"\n')
             elif in_telegram and stripped.startswith("access_token:") and telegram_token:
                 new_line = line[:len(line) - len(line.lstrip())]
@@ -81,7 +95,7 @@ def main():
     else:
         print("WARNING: No se encontró credentials.yml en /app. Se usará configuración por defecto.")
         
-    # Register Webhook in Telegram API
+    # Registrar Webhook en la API de Telegram
     telegram_token = os.environ.get("TELEGRAM_TOKEN")
     if telegram_token:
         print("Enviando webhook a Telegram...")
@@ -101,18 +115,18 @@ def main():
         except Exception as e:
             print(f"ERROR configurando Telegram: {e}")
             
-    # Train Model
+    # Entrenar el Modelo
     print("Entrenando el modelo de Rasa (si es necesario)...")
     subprocess.run(["rasa", "train"], check=False)
     
-    # Start Rasa Server
+    # Iniciar el Servidor Rasa
     print("Iniciando servidor de Rasa...")
     cmd = ["rasa", "run", "--enable-api", "--cors", "*", "--debug", 
            "--credentials", "credentials.yml", 
            "--endpoints", "endpoints.yml", 
            "--port", "5005"]
     
-    # Replace the current process with Rasa
+    # Reemplazar el proceso actual con el proceso de Rasa
     os.execvp("rasa", cmd)
 
 if __name__ == "__main__":

@@ -1,9 +1,17 @@
+"""
+Script para la generación de gráficas de evaluación del sistema de recomendación.
+
+Procesa los resultados del entrenamiento y del GridSearchCV para generar representaciones
+visuales del rendimiento del modelo, tiempos de entrenamiento y una matriz de confusión.
+Las gráficas resultantes se exportan al directorio de resultados.
+"""
+
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 import joblib
 import os
-from train_mlp import generar_datos_antibloqueo
+from train_mlp import generar_datos
 from db_utils import get_num_temas
 
 RESULTS_CSV = "../results/resultados_gridsearch.csv"
@@ -11,6 +19,12 @@ MODEL_PATH = "../models/recommender_mlp.pkl"
 PLOTS_DIR = "../results/plots"
 
 def plot_gridsearch_results():
+    """
+    Genera y guarda gráficas de cajas (boxplots) comparando los resultados del GridSearch.
+    
+    Analiza métricas como la puntuación media y el tiempo de entrenamiento en función
+    de los diferentes hiperparámetros evaluados (optimizador y función de activación).
+    """
     print("Generando gráficas comparativas del GridSearch...")
     df = pd.read_csv(RESULTS_CSV)
     
@@ -47,6 +61,12 @@ def plot_gridsearch_results():
     print("Gráficas comparativas generadas en: ", PLOTS_DIR)
 
 def plot_confusion_matrix():
+    """
+    Genera y guarda la matriz de confusión del modelo entrenado.
+    
+    Carga el modelo MLP guardado, genera un conjunto de datos de prueba sintético
+    y evalúa las predicciones del modelo frente a los valores reales.
+    """
     print("Generando matriz de confusión...")
     # Cargar modelo
     clf = joblib.load(MODEL_PATH)
@@ -56,7 +76,7 @@ def plot_confusion_matrix():
     
     # Generar un set de datos de prueba para la matriz
     # Se genera una muestra pequeña (ej 2000)
-    X, y = generar_datos_antibloqueo(2000, num_temas)
+    X, y = generar_datos(2000, num_temas)
     
     y_pred = clf.predict(X)
     

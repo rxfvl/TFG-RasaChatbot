@@ -1,22 +1,10 @@
 """
-Custom actions para el chatbot de Redes.
+Acciones personalizadas (Custom Actions) para el chatbot de Redes.
 
-Arquitectura de conceptos teóricos:
-  - action_listar_temas         → Muestra TODOS los temas (cuestionarios Y conceptos)
-  - action_listar_conceptos     → Lista los conceptos de un tema desde la BBDD
-  - action_dar_concepto         → Muestra la definición de un concepto (por ID de BBDD)
-
-Arquitectura de cuestionarios:
-  - action_listar_temas         → Compartido (muestra todos los temas)
-  - action_reset_cuestionario_dinamico → Inicia el cuestionario de un tema
-  - validate_cuestionario_dinamico_form → Gestiona el flujo pregunta a pregunta
-
-Log de intenciones:
-  - action_registrar_intent     → Registra en INTERACCIONES_CHAT el intent de cada mensaje
-  - ActionDefaultFallback       → Sobrescrita para loguear intents no reconocidos
-
-Control de acceso por asignatura:
-  - action_check_matricula      → Verifica si el alumno está matriculado en la asignatura activa
+Este módulo define las acciones ejecutadas por el servidor de acciones de Rasa.
+Gestiona el acceso a la base de datos PostgreSQL, la lógica de cuestionarios
+dinámicos, la consulta de conceptos teóricos, horarios, tutorías y el
+seguimiento del progreso del estudiante.
 """
 
 from typing import Any, Text, Dict, List
@@ -37,7 +25,12 @@ from rasa_sdk.executor import CollectingDispatcher
 # ---------------------------------------------------------------------------
 
 def get_db_connection():
-    """Crea y devuelve una conexión a la base de datos PostgreSQL."""
+    """
+    Establece y devuelve una conexión a la base de datos PostgreSQL.
+    
+    Returns:
+        psycopg2.extensions.connection: Conexión activa a la base de datos.
+    """
     return psycopg2.connect(
         host=os.environ.get("DB_HOST"),
         database=os.environ.get("DB_NAME"),
@@ -51,7 +44,15 @@ ASIGNATURA_ID_ACTIVA = 1
 
 
 def _tema_num_from_slot(tema_slot: str) -> int | None:
-    """Extrae el número de tema del valor del slot (ej: 'tema2' -> 2)."""
+    """
+    Extrae el número de tema a partir del valor del slot proporcionado.
+    
+    Args:
+        tema_slot (str): El valor del slot del tema (ej. 'tema2').
+        
+    Returns:
+        int | None: El número de tema extraído, o None si no se encuentra.
+    """
     if not tema_slot:
         return None
     match = re.search(r'\d+', tema_slot)
@@ -60,8 +61,14 @@ def _tema_num_from_slot(tema_slot: str) -> int | None:
 
 def load_preguntas(cuestionario_id_slot: str) -> list:
     """
-    Carga las preguntas y respuestas del cuestionario desde la BBDD usando su ID.
-    Devuelve una lista de dicts.
+    Carga las preguntas y respuestas asociadas a un cuestionario desde la base de datos.
+    
+    Args:
+        cuestionario_id_slot (str): Identificador del cuestionario en formato cadena.
+        
+    Returns:
+        list: Lista de diccionarios, donde cada diccionario contiene los datos 
+              de una pregunta (id, texto, imagen, opciones, respuesta correcta y feedback).
     """
     if not cuestionario_id_slot:
         return []
@@ -124,8 +131,14 @@ def load_preguntas(cuestionario_id_slot: str) -> list:
 
 def load_conceptos(tema_slot: str) -> list:
     """
-    Carga los conceptos teóricos de un tema desde la BBDD.
-    Devuelve una lista de dicts con claves: id, termino, termino_legible, definicion.
+    Recupera los conceptos teóricos asociados a un tema específico desde la base de datos.
+    
+    Args:
+        tema_slot (str): Identificador del tema (ej. 'tema1').
+        
+    Returns:
+        list: Lista de diccionarios con la información de cada concepto 
+              (id, término original, término legible y definición).
     """
     tema_num = _tema_num_from_slot(tema_slot)
     if tema_num is None:
@@ -158,8 +171,10 @@ def load_conceptos(tema_slot: str) -> list:
 
 def load_todos_los_temas() -> list:
     """
-    Carga todos los temas registrados en la BBDD.
-    Devuelve una lista de números de tema (int).
+    Obtiene la lista de todos los números de temas registrados para la asignatura activa.
+    
+    Returns:
+        list: Lista de enteros representando los números de los temas disponibles.
     """
     temas = []
     try:
@@ -181,9 +196,14 @@ def load_todos_los_temas() -> list:
 
 def guardar_interaccion(alumno_id: str, tipo_consulta: str, mensaje: str) -> None:
     """
-    Registra una interacción del alumno en INTERACCIONES_CHAT.
-    alumno_id puede ser None cuando el alumno aún no está registrado;
-    en ese caso se guarda NULL (la FK admite SET NULL).
+    Registra una interacción del alumno en la tabla INTERACCIONES_CHAT.
+    
+    Si el alumno_id proporcionado no existe en la base de datos, se almacena como NULL.
+    
+    Args:
+        alumno_id (str): Identificador del alumno (rasa_sender_id).
+        tipo_consulta (str): Categoría o tipo de la interacción.
+        mensaje (str): Contenido del mensaje o detalle de la consulta.
     """
     try:
         with get_db_connection() as conn:
@@ -205,7 +225,16 @@ def guardar_interaccion(alumno_id: str, tipo_consulta: str, mensaje: str) -> Non
 
 
 def esta_matriculado(alumno_id: str, asignatura_id: int) -> bool:
-    """Devuelve True si el alumno tiene matrícula activa en la asignatura indicada."""
+    """
+    Verifica si un alumno posee una matrícula activa en una asignatura específica.
+    
+    Args:
+        alumno_id (str): Identificador del alumno.
+        asignatura_id (int): Identificador de la asignatura.
+        
+    Returns:
+        bool: True si el alumno está matriculado, False en caso contrario.
+    """
     try:
         with get_db_connection() as conn:
             with conn.cursor() as cur:
@@ -224,9 +253,16 @@ def esta_matriculado(alumno_id: str, asignatura_id: int) -> bool:
 
 def iniciar_seguimiento(alumno_id: str, cuestionario_id: int) -> int | None:
     """
-    Crea una fila en SEGUIMIENTO y devuelve su id.
-    Si ya existe una sesión previa para el mismo alumno y cuestionario,
-    crea igualmente una nueva (permite reintentos).
+    Crea un nuevo registro de seguimiento para un intento de cuestionario.
+    
+    Permite registrar múltiples intentos creando una nueva sesión cada vez.
+    
+    Args:
+        alumno_id (str): Identificador del alumno.
+        cuestionario_id (int): Identificador del cuestionario a realizar.
+        
+    Returns:
+        int | None: El ID del registro de seguimiento creado, o None si ocurre un error.
     """
     try:
         with get_db_connection() as conn:
@@ -246,7 +282,14 @@ def iniciar_seguimiento(alumno_id: str, cuestionario_id: int) -> int | None:
 
 
 def guardar_detalle_respuesta(seguimiento_id: int, pregunta_id: int, respuesta_id: int) -> None:
-    """Registra la respuesta elegida para una pregunta en SEGUIMIENTO_DETALLE."""
+    """
+    Almacena o actualiza la respuesta seleccionada por el alumno para una pregunta específica.
+    
+    Args:
+        seguimiento_id (int): Identificador del intento del cuestionario.
+        pregunta_id (int): Identificador de la pregunta respondida.
+        respuesta_id (int): Identificador de la opción de respuesta elegida.
+    """
     try:
         with get_db_connection() as conn:
             with conn.cursor() as cur:
@@ -264,7 +307,13 @@ def guardar_detalle_respuesta(seguimiento_id: int, pregunta_id: int, respuesta_i
 
 
 def actualizar_puntuacion(seguimiento_id: int, puntuacion: float) -> None:
-    """Actualiza la puntuación total en SEGUIMIENTO al finalizar el cuestionario."""
+    """
+    Actualiza la calificación total obtenida en un intento de cuestionario finalizado.
+    
+    Args:
+        seguimiento_id (int): Identificador del intento del cuestionario.
+        puntuacion (float): Calificación final a registrar.
+    """
     try:
         with get_db_connection() as conn:
             with conn.cursor() as cur:
@@ -277,7 +326,16 @@ def actualizar_puntuacion(seguimiento_id: int, puntuacion: float) -> None:
 
 
 def get_cuestionario_id(tema_num: int, asignatura_id: int) -> int | None:
-    """Devuelve el id del cuestionario de un tema dado."""
+    """
+    Recupera el identificador del primer cuestionario asociado a un tema y asignatura.
+    
+    Args:
+        tema_num (int): Número del tema.
+        asignatura_id (int): Identificador de la asignatura.
+        
+    Returns:
+        int | None: El ID del cuestionario encontrado, o None si no existe.
+    """
     try:
         with get_db_connection() as conn:
             with conn.cursor() as cur:
@@ -299,8 +357,17 @@ def get_cuestionario_id(tema_num: int, asignatura_id: int) -> int | None:
 
 def get_respuesta_id_elegida(pregunta_id: int, texto_respuesta: str) -> int | None:
     """
-    Dado el id de la pregunta y el texto de la respuesta (o su letra inicial),
-    intenta localizar el id de la opción más probable en CUESTIONARIOS_RESPUESTAS.
+    Localiza el identificador de una opción de respuesta basada en la entrada del usuario.
+    
+    Intenta realizar una coincidencia exacta o parcial con el texto de la opción, 
+    o bien mediante la letra inicial (ej. 'A', 'B').
+    
+    Args:
+        pregunta_id (int): Identificador de la pregunta.
+        texto_respuesta (str): Texto introducido por el usuario.
+        
+    Returns:
+        int | None: El ID de la respuesta coincidente, o None si no se encuentra.
     """
     try:
         with get_db_connection() as conn:
@@ -341,22 +408,17 @@ def get_respuesta_id_elegida(pregunta_id: int, texto_respuesta: str) -> int | No
 
 def get_progreso_alumno(alumno_id: str) -> dict:
     """
-    Agrega en la BBDD todas las métricas de progreso del alumno y las
-    devuelve en un dict con la siguiente estructura:
-
-            {
-              "dias_activo":           int,
-              "total_interacciones":   int,
-              "conceptos_consultados": int,
-              "por_tema": [
-              {"tema_num": int, "tema_titulo": str,
-               "intentos": int, "media": float, "mejor": float},
-              ...
-              ],
-              "media_global": float | None,
-            }
-
-    Si no existe ningún dato devuelve la estructura con valores a 0 / [].
+    Recopila y estructura todas las métricas de progreso académico de un alumno.
+    
+    Agrupa datos de actividad general, resultados por tema y la media global.
+    
+    Args:
+        alumno_id (str): Identificador del alumno.
+        
+    Returns:
+        dict: Diccionario con la estructura de progreso detallada, incluyendo días 
+              activos, interacciones, conceptos consultados y estadísticas por tema.
+              Si no hay datos, devuelve la estructura inicializada a cero o vacía.
     """
     resultado = {
             "dias_activo": 0,
@@ -443,13 +505,11 @@ def get_progreso_alumno(alumno_id: str) -> dict:
 
 class ActionRegistrarIntent(Action):
     """
-    Registra en INTERACCIONES_CHAT el intent detectado por Rasa para cada
-    mensaje del usuario. Se invoca desde rules.yml y stories.yml antes de
-    las acciones principales, de modo que queda trazabilidad de TODAS las
-    intenciones reconocidas (incluso las que solo disparan utter_*).
-
-    El campo tipo_consulta almacena: 'intent:<nombre> (conf=X.XX)'.
-    El campo mensaje_usuario almacena el texto original del usuario.
+    Acción personalizada para registrar de forma global la intención detectada por Rasa.
+    
+    Esta acción se ejecuta antes de las acciones principales para asegurar la 
+    trazabilidad completa de los mensajes del usuario en la base de datos (INTERACCIONES_CHAT).
+    Almacena el intent detectado, la confianza del NLU y el texto original del usuario.
     """
     def name(self) -> Text:
         return "action_registrar_intent"
@@ -469,12 +529,11 @@ class ActionRegistrarIntent(Action):
 
 class ActionDefaultFallback(Action):
     """
-    Sobrescribe action_default_fallback para que los mensajes que no superan
-    el umbral de confianza del NLU queden registrados en INTERACCIONES_CHAT
-    con tipo_consulta = 'intent:no_detectado'.
-
-    El campo mensaje_usuario guarda el texto íntegro del alumno para que
-    el profesor pueda revisar qué preguntas no cubre el bot actualmente.
+    Sobrescribe la acción de fallback por defecto de Rasa.
+    
+    Registra los mensajes con baja confianza de NLU como intenciones no detectadas,
+    almacenando el texto original en la base de datos. Esto facilita su revisión 
+    posterior y permite identificar preguntas o temas que el bot aún no cubre.
     """
     def name(self) -> Text:
         return "action_default_fallback"
@@ -505,6 +564,9 @@ class ActionDefaultFallback(Action):
 # ---------------------------------------------------------------------------
 
 class ActionMostrarHorario(Action):
+    """
+    Consulta y muestra los horarios de clase programados para un día de la semana específico.
+    """
     def name(self) -> Text:
         return "action_mostrar_horario"
 
@@ -549,6 +611,10 @@ class ActionMostrarHorario(Action):
 
 
 class ActionMostrarProfesoradoTutorias(Action):
+    """
+    Recupera y presenta la información de contacto y los horarios de tutoría 
+    del profesorado asignado a la asignatura activa.
+    """
     def name(self) -> Text:
         return "action_mostrar_profesorado_tutorias"
 
@@ -607,10 +673,10 @@ class ActionMostrarProfesoradoTutorias(Action):
 
 class ActionCheckMatricula(Action):
     """
-    Comprueba si el alumno está matriculado en la asignatura activa (ASIGNATURA_ID_ACTIVA).
-    Establece el slot 'matriculado' con True/False.
-    Las acciones de contenido (listar_temas, listar_conceptos, cuestionarios) deben
-    llamarse tras esta acción y comprobar el slot antes de mostrar información.
+    Verifica la matriculación del usuario en la asignatura activa.
+    
+    Establece el slot 'matriculado' con un valor booleano. Las acciones de contenido 
+    deben ejecutarse posteriormente y validar este slot para permitir el acceso.
     """
     def name(self) -> Text:
         return "action_check_matricula"
@@ -626,6 +692,11 @@ class ActionCheckMatricula(Action):
 # ---------------------------------------------------------------------------
 
 class ActionCheckRegistro(Action):
+    """
+    Comprueba si el usuario actual está registrado como alumno en la base de datos.
+    
+    Actualiza el slot 'requiere_registro' y, si existe, recupera el nombre del alumno.
+    """
     def name(self) -> Text:
         return "action_check_registro"
 
@@ -650,6 +721,9 @@ class ActionCheckRegistro(Action):
 
 
 class ActionGuardarAlumno(Action):
+    """
+    Registra a un nuevo alumno en la base de datos tras obtener su nombre y correo.
+    """
     def name(self) -> Text:
         return "action_guardar_alumno"
 
@@ -672,10 +746,16 @@ class ActionGuardarAlumno(Action):
 
 
 class ValidateRegistroForm(FormValidationAction):
+    """
+    Valida los datos introducidos por el usuario durante el formulario de registro.
+    """
     def name(self) -> Text:
         return "validate_registro_form"
 
     def validate_correo(self, slot_value: Any, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> Dict[Text, Any]:
+        """
+        Verifica que el correo proporcionado pertenezca al dominio oficial (@uco.es).
+        """
         correo = str(slot_value).strip().lower()
         if correo.endswith("@uco.es"):
             return {"correo": correo}
@@ -688,6 +768,11 @@ class ValidateRegistroForm(FormValidationAction):
 # ---------------------------------------------------------------------------
 
 class ActionListarTemas(Action):
+    """
+    Muestra la lista de temas disponibles en la asignatura activa.
+    
+    Requiere que el usuario tenga una matrícula activa.
+    """
     def name(self) -> Text:
         return "action_listar_temas"
 
@@ -723,9 +808,10 @@ class ActionListarTemas(Action):
 
 class ActionListarConceptos(Action):
     """
-    Muestra los conceptos teóricos disponibles para el tema seleccionado.
-    Si no hay conceptos, informa al usuario.
-    Requiere que el alumno esté matriculado en la asignatura activa.
+    Presenta los conceptos teóricos correspondientes al tema seleccionado.
+    
+    Requiere que el usuario esté matriculado. Si el tema no tiene conceptos, 
+    informa al usuario.
     """
     def name(self) -> Text:
         return "action_listar_conceptos"
@@ -771,7 +857,7 @@ class ActionListarConceptos(Action):
 
 class ActionDarConcepto(Action):
     """
-    Muestra la definición del concepto seleccionado, leyendo su ID desde el slot.
+    Recupera y muestra la definición detallada de un concepto seleccionado.
     """
     def name(self) -> Text:
         return "action_dar_concepto"
@@ -823,6 +909,11 @@ class ActionDarConcepto(Action):
 # ---------------------------------------------------------------------------
 
 class ActionListarCuestionarios(Action):
+    """
+    Lista los cuestionarios (teoría o ejercicios) disponibles para un tema específico.
+    
+    Si solo existe un cuestionario, lo selecciona automáticamente y procede a iniciarlo.
+    """
     def name(self) -> Text:
         return "action_listar_cuestionarios"
 
@@ -878,6 +969,12 @@ class ActionListarCuestionarios(Action):
 
 
 class ActionResetCuestionarioDinamico(Action):
+    """
+    Inicializa el estado y los slots necesarios para comenzar un nuevo cuestionario.
+    
+    Carga las preguntas asociadas, crea el registro de seguimiento y muestra 
+    la primera pregunta al usuario.
+    """
     def name(self) -> Text:
         return "action_reset_cuestionario_dinamico"
 
@@ -932,8 +1029,10 @@ class ActionResetCuestionarioDinamico(Action):
 
 class ActionCancelarCuestionario(Action):
     """
-    Cancela un cuestionario en curso. Borra la entrada de SEGUIMIENTO de la base de datos
-    para que este intento fallido no compute en las estadísticas, y limpia los slots.
+    Interrumpe un cuestionario en curso y limpia los datos de progreso.
+    
+    Elimina el registro de seguimiento asociado para evitar que compute 
+    negativamente en las estadísticas del alumno.
     """
     def name(self) -> Text:
         return "action_cancelar_cuestionario"
@@ -969,6 +1068,12 @@ class ActionCancelarCuestionario(Action):
 
 
 class ActionAskRespuestaGenerica(Action):
+    """
+    Acción auxiliar requerida por Rasa Forms para solicitar la entrada del usuario.
+    
+    Su ejecución está vacía ya que la emisión de la pregunta se gestiona explícitamente 
+    en la validación o reseteo del cuestionario.
+    """
     def name(self) -> Text:
         return "action_ask_respuesta_generica"
 
@@ -979,6 +1084,12 @@ class ActionAskRespuestaGenerica(Action):
 
 
 class ValidateCuestionarioDinamicoForm(FormValidationAction):
+    """
+    Gestiona la validación de las respuestas durante un cuestionario dinámico.
+    
+    Controla el avance entre preguntas, evalúa la corrección de las respuestas, 
+    registra el progreso y calcula la puntuación final al concluir.
+    """
     def name(self) -> Text:
         return "validate_cuestionario_dinamico_form"
 
@@ -1069,14 +1180,9 @@ class ValidateCuestionarioDinamicoForm(FormValidationAction):
 
 class ActionMostrarProgreso(Action):
     """
-    Consulta las métricas de progreso del alumno desde la BBDD y las
-    formatea en un mensaje estructurado con emojis.
-
-    Métricas incluidas:
-      - Días de actividad distintos (desde INTERACCIONES_CHAT)
-      - Total de interacciones y conceptos consultados
-      - Por cada tema: nº de intentos, mejor nota y nota media
-      - Nota media global de todos los cuestionarios completados
+    Recupera y presenta un resumen estructurado del progreso académico del estudiante.
+    
+    Muestra estadísticas de uso, resultados por tema y la calificación media global.
     """
     def name(self) -> Text:
         return "action_mostrar_progreso"
@@ -1147,6 +1253,12 @@ class ActionMostrarProgreso(Action):
 # ---------------------------------------------------------------------------
 
 class ActionRecomendar(Action):
+    """
+    Genera recomendaciones de estudio personalizadas mediante un modelo de Machine Learning.
+    
+    Analiza el progreso del alumno y predice la acción más adecuada (repasar un tema, 
+    avanzar o realizar un examen global).
+    """
     def name(self) -> Text:
         return "action_recomendar"
 
