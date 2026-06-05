@@ -67,7 +67,7 @@ stories:
   - action: utter_fechas_tp
   - intent: teoria
   - action: action_registrar_intent
-  - action: utter_fechas_horarios_teoria
+  - action: action_mostrar_menu_horario
 
 - story: clases practicas
   steps:
@@ -76,7 +76,7 @@ stories:
   - action: utter_fechas_tp
   - intent: practica
   - action: action_registrar_intent
-  - action: utter_fechas_horarios_practica
+  - action: action_mostrar_menu_horario
 
 # ---------------------------------------------------------------------------
 # Repaso: cuestionarios / conceptos / ejercicios (desde menú principal)

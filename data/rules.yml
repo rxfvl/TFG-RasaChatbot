@@ -125,13 +125,25 @@ rules:
   steps:
   - intent: entregas
   - action: action_registrar_intent
-  - action: utter_entregas
+  - action: action_mostrar_entregas
 
 - rule: Mostrar noticia semanal
   steps:
   - intent: noticia
   - action: action_registrar_intent
-  - action: utter_noticia
+  - action: action_mostrar_noticia
+
+- rule: Mostrar menu horario teoria
+  steps:
+  - intent: teoria
+  - action: action_registrar_intent
+  - action: action_mostrar_menu_horario
+
+- rule: Mostrar menu horario practica
+  steps:
+  - intent: practica
+  - action: action_registrar_intent
+  - action: action_mostrar_menu_horario
 
 # ---------------------------------------------------------------------------
 # Repaso y selección de tema (turno único → lista de temas)

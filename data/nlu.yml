@@ -74,37 +74,27 @@ nlu:
     - ¿Estoy hablando con un bot?
     - ¿Estoy hablando con un humano?
     
-- intent: fechas_horarios_teoria
-  examples: |
-    - ¿A qué hora es la clase teorica de redes?
-    - ¿Cuando hay clase de teoria?
-    - ¿A qué hora es mañana la clase teorica?
-    - clases teoricas
-    - teoria
-    - teoría
-    - teórica
-    - teorica
-    
-- intent: fechas_horarios_practica
-  examples: |
-    - ¿A qué hora es la clase practica de redes?
-    - ¿Cuando hay clase de practica?
-    - ¿A qué hora es mañana la clase practica?
-    - clases practicas
-    - practica
-    - práctica
-    - prácticas
-    - practicas
-    
 - intent: fechas_tp
   examples: |
     - ¿A qué hora es la clase de redes?
     - ¿Cuando hay clase?
     - ¿A qué hora es mañana la clase?
     - Horario
+    - horario
+    - HORARIO
+    - Horarios
+    - horarios
+    - HORARIOS
+    - Ver horario
+    - ver horario
+    - horario de clases
     - Hora
+    - hora
     - clases
     - Informacion sobre clases
+    - información sobre clases
+    - ¿qué horario hay?
+    - ¿cuál es el horario?
 
 - intent: martes
   examples: |
@@ -143,11 +133,21 @@ nlu:
   examples: |
     - Teoría
     - teoria
-    - Teoría
     - teoría
     - TEORIA
     - TEORÍA
-    
+    - ¿a qué hora es la teoría?
+    - horario de las clases teóricas
+    - ¿cuándo tengo teoría?
+    - ¿qué días se imparte la teoría?
+    - horario de teoria
+    - ¿cuándo empieza la clase de teoría?
+    - a qué hora damos la teoría
+    - dime el horario de la teoría
+    - ¿cuándo es la teoría?
+    - turnos para las clases de teoría
+    - horas de teoría
+
 - intent: practica
   examples: |
     - Práctica
@@ -156,6 +156,17 @@ nlu:
     - práctica
     - PRÁCTICA
     - PRACTICA
+    - ¿a qué hora son las prácticas?
+    - horario de las clases prácticas
+    - ¿cuándo tengo prácticas?
+    - días de prácticas
+    - ¿qué días me toca práctica?
+    - horario de la parte práctica
+    - ¿cuándo empiezan las prácticas?
+    - dime el horario de las prácticas
+    - ¿cuándo es la práctica?
+    - turnos de los grupos de práctica
+    - horas de prácticas
     
 - intent: gracias
   examples: |
@@ -193,13 +204,6 @@ nlu:
     - Estudio
     - estudio
   
-- intent: tema1
-  examples: |
-    - tema 1
-    - TEMA 1
-    - Tema 1
-    
-
 - intent: cuestionarios
   examples: |
     - Cuestionarios
@@ -238,62 +242,7 @@ nlu:
     - ejercicio
     - EJERCICIO
     
-- intent: capa_aplicacion
-  examples: |
-    - Capa de aplicacion
-    - capa de aplicacion
-    - CAPA DE APLICACION
-    
-- intent: capa_presentacion
-  examples: |
-    - Capa de presentacion
-    - capa de presentacion
-    - CAPA DE PRESENTACION
-    
-- intent: capa_sesion
-  examples: |
-    - Capa de sesion
-    - capa de sesion
-    - CAPA DE SESION
-    
-- intent: capa_transporte
-  examples: |
-    - Capa de transporte
-    - capa de transporte
-    - CAPA DE TRANSPORTE
- 
-- intent: capa_red
-  examples: |
-    - Capa de red
-    - capa de red
-    - CAPA DE RED
-    
-- intent: conmutacion
-  examples: |
-    - Conmutación
-    - Conmutacion
-    - CONMUTACION
-    - CONMUTACIÓN
-    - conmutación
-    - conmutacion
-    
 
-- intent: congestion
-  examples: |
-    - Congestión
-    - Congestion
-    - CONGESTION
-    - CONGESTIÓN
-    - congestion
-    - congestion
-    
-
-- intent: calidad_servicio
-  examples: |
-    - calidad servicio
-    - Calidad servicio
-    - CALIDAD SERVICIO
-    
 - intent: seleccionar_concepto
   examples: |
     - quiero ver el concepto [5]{"entity": "concepto_id", "value": "5"}

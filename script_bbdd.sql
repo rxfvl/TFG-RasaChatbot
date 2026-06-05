@@ -118,6 +118,15 @@ CREATE TABLE CUESTIONARIOS (
     FOREIGN KEY (tema_id) REFERENCES TEMAS(id) ON DELETE CASCADE
 );
 
+CREATE TABLE NOTICIAS (
+    id                SERIAL PRIMARY KEY,
+    asignatura_id     INT,                        -- NULL = noticia global
+    titulo            VARCHAR(300) NOT NULL,
+    url               VARCHAR(500),
+    fecha_publicacion DATE,
+    FOREIGN KEY (asignatura_id) REFERENCES ASIGNATURAS(id) ON DELETE SET NULL
+);
+
 
 -- ============================================================
 -- 4. TABLAS DE PREGUNTAS Y SEGUIMIENTO (Nivel 3)
@@ -236,6 +245,11 @@ CREATE INDEX idx_detalle_seguimiento       ON SEGUIMIENTO_DETALLE(seguimiento_id
 CREATE INDEX idx_detalle_pregunta          ON SEGUIMIENTO_DETALLE(pregunta_id);
 CREATE INDEX idx_detalle_respuesta         ON SEGUIMIENTO_DETALLE(respuesta_id);
 
+-- NOTICIAS
+CREATE INDEX idx_noticias_asignatura       ON NOTICIAS(asignatura_id);
+-- Consultas de la noticia más reciente
+CREATE INDEX idx_noticias_fecha            ON NOTICIAS(fecha_publicacion DESC);
+
 -- ============================================================
 -- 7. DATOS INICIALES (INSERTS)
 -- ============================================================
@@ -243,6 +257,13 @@ CREATE INDEX idx_detalle_respuesta         ON SEGUIMIENTO_DETALLE(respuesta_id);
 -- Insertar Profesora
 INSERT INTO PROFESORES (nombre, correo) 
 VALUES ('Amelia Zafra Gómez', 'in1zagoa@uco.es');
+
+-- Noticia inicial (migrada desde el domain.yml hardcodeado)
+INSERT INTO NOTICIAS (asignatura_id, titulo, url, fecha_publicacion) VALUES
+(NULL,
+ 'Ciberseguridad: Una nueva técnica del ''malware'' sin archivos aprovecha los registros de eventos de Windows para ocultarse',
+ 'https://www.cope.es/actualidad/tecnologia/noticias/ciberseguridad-una-nueva-tecnica-del-malware-sin-archivos-aprovecha-los-registros-eventos-windows-para-ocultarse-20220524_2101869',
+ '2022-05-24');
 
 -- Insertar Asignatura
 INSERT INTO ASIGNATURAS (nombre, titulacion, curso, enlace_guia_docente) 
@@ -268,6 +289,23 @@ VALUES (
     (SELECT id FROM ASIGNATURAS WHERE nombre = 'Redes')
 )
 ON CONFLICT DO NOTHING;
+
+-- Insertar Entregas del Calendario (curso 2025/2026)
+INSERT INTO ENTREGAS_CALENDARIO (asignatura_id, titulo, fecha_limite) VALUES
+((SELECT id FROM ASIGNATURAS WHERE nombre = 'Redes'), 'Cuestionario Tema 1', '2025-09-30'),
+((SELECT id FROM ASIGNATURAS WHERE nombre = 'Redes'), 'Cuestionario Tema 2', '2025-10-06'),
+((SELECT id FROM ASIGNATURAS WHERE nombre = 'Redes'), 'Cuestionario Tema 3', '2025-10-15'),
+((SELECT id FROM ASIGNATURAS WHERE nombre = 'Redes'), 'Cuestionario Tema 4', '2025-10-30'),
+((SELECT id FROM ASIGNATURAS WHERE nombre = 'Redes'), 'Cuestionario Tema 5', '2025-11-08'),
+((SELECT id FROM ASIGNATURAS WHERE nombre = 'Redes'), 'Cuestionario Tema 6', '2025-11-25'),
+((SELECT id FROM ASIGNATURAS WHERE nombre = 'Redes'), 'Primer parcial',      '2025-12-04'),
+((SELECT id FROM ASIGNATURAS WHERE nombre = 'Redes'), 'Segundo parcial',     '2025-12-16'),
+((SELECT id FROM ASIGNATURAS WHERE nombre = 'Redes'), 'Primera convocatoria','2026-01-08'),
+((SELECT id FROM ASIGNATURAS WHERE nombre = 'Redes'), 'Segunda convocatoria','2026-01-27'),
+((SELECT id FROM ASIGNATURAS WHERE nombre = 'Redes'), 'Entrega ejercicio 1', NULL),
+((SELECT id FROM ASIGNATURAS WHERE nombre = 'Redes'), 'Entrega ejercicio 2', NULL),
+((SELECT id FROM ASIGNATURAS WHERE nombre = 'Redes'), 'Entrega ejercicio 3', NULL),
+((SELECT id FROM ASIGNATURAS WHERE nombre = 'Redes'), 'Entrega ejercicio 4', NULL);
 
 -- Insertar Temas (todos los temas del temario)
 INSERT INTO TEMAS (asignatura_id, numero, titulo) VALUES

@@ -610,6 +610,204 @@ class ActionMostrarHorario(Action):
         return []
 
 
+# ---------------------------------------------------------------------------
+# Acción: mostrar menú de días con horario (dinámico desde CLASE_HORARIO)
+# ---------------------------------------------------------------------------
+
+class ActionMostrarMenuHorario(Action):
+    """
+    Construye dinámicamente los botones de selección de día para el tipo de
+    clase (teoría o práctica) consultando qué días existen en CLASE_HORARIO.
+
+    Grupos de teoría:  GG1, GG2
+    Grupos de práctica: GM1, GM2, GM3
+    """
+    def name(self) -> Text:
+        return "action_mostrar_menu_horario"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        intent_name = tracker.latest_message.get("intent", {}).get("name")
+        tipo = None
+        if intent_name == "teoria":
+            tipo = "teoria"
+        elif intent_name == "practica":
+            tipo = "practica"
+
+        # Grupos que corresponden a cada tipo
+        GRUPOS_TEORIA   = ("GG1", "GG2")
+        GRUPOS_PRACTICA = ("GM1", "GM2", "GM3")
+
+        try:
+            with get_db_connection() as conn:
+                with conn.cursor() as cur:
+                    if tipo == "teoria":
+                        cur.execute(
+                            """
+                            SELECT DISTINCT dia_semana
+                            FROM CLASE_HORARIO
+                            WHERE asignatura_id = %s AND grupo = ANY(%s)
+                            ORDER BY dia_semana ASC
+                            """,
+                            (ASIGNATURA_ID_ACTIVA, list(GRUPOS_TEORIA))
+                        )
+                        tipo_txt = "teoría"
+                    elif tipo == "practica":
+                        cur.execute(
+                            """
+                            SELECT DISTINCT dia_semana
+                            FROM CLASE_HORARIO
+                            WHERE asignatura_id = %s AND grupo = ANY(%s)
+                            ORDER BY dia_semana ASC
+                            """,
+                            (ASIGNATURA_ID_ACTIVA, list(GRUPOS_PRACTICA))
+                        )
+                        tipo_txt = "práctica"
+                    else:
+                        # Sin tipo: mostrar todos los días con clase
+                        cur.execute(
+                            """
+                            SELECT DISTINCT dia_semana
+                            FROM CLASE_HORARIO
+                            WHERE asignatura_id = %s
+                            ORDER BY dia_semana ASC
+                            """,
+                            (ASIGNATURA_ID_ACTIVA,)
+                        )
+                        tipo_txt = "clase"
+
+                    dias = [row[0] for row in cur.fetchall()]
+
+            if not dias:
+                dispatcher.utter_message(text=f"No hay días de {tipo_txt} registrados en el sistema.")
+                return []
+
+            # Orden natural de la semana
+            orden_semana = ["lunes", "martes", "miercoles", "jueves", "viernes"]
+            dias_ordenados = sorted(dias, key=lambda d: orden_semana.index(d) if d in orden_semana else 99)
+
+            buttons = [
+                {
+                    "title": dia.capitalize(),
+                    "payload": f"/{dia}"
+                }
+                for dia in dias_ordenados
+            ]
+            dispatcher.utter_message(
+                text=f"Elige el día del que quieres ver el horario de {tipo_txt}:",
+                buttons=buttons
+            )
+        except Exception as e:
+            print(f"[ActionMostrarMenuHorario] Error: {e}")
+            dispatcher.utter_message(text="Hubo un error al consultar los días con clase.")
+
+        return []
+
+
+# ---------------------------------------------------------------------------
+# Acción: mostrar entregas del calendario (dinámico desde ENTREGAS_CALENDARIO)
+# ---------------------------------------------------------------------------
+
+class ActionMostrarEntregas(Action):
+    """
+    Recupera y muestra las entregas del calendario académico de la asignatura
+    activa, ordenadas por fecha límite ascendente.
+    Las entregas sin fecha se muestran al final con 'Fecha pendiente'.
+    """
+    def name(self) -> Text:
+        return "action_mostrar_entregas"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        try:
+            with get_db_connection() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        """
+                        SELECT titulo, descripcion, fecha_limite
+                        FROM ENTREGAS_CALENDARIO
+                        WHERE asignatura_id = %s
+                        ORDER BY fecha_limite ASC NULLS LAST
+                        """,
+                        (ASIGNATURA_ID_ACTIVA,)
+                    )
+                    entregas = cur.fetchall()
+
+            if not entregas:
+                dispatcher.utter_message(text="No hay entregas registradas en el calendario.")
+                return []
+
+            lineas = ["📅 **Entregas del curso:**\n"]
+            for titulo, descripcion, fecha in entregas:
+                fecha_txt = fecha.strftime("%-d de %B de %Y") if fecha else "Fecha pendiente de confirmar"
+                linea = f"• {titulo} — {fecha_txt}"
+                if descripcion:
+                    linea += f"\n  _{descripcion}_"
+                lineas.append(linea)
+
+            guardar_interaccion(
+                alumno_id=tracker.sender_id,
+                tipo_consulta="consultar_entregas",
+                mensaje="listado de entregas"
+            )
+            dispatcher.utter_message(text="\n".join(lineas))
+        except Exception as e:
+            print(f"[ActionMostrarEntregas] Error: {e}")
+            dispatcher.utter_message(text="Hubo un error al consultar las entregas del calendario.")
+
+        return []
+
+
+# ---------------------------------------------------------------------------
+# Acción: mostrar noticia más reciente (dinámico desde NOTICIAS)
+# ---------------------------------------------------------------------------
+
+class ActionMostrarNoticia(Action):
+    """
+    Recupera y muestra la noticia más reciente registrada en la tabla NOTICIAS
+    de la base de datos.
+    """
+    def name(self) -> Text:
+        return "action_mostrar_noticia"
+
+    def run(self, dispatcher: CollectingDispatcher, tracker: Tracker, domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        try:
+            with get_db_connection() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(
+                        """
+                        SELECT titulo, url, fecha_publicacion
+                        FROM NOTICIAS
+                        WHERE asignatura_id = %s OR asignatura_id IS NULL
+                        ORDER BY fecha_publicacion DESC
+                        LIMIT 1
+                        """,
+                        (ASIGNATURA_ID_ACTIVA,)
+                    )
+                    noticia = cur.fetchone()
+
+            if not noticia:
+                dispatcher.utter_message(text="No hay noticias disponibles esta semana.")
+                return []
+
+            titulo, url, fecha = noticia
+            fecha_txt = fecha.strftime("%-d de %B de %Y") if fecha else ""
+            texto = f"📰 **Noticia de la semana**"
+            if fecha_txt:
+                texto += f" ({fecha_txt})"
+            texto += f":\n[{titulo}]({url})"
+
+            guardar_interaccion(
+                alumno_id=tracker.sender_id,
+                tipo_consulta="consultar_noticia",
+                mensaje=titulo
+            )
+            dispatcher.utter_message(text=texto)
+        except Exception as e:
+            print(f"[ActionMostrarNoticia] Error: {e}")
+            dispatcher.utter_message(text="Hubo un error al consultar las noticias.")
+
+        return []
+
+
 class ActionMostrarProfesoradoTutorias(Action):
     """
     Recupera y presenta la información de contacto y los horarios de tutoría 
@@ -793,7 +991,7 @@ class ActionListarTemas(Action):
 
         buttons = [
             {
-                "title": f"Tema {num}",
+                "title": f"{num}",
                 "payload": f'/seleccionar_tema{{"tema_actual":"tema{num}"}}'
             }
             for num in temas
@@ -1280,8 +1478,9 @@ class ActionRecomendar(Action):
         interacciones = progreso.get("total_interacciones", 0)
         conceptos_consultados = progreso.get("conceptos_consultados", 0)
         
-        # Preparar array de indicadores y notas de los 6 temas
-        NUM_TEMAS = 6 # REVISAR, DEBE SER DINÁMICO
+        # Preparar array de indicadores y notas dinámicamente según la cantidad de temas
+        temas_disponibles = load_todos_los_temas()
+        NUM_TEMAS = len(temas_disponibles)
         indicadores = [0] * NUM_TEMAS
         notas = [0.0] * NUM_TEMAS
         
