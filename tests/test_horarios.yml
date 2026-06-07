@@ -1,0 +1,69 @@
+version: "3.1"
+
+stories:
+
+- story: test mostrar horario martes
+  steps:
+  - user: |
+      horario del martes
+    intent: martes
+  - action: action_registrar_intent
+  - action: action_mostrar_horario
+
+- story: test mostrar horario jueves
+  steps:
+  - user: |
+      jueves
+    intent: jueves
+  - action: action_registrar_intent
+  - action: action_mostrar_horario
+
+- story: test mostrar horario lunes
+  steps:
+  - user: |
+      lunes
+    intent: lunes
+  - action: action_registrar_intent
+  - action: action_mostrar_horario
+
+- story: test mostrar horario miercoles
+  steps:
+  - user: |
+      miercoles
+    intent: miercoles
+  - action: action_registrar_intent
+  - action: action_mostrar_horario
+
+- story: test mostrar horario viernes
+  steps:
+  - user: |
+      viernes
+    intent: viernes
+  - action: action_registrar_intent
+  - action: action_mostrar_horario
+
+- story: test clases teoricas
+  steps:
+  - user: |
+      ¿A qué hora es la clase de redes?
+    intent: fechas_tp
+  - action: action_registrar_intent
+  - action: utter_fechas_tp
+  - user: |
+      teoria
+    intent: teoria
+  - action: action_registrar_intent
+  - action: action_mostrar_menu_horario
+
+- story: test clases practicas
+  steps:
+  - user: |
+      horario
+    intent: fechas_tp
+  - action: action_registrar_intent
+  - action: utter_fechas_tp
+  - user: |
+      practica
+    intent: practica
+  - action: action_registrar_intent
+  - action: action_mostrar_menu_horario

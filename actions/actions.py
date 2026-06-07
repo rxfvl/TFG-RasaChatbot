@@ -598,7 +598,7 @@ class ActionMostrarHorario(Action):
                     h_ini = hora_inicio.strftime("%H:%M") if hasattr(hora_inicio, 'strftime') else hora_inicio
                     h_fin = hora_fin.strftime("%H:%M") if hasattr(hora_fin, 'strftime') else hora_fin
                     aula_texto = aula if aula else "Aula no especificada"
-                    tipo = "Teoría" if grupo == 'GG1' else "Práctica" if grupo == 'GM1' else "Clase"
+                    tipo = "Teoría" if grupo and grupo.startswith('GG') else "Práctica" if grupo and grupo.startswith('GM') else "Clase"
                     mensaje += f"- {h_ini} a {h_fin} en {aula_texto} ({tipo})\n"
                 dispatcher.utter_message(text=mensaje.strip())
             else:
@@ -633,10 +633,6 @@ class ActionMostrarMenuHorario(Action):
         elif intent_name == "practica":
             tipo = "practica"
 
-        # Grupos que corresponden a cada tipo
-        GRUPOS_TEORIA   = ("GG1", "GG2")
-        GRUPOS_PRACTICA = ("GM1", "GM2", "GM3")
-
         try:
             with get_db_connection() as conn:
                 with conn.cursor() as cur:
@@ -645,10 +641,10 @@ class ActionMostrarMenuHorario(Action):
                             """
                             SELECT DISTINCT dia_semana
                             FROM CLASE_HORARIO
-                            WHERE asignatura_id = %s AND grupo = ANY(%s)
+                            WHERE asignatura_id = %s AND grupo LIKE 'GG%%'
                             ORDER BY dia_semana ASC
                             """,
-                            (ASIGNATURA_ID_ACTIVA, list(GRUPOS_TEORIA))
+                            (ASIGNATURA_ID_ACTIVA,)
                         )
                         tipo_txt = "teoría"
                     elif tipo == "practica":
@@ -656,10 +652,10 @@ class ActionMostrarMenuHorario(Action):
                             """
                             SELECT DISTINCT dia_semana
                             FROM CLASE_HORARIO
-                            WHERE asignatura_id = %s AND grupo = ANY(%s)
+                            WHERE asignatura_id = %s AND grupo LIKE 'GM%%'
                             ORDER BY dia_semana ASC
                             """,
-                            (ASIGNATURA_ID_ACTIVA, list(GRUPOS_PRACTICA))
+                            (ASIGNATURA_ID_ACTIVA,)
                         )
                         tipo_txt = "práctica"
                     else:
@@ -1079,20 +1075,20 @@ class ActionDarConcepto(Action):
             with get_db_connection() as conn:
                 with conn.cursor() as cur:
                     cur.execute(
-                        "SELECT termino_legible, definicion FROM CONCEPTOS_TEORICOS WHERE id = %s",
+                        "SELECT id, termino_legible, definicion FROM CONCEPTOS_TEORICOS WHERE id = %s",
                         (concepto_id,)
                     )
                     row = cur.fetchone()
 
             if row:
-                termino_legible, definicion = row
+                id, termino_legible, definicion = row
                 # Registrar interacción
                 guardar_interaccion(
                     alumno_id=tracker.sender_id,
                     tipo_consulta="consultar_concepto",
                     mensaje=termino_legible
                 )
-                dispatcher.utter_message(text=f"**{termino_legible}**\n\n{definicion}")
+                dispatcher.utter_message(text=f"**{id} - {termino_legible}**\n\n{definicion}")
             else:
                 dispatcher.utter_message(text="No se ha encontrado la definición para este concepto.")
         except Exception as e:

@@ -1,0 +1,51 @@
+version: "3.1"
+
+stories:
+
+- story: test agradecer
+  steps:
+  - user: |
+      gracias
+    intent: gracias
+  - action: action_registrar_intent
+  - action: utter_gracias
+
+- story: test informacion profesorado
+  steps:
+  - user: |
+      ¿quien es el profesor?
+    intent: profesorado
+  - action: action_registrar_intent
+  - action: action_mostrar_profesorado_tutorias
+
+- story: test informacion correos profesor
+  steps:
+  - user: |
+      correo del profe
+    intent: correos_profesor
+  - action: action_registrar_intent
+  - action: action_mostrar_profesorado_tutorias
+
+- story: test informacion entregas
+  steps:
+  - user: |
+      ¿que hay que entregar?
+    intent: entregas
+  - action: action_registrar_intent
+  - action: action_mostrar_entregas
+
+- story: test noticia semanal
+  steps:
+  - user: |
+      noticia
+    intent: noticia
+  - action: action_registrar_intent
+  - action: action_mostrar_noticia
+
+- story: test bot challenge
+  steps:
+  - user: |
+      ¿eres un bot?
+    intent: bot_challenge
+  - action: action_registrar_intent
+  - action: utter_iamabot

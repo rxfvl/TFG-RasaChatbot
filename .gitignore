@@ -3,15 +3,15 @@ models/
 
 # Ignorar Caché y Meta-datos internos de Rasa
 .rasa/
-
+.cache/
 # Ignorar Credenciales y Endpoints
 credentials.yml
 endpoints.yml
 
 # Ignorar archivos locales de Entornos Virtuales
-venv/
+.venv/
 .env
-
+venv/
 # Ignorar Backups y logs temporales
 *.bak
 *.log
@@ -21,3 +21,7 @@ rasa.db
 __pycache__/
 *.py[cod]
 *$py.class
+
+results/
+
+.keras/

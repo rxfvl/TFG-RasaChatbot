@@ -1,0 +1,81 @@
+version: "3.1"
+
+stories:
+
+- story: test happy path registrado
+  steps:
+  - user: |
+      hola
+    intent: greet
+  - action: action_registrar_intent
+  - action: action_check_registro
+  - slot_was_set:
+    - requiere_registro: false
+  - action: utter_greet
+  - user: |
+      bien
+    intent: mood_great
+  - action: action_registrar_intent
+  - action: utter_happy
+
+- story: test sad path 1 registrado
+  steps:
+  - user: |
+      buenas
+    intent: start
+  - action: action_registrar_intent
+  - action: action_check_registro
+  - slot_was_set:
+    - requiere_registro: false
+  - action: utter_greet
+  - user: |
+      mal
+    intent: mood_unhappy
+  - action: action_registrar_intent
+  - action: utter_cheer_up
+  - action: utter_did_that_help
+  - user: |
+      si
+    intent: affirm
+  - action: action_registrar_intent
+  - action: utter_happy
+
+- story: test sad path 2 registrado
+  steps:
+  - user: |
+      hola
+    intent: greet
+  - action: action_registrar_intent
+  - action: action_check_registro
+  - slot_was_set:
+    - requiere_registro: false
+  - action: utter_greet
+  - user: |
+      estoy triste
+    intent: mood_unhappy
+  - action: action_registrar_intent
+  - action: utter_cheer_up
+  - action: utter_did_that_help
+  - user: |
+      no
+    intent: deny
+  - action: action_registrar_intent
+  - action: utter_goodbye
+
+- story: test inicio registro nuevo usuario
+  steps:
+  - user: |
+      hola
+    intent: greet
+  - action: action_registrar_intent
+  - action: action_check_registro
+  - slot_was_set:
+    - requiere_registro: true
+  - action: registro_form
+  - active_loop: registro_form
+  - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  - action: action_guardar_alumno
+  - action: utter_registro_completado
+  - action: utter_greet

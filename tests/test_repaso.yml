@@ -1,0 +1,96 @@
+version: "3.1"
+
+stories:
+
+- story: test menu repaso
+  steps:
+  - user: |
+      quiero repasar
+    intent: repasar
+  - action: action_registrar_intent
+  - action: action_listar_temas
+
+- story: test repasar y seleccionar tema conceptos
+  steps:
+  - user: |
+      repaso
+    intent: repasar
+  - action: action_registrar_intent
+  - action: action_listar_temas
+  - user: |
+      tema 1
+    intent: seleccionar_tema
+  - action: action_registrar_intent
+  - action: utter_tipo_ejercicio
+  - user: |
+      conceptos
+    intent: conceptos
+  - action: action_registrar_intent
+  - action: action_listar_conceptos
+
+- story: test definicion directa de concepto
+  steps:
+  - user: |
+      conmutacion
+    intent: seleccionar_concepto
+  - action: action_registrar_intent
+  - action: action_dar_concepto
+
+- story: test inicio de cuestionario dinamico directo
+  steps:
+  - user: |
+      tema 2
+    intent: seleccionar_tema
+  - action: action_registrar_intent
+  - action: utter_tipo_ejercicio
+  - user: |
+      cuestionario
+    intent: cuestionarios
+  - action: action_registrar_intent
+  - action: action_listar_cuestionarios
+
+- story: test realizar cuestionario dinamico completo
+  steps:
+  - user: |
+      hacer el cuestionario 1
+    intent: seleccionar_cuestionario
+  - action: action_registrar_intent
+  - action: action_reset_cuestionario_dinamico
+  - action: cuestionario_dinamico_form
+  - active_loop: cuestionario_dinamico_form
+  - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  - action: utter_fin_test
+
+- story: test salir de cuestionario a la mitad
+  steps:
+  - user: |
+      quiero hacer un test
+    intent: seleccionar_cuestionario
+  - action: action_registrar_intent
+  - action: action_reset_cuestionario_dinamico
+  - action: cuestionario_dinamico_form
+  - active_loop: cuestionario_dinamico_form
+  - user: |
+      salir del cuestionario
+    intent: salir_cuestionario
+  - action: action_registrar_intent
+  - action: action_cancelar_cuestionario
+  - active_loop: null
+
+- story: test ver progreso
+  steps:
+  - user: |
+      ver mi progreso
+    intent: ver_progreso
+  - action: action_registrar_intent
+  - action: action_mostrar_progreso
+
+- story: test recomendar
+  steps:
+  - user: |
+      que me recomiendas
+    intent: recomendar
+  - action: action_registrar_intent
+  - action: action_recomendar
