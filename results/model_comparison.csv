@@ -1,4 +1,0 @@
-Modelo,Mejores Parametros,Tiempo Entrenamiento (s),Tiempo Inferencia (s),Accuracy,Precision,Recall,F1_Score
-Decision Tree,"{'criterion': 'gini', 'max_depth': None}",1.535,0.0005,0.828,0.8272,0.828,0.8265
-Random Forest,"{'max_depth': None, 'n_estimators': 100}",4.161,0.0276,0.9255,0.9266,0.9255,0.9257
-MLP (Red Neuronal),"{'activation': 'relu', 'hidden_layer_sizes': (32,), 'solver': 'adam'}",17.713,0.0013,0.9585,0.9596,0.9585,0.9583
