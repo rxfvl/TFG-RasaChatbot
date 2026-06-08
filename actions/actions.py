@@ -75,7 +75,10 @@ def load_preguntas(cuestionario_id_slot: str) -> list:
 
     preguntas_dict = {}
     try:
-        cuest_id = int(cuestionario_id_slot)
+        match = re.search(r'\d+', str(cuestionario_id_slot))
+        if not match:
+            return []
+        cuest_id = int(match.group())
         with get_db_connection() as conn:
             with conn.cursor() as cur:
                 query = """
@@ -1065,11 +1068,17 @@ class ActionDarConcepto(Action):
             )
             return []
 
-        concepto_id = tracker.get_slot("concepto_id")
+        concepto_id_raw = tracker.get_slot("concepto_id")
 
-        if not concepto_id:
+        if not concepto_id_raw:
             dispatcher.utter_message(text="No se ha seleccionado ningún concepto.")
             return []
+            
+        match = re.search(r'\d+', str(concepto_id_raw))
+        if not match:
+            dispatcher.utter_message(text="No se ha encontrado un identificador válido para el concepto.")
+            return []
+        concepto_id = match.group()
 
         try:
             with get_db_connection() as conn:
@@ -1186,10 +1195,16 @@ class ActionResetCuestionarioDinamico(Action):
                 SlotSet("aciertos_cuestionario", 0),
             ]
 
-        cuest_id = tracker.get_slot("cuestionario_id_seleccionado")
-        if not cuest_id:
+        cuest_id_raw = tracker.get_slot("cuestionario_id_seleccionado")
+        if not cuest_id_raw:
             dispatcher.utter_message(text="No se ha seleccionado ningún cuestionario.")
             return []
+
+        match = re.search(r'\d+', str(cuest_id_raw))
+        if not match:
+            dispatcher.utter_message(text="No se ha encontrado un identificador válido para el cuestionario.")
+            return []
+        cuest_id = match.group()
 
         preguntas = load_preguntas(cuest_id)
         seguimiento_id = None
@@ -1514,18 +1529,24 @@ class ActionRecomendar(Action):
                 )
             elif prediction == "avanzar_siguiente_tema":
                 # Buscar el primer tema que no ha intentado
-                tema_siguiente = 1
+                tema_siguiente = None
                 for i, ind in enumerate(indicadores):
                     if ind == 0:
                         tema_siguiente = i + 1
                         break
                         
-                botones = [{"title": f"Ir al Tema {tema_siguiente}", "payload": f'/seleccionar_tema{{"tema_actual":"tema{tema_siguiente}"}}'}]
-                dispatcher.utter_message(
-                    text=f"🤖 **Recomendación de la IA:** ¡Vas muy bien! Tus notas son buenas. "
-                         f"Te recomiendo avanzar hacia el **Tema {tema_siguiente}**.",
-                    buttons=botones
-                )
+                if tema_siguiente is None:
+                    dispatcher.utter_message(
+                        text="🤖 **Recomendación de la IA:** ¡Excelente trabajo! Ya has completado todos los temas. "
+                             "¡Estás preparado/a para el examen final!"
+                    )
+                else:
+                    botones = [{"title": f"Ir al Tema {tema_siguiente}", "payload": f'/seleccionar_tema{{"tema_actual":"tema{tema_siguiente}"}}'}]
+                    dispatcher.utter_message(
+                        text=f"🤖 **Recomendación de la IA:** ¡Vas muy bien! Tus notas son buenas. "
+                             f"Te recomiendo avanzar hacia el **Tema {tema_siguiente}**.",
+                        buttons=botones
+                    )
             elif prediction == "hacer_examen_global":
                 dispatcher.utter_message(
                     text="🤖 **Recomendación de la IA:** ¡Excelente trabajo! Has completado y dominado todos los temas. "

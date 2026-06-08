@@ -6,51 +6,15 @@ stories:
 # Saludos y estados de ánimo (flujos multi-turno)
 # ---------------------------------------------------------------------------
 
-- story: happy path
+- story: affirm after cheer up
   steps:
-  - or:
-    - intent: greet
-    - intent: start
-  - action: action_registrar_intent
-  - action: action_check_registro
-  - slot_was_set:
-    - requiere_registro: false
-  - action: utter_greet
-  - intent: mood_great
-  - action: action_registrar_intent
-  - action: utter_happy
-
-- story: sad path 1
-  steps:
-  - or:
-    - intent: greet
-    - intent: start
-  - action: action_registrar_intent
-  - action: action_check_registro
-  - slot_was_set:
-    - requiere_registro: false
-  - action: utter_greet
-  - intent: mood_unhappy
-  - action: action_registrar_intent
-  - action: utter_cheer_up
   - action: utter_did_that_help
   - intent: affirm
   - action: action_registrar_intent
   - action: utter_happy
 
-- story: sad path 2
+- story: deny after cheer up
   steps:
-  - or:
-    - intent: greet
-    - intent: start
-  - action: action_registrar_intent
-  - action: action_check_registro
-  - slot_was_set:
-    - requiere_registro: false
-  - action: utter_greet
-  - intent: mood_unhappy
-  - action: action_registrar_intent
-  - action: utter_cheer_up
   - action: utter_did_that_help
   - intent: deny
   - action: action_registrar_intent

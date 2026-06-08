@@ -21,7 +21,7 @@ stories:
 - story: test sad path 1 registrado
   steps:
   - user: |
-      buenas
+      /start
     intent: start
   - action: action_registrar_intent
   - action: action_check_registro

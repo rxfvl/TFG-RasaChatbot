@@ -14,7 +14,7 @@ nlu:
   examples: |
     - Adios
     - Hasta luego
-    - Buenas noches
+    - Que pases buenas noches
     - Hasta mañana
     - Hasta pronto
     - Ten un buen día
@@ -66,6 +66,16 @@ nlu:
     - no muy bien
     - Extremadamente triste
     - Tan triste
+    - estoy agobiado
+    - me siento fatal
+    - tengo ansiedad
+    - tengo mucha ansiedad
+    - padezco de mucha ansiedad
+    - me esta dando ansiedad
+    - todo me sale mal
+    - estoy de bajón
+    - vaya asco de día
+    - estoy frustrado
 
 - intent: bot_challenge
   examples: |
@@ -100,34 +110,46 @@ nlu:
   examples: |
     - Martes
     - martes
-    - MARTES
+    - horario del martes
+    - ¿tenemos clase el martes?
+    - ¿qué toca el martes?
+    - clases del martes
     
 - intent: jueves
   examples: |
     - Jueves
     - jueves
-    - JUEVES
+    - horario del jueves
+    - ¿tenemos clase el jueves?
+    - ¿qué toca el jueves?
+    - clases del jueves
     
 - intent: lunes
   examples: |
     - Lunes
     - lunes
-    - LUNES
+    - horario del lunes
+    - ¿tenemos clase el lunes?
+    - ¿qué toca el lunes?
+    - clases del lunes
     
 - intent: miercoles
   examples: |
-    - Miercoles
     - Miércoles
     - miercoles
-    - miércoles
-    - MIERCOLES
-    - MIÉRCOLES
+    - horario del miércoles
+    - ¿tenemos clase el miercoles?
+    - ¿qué toca el miércoles?
+    - clases del miercoles
     
 - intent: viernes
   examples: |
     - Viernes
     - viernes
-    - VIERNES
+    - horario del viernes
+    - ¿tenemos clase el viernes?
+    - ¿qué toca el viernes?
+    - clases del viernes
     
 - intent: teoria
   examples: |
@@ -245,9 +267,9 @@ nlu:
 
 - intent: seleccionar_concepto
   examples: |
-    - quiero ver el concepto [5]{"entity": "concepto_id", "value": "5"}
-    - concepto [3]{"entity": "concepto_id", "value": "3"}
-    - ver concepto [1]{"entity": "concepto_id", "value": "1"}
+    - quiero ver el [concepto 5]{"entity": "concepto_id", "value": "5"}
+    - [concepto 3]{"entity": "concepto_id", "value": "3"}
+    - ver [concepto 1]{"entity": "concepto_id", "value": "1"}
 
 - intent: correos_profesor
   examples: |
@@ -257,6 +279,8 @@ nlu:
     - email
     - EMAIL
     - Email
+    - correo del profe
+    - correo del profesor
     
 - intent: entregas
   examples: |
@@ -326,3 +350,12 @@ nlu:
     - ¿Qué debería repasar?
     - Sugiéreme un tema
     - ¿Por dónde sigo?
+
+- intent: seleccionar_cuestionario
+  examples: |
+    - hacer el [cuestionario 1]{"entity": "cuestionario_id_seleccionado", "value": "1"}
+    - quiero hacer un test
+    - hacer [cuestionario 2]{"entity": "cuestionario_id_seleccionado", "value": "2"}
+    - iniciar [test 3]{"entity": "cuestionario_id_seleccionado", "value": "3"}
+    - el [cuestionario 4]{"entity": "cuestionario_id_seleccionado", "value": "4"}
+    - quiero el [test 5]{"entity": "cuestionario_id_seleccionado", "value": "5"}

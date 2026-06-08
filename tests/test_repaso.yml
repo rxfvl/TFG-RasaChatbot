@@ -17,9 +17,9 @@ stories:
     intent: repasar
   - action: action_registrar_intent
   - action: action_listar_temas
-  - user: |
-      tema 1
-    intent: seleccionar_tema
+  - intent: seleccionar_tema
+    user: |-
+      [tema 1]{"entity": "tema_actual", "value": "tema1"}
   - action: action_registrar_intent
   - action: utter_tipo_ejercicio
   - user: |
@@ -30,17 +30,17 @@ stories:
 
 - story: test definicion directa de concepto
   steps:
-  - user: |
-      conmutacion
-    intent: seleccionar_concepto
+  - intent: seleccionar_concepto
+    user: |-
+      [concepto 3]{"entity": "concepto_id", "value": "3"}
   - action: action_registrar_intent
   - action: action_dar_concepto
 
 - story: test inicio de cuestionario dinamico directo
   steps:
-  - user: |
-      tema 2
-    intent: seleccionar_tema
+  - intent: seleccionar_tema
+    user: |-
+      [tema 2]{"entity": "tema_actual", "value": "tema2"}
   - action: action_registrar_intent
   - action: utter_tipo_ejercicio
   - user: |
@@ -51,9 +51,9 @@ stories:
 
 - story: test realizar cuestionario dinamico completo
   steps:
-  - user: |
-      hacer el cuestionario 1
-    intent: seleccionar_cuestionario
+  - intent: seleccionar_cuestionario
+    user: |-
+      hacer el [cuestionario 1]{"entity": "cuestionario_id_seleccionado", "value": "1"}
   - action: action_registrar_intent
   - action: action_reset_cuestionario_dinamico
   - action: cuestionario_dinamico_form

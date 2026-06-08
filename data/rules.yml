@@ -47,6 +47,19 @@ rules:
   - action: action_registrar_intent
   - action: utter_goodbye
 
+- rule: Responder a estado de animo feliz
+  steps:
+  - intent: mood_great
+  - action: action_registrar_intent
+  - action: utter_happy
+
+- rule: Responder a estado de animo triste
+  steps:
+  - intent: mood_unhappy
+  - action: action_registrar_intent
+  - action: utter_cheer_up
+  - action: utter_did_that_help
+
 - rule: Salir sin estar en cuestionario
   condition:
   - active_loop: null
